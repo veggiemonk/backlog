@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make:*)",
+      "Bash(go test:*)",
+      "Bash(go vet:*)",
+      "Bash(gofmt:*)",
+      "Bash(go build:*)",
+      "Bash(./bin/backlog:*)",
+      "Bash(find:*)",
+      "mcp__gopls__go_workspace",
+      "mcp__backlog__task_create",
+      "mcp__backlog__task_list",
+      "mcp__backlog__task_view",
+      "mcp__backlog__task_edit",
+      "Bash(cat:*)",
+      "Bash(timeout:*)",
+      "Bash(true)",
+      "Bash(BACKLOG_LOG_FILE=\"test.log\" BACKLOG_LOG_LEVEL=\"debug\" BACKLOG_LOG_FORMAT=\"json\" ./bin/backlog version)",
+      "Bash(BACKLOG_LOG_FILE=\"test.log\" BACKLOG_LOG_LEVEL=\"debug\" BACKLOG_LOG_FORMAT=\"json\" ./bin/backlog list)",
+      "Bash(BACKLOG_LOG_FILE=\"test.log\" BACKLOG_LOG_LEVEL=\"debug\" BACKLOG_LOG_FORMAT=\"json\" ./bin/backlog view nonexistent)",
+      "Bash(BACKLOG_LOG_FILE=\"text.log\" BACKLOG_LOG_LEVEL=\"debug\" BACKLOG_LOG_FORMAT=\"text\" ./bin/backlog view nonexistent)"
+    ],
+    "deny": [],
+    "ask": [
+      "Bash(rm:*)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "backlog",
+    "gopls"
+  ]
+}

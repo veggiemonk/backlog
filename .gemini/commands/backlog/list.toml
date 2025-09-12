@@ -1,0 +1,4 @@
+description = "Lists all tasks in the backlog."
+prompt = """
+@docs/cli/backlog_list.md
+"""

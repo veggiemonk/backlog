@@ -1,0 +1,20 @@
+{
+  "inputs": [],
+  "servers": {
+    "backlog": {
+      "command": "go",
+      "args": ["run", ".", "mcp"],
+      "cwd": "$PWD",
+      "type": "stdio"
+    },
+    "gopls": {
+      "command": "gopls",
+      "args": ["mcp"],
+      "type": "stdio"
+    },
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    }
+  }
+}

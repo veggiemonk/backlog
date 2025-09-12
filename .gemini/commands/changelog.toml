@@ -1,0 +1,21 @@
+description = "Adds a new entry to the project's CHANGELOG.md file."
+prompt = """
+# Task: Update Changelog
+
+You are an expert maintainer of this software project. A user has invoked a command to add a new entry to the changelog.
+
+**The user's raw command is appended below your instructions.**
+
+Your task is to parse the `<version>`, `<change_type>`, and `<message>` from their input and use the `write_file` tool to correctly update the `CHANGELOG.md` file.
+
+## Expected Format
+The command follows this format: `/changelog <version> <type> <message>`
+- `<type>` must be one of: "added", "changed", "fixed", "removed".
+
+## Behavior
+1. Read the `CHANGELOG.md` file.
+2. Find the section for the specified `<version>`.
+3. Add the `<message>` under the correct `<type>` heading.
+4. If the version or type section doesn't exist, create it.
+5. Adhere strictly to the "Keep a Changelog" format.
+"""

@@ -1,0 +1,23 @@
+description = "break down a plan to tasks in the backlog."
+
+prompt = """
+Your task is to convert the following plan into a list of tasks that can be added to a backlog using the backlog MCP tool.
+Each task should be concise and actionable.
+
+GOAL: break down the following plan into as many tasks as needed to keep the plan accurate. {{args}}
+
+Instructions:
+1. Read the plan carefully and identify all the key tasks that need to be completed.
+2. For each task, provide a clear and concise title.
+3. Write a detailed description of what needs to be done for each task.
+4. Include Acceptance Criteria to define when the task is considered complete.
+5. Outline an Implementation Plan for how the task will be carried out.
+6. Add any relevant Notes that may help in completing the task.
+7. Set relevant labels for each task to categorize them.
+8. Assign each task to @me (you can change this later).
+9. Set the status of each task to "todo".
+10. Assign a priority level to each task (low, medium, high).
+
+@docs/cli/backlog_create.md
+
+"""

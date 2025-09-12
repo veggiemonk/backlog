@@ -1,0 +1,19 @@
+description = "Make a plan from a complete project"
+
+prompt = """
+
+Goal: Given a complete project, build a list of tasks that would be needed to recreate it from scratch.
+
+{{args}}
+
+if you were to recreate this project from scratch, make a plan and break it down into tasks using backlog.
+The plan should be detailed and broken down into small, manageable tasks.
+Add implementation plan to relevant tasks, all tasks should have at least one acceptance criteria.
+Use the existing tasks as a backlog, do not create duplicate tasks. 
+If a task already exists that matches a step in your plan, propose to modify it to fit the plan.
+If any existing tasks are made irrelevant by this plan, list them under a "Tasks to Archive" section in your plan.
+The plan should be written to ./docs/plan.md
+
+How to use backlog: {@internal/mcp/prompt.md}
+
+"""
