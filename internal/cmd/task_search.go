@@ -43,6 +43,23 @@ backlog search "user" --labels --priority --assigned
 	`,
 	Run: runSearch,
 }
+var (
+	searchParent        string
+	searchStatus        []string
+	searchAssigned      []string
+	searchLabels        []string
+	searchUnassigned    bool
+	searchHasDependency bool
+	searchDependedon    bool
+	// sorting
+	searchSortFields   string
+	searchReverseOrder bool
+	// column visibility
+	searchHideExtraFields bool
+	// output format
+	searchMarkdownOutput bool
+	searchJSONOutput     bool
+)
 
 // markdownOutput bool
 // jsonOutput     bool
@@ -51,21 +68,21 @@ backlog search "user" --labels --priority --assigned
 func init() {
 	rootCmd.AddCommand(searchCmd)
 	// filtering
-	searchCmd.Flags().StringVarP(&filterParent, "parent", "p", "", "Filter tasks by parent ID")
-	searchCmd.Flags().StringSliceVarP(&filterStatus, "status", "s", nil, "Filter tasks by status")
-	searchCmd.Flags().StringSliceVarP(&filterAssigned, "assigned", "a", nil, "Filter tasks by assigned names")
-	searchCmd.Flags().StringSliceVarP(&filterLabels, "labels", "l", nil, "Filter tasks by labels")
-	searchCmd.Flags().BoolVarP(&filterUnassigned, "unassigned", "u", false, "List tasks that have no one assigned")
-	searchCmd.Flags().BoolVarP(&hasDependency, "has-dependency", "c", false, "Include tasks that have dependencies")
-	searchCmd.Flags().BoolVarP(&dependedon, "depended-on", "d", false, "Filter tasks that are depended on by other tasks")
-	// column visibility
-	searchCmd.Flags().BoolVarP(&hideExtraFields, "hide-extra", "e", false, "Hide extra fields (labels, priority, assigned)")
+	searchCmd.Flags().StringVarP(&searchParent, "parent", "p", "", "Filter tasks by parent ID")
+	searchCmd.Flags().StringSliceVarP(&searchStatus, "status", "s", nil, "Filter tasks by status")
+	searchCmd.Flags().StringSliceVarP(&searchAssigned, "assigned", "a", nil, "Filter tasks by assigned names")
+	searchCmd.Flags().StringSliceVarP(&searchLabels, "labels", "l", nil, "Filter tasks by labels")
+	searchCmd.Flags().BoolVarP(&searchUnassigned, "unassigned", "u", false, "List tasks that have no one assigned")
+	searchCmd.Flags().BoolVarP(&searchHasDependency, "has-dependency", "c", false, "Include tasks that have dependencies")
+	searchCmd.Flags().BoolVarP(&searchDependedon, "depended-on", "d", false, "Filter tasks that are depended on by other tasks")
 	// sorting
-	searchCmd.Flags().StringVar(&sortFields, "sort", "", "Sort tasks by comma-separated fields (id, title, status, priority, created, updated)")
-	searchCmd.Flags().BoolVarP(&reverseOrder, "reverse", "r", false, "Reverse the order of tasks")
+	searchCmd.Flags().StringVar(&searchSortFields, "sort", "", "Sort tasks by comma-separated fields (id, title, status, priority, created, updated)")
+	searchCmd.Flags().BoolVarP(&searchReverseOrder, "reverse", "r", false, "Reverse the order of tasks")
+	// column visibility
+	searchCmd.Flags().BoolVarP(&searchHideExtraFields, "hide-extra", "e", false, "Hide extra fields (labels, priority, assigned)")
 	// output format
-	searchCmd.Flags().BoolVarP(&markdownOutput, "markdown", "m", false, "Print markdown table")
-	searchCmd.Flags().BoolVarP(&jsonOutput, "json", "j", false, "Print JSON output")
+	searchCmd.Flags().BoolVarP(&searchMarkdownOutput, "markdown", "m", false, "Print markdown table")
+	searchCmd.Flags().BoolVarP(&searchJSONOutput, "json", "j", false, "Print JSON output")
 }
 
 func runSearch(cmd *cobra.Command, args []string) {
@@ -79,15 +96,15 @@ func runSearch(cmd *cobra.Command, args []string) {
 		}
 	}
 	params := core.ListTasksParams{
-		Parent:        &filterParent,
-		Status:        filterStatus,
-		Assigned:      filterAssigned,
-		Labels:        filterLabels,
-		Unassigned:    filterUnassigned,
-		HasDependency: hasDependency,
-		DependedOn:    dependedon,
+		Parent:        &searchParent,
+		Status:        searchStatus,
+		Assigned:      searchAssigned,
+		Labels:        searchLabels,
+		Unassigned:    searchUnassigned,
+		HasDependency: searchHasDependency,
+		DependedOn:    searchDependedon,
 		Sort:          sortFieldsSlice,
-		Reverse:       reverseOrder,
+		Reverse:       searchReverseOrder,
 	}
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
 	tasks, err := store.Search(query, params)
@@ -97,7 +114,7 @@ func runSearch(cmd *cobra.Command, args []string) {
 	}
 
 	if len(tasks) == 0 {
-		if jsonOutput {
+		if searchJSONOutput {
 			fmt.Println("[]")
 		} else {
 			fmt.Printf("No tasks found matching '%s'.\n", query)
@@ -106,23 +123,21 @@ func runSearch(cmd *cobra.Command, args []string) {
 	}
 
 	// Handle JSON output
-	if jsonOutput {
-		output, err := json.MarshalIndent(tasks, "", "  ")
-		if err != nil {
+	if searchJSONOutput {
+		if err := json.NewEncoder(os.Stdout).Encode(tasks); err != nil {
 			logging.Error("failed to encode JSON", "query", query, "error", err)
 			os.Exit(1)
 		}
-		fmt.Println(string(output))
 		return
 	}
 
-	table := tableWriter(markdownOutput)
-
 	// Set table header based on hidden columns
 	header := []string{"ID", "Status", "Title", "Dependencies"}
-	if !hideExtraFields {
+	if !searchHideExtraFields {
 		header = append(header, "Labels", "Priority", "Assigned")
 	}
+
+	table := tableWriter(searchMarkdownOutput)
 	table.Header(header)
 
 	fmt.Printf("Found %d task(s) matching '%s':\n\n", len(tasks), query)
@@ -132,9 +147,13 @@ func runSearch(cmd *cobra.Command, args []string) {
 			t.ID.String(),
 			string(t.Status),
 			t.Title,
-			strings.Join(t.Labels, ", "),
-			t.Priority.String(),
-			strings.Join(t.Assigned, ", "),
+			strings.Join(t.Dependencies, ", ")}
+		if !searchHideExtraFields {
+			row = append(row,
+				strings.Join(t.Labels, ", "),
+				t.Priority.String(),
+				strings.Join(t.Assigned, ", "),
+			)
 		}
 		if err := table.Append(row); err != nil {
 			logging.Error("failed to append table row", "task_id", t.ID, "error", err)

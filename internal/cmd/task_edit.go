@@ -105,15 +105,15 @@ var (
 	newTitle        string
 	newDescription  string
 	newStatus       string
+	newPriority     string
+	newParent       string
 	addAssigned     []string
 	removeAssigned  []string
 	addLabels       []string
 	removeLabels    []string
-	newPriority     string
-	newParent       string
+	newDependencies []string
 	newNotes        string
 	newPlan         string
-	newDependencies []string
 	addAC           []string
 	checkAC         []int
 	uncheckAC       []int
@@ -126,13 +126,13 @@ func init() {
 	editCmd.Flags().StringVarP(&newTitle, "title", "t", "", "New title for the task")
 	editCmd.Flags().StringVarP(&newDescription, "description", "d", "", "New description for the task")
 	editCmd.Flags().StringVarP(&newStatus, "status", "s", "", "New status for the task")
-	editCmd.Flags().StringVar(&newPriority, "priority", "P", "New priority for the task")
+	editCmd.Flags().StringVar(&newPriority, "priority", "", "New priority for the task")
 	editCmd.Flags().StringVarP(&newParent, "parent", "p", "", "New parent for the task")
 	editCmd.Flags().StringSliceVarP(&addAssigned, "assigned", "a", nil, "Add assigned names for the task (can be used multiple times)")
 	editCmd.Flags().StringSliceVarP(&removeAssigned, "remove-assigned", "A", nil, "Assigned names to remove from the task (can be used multiple times)")
 	editCmd.Flags().StringSliceVarP(&addLabels, "labels", "l", nil, "Add labels for the task (can be used multiple times)")
 	editCmd.Flags().StringSliceVarP(&removeLabels, "remove-labels", "L", nil, "Labels to remove from the task (can be used multiple times)")
-	editCmd.Flags().StringSliceVarP(&newDependencies, "deps", "D", nil, "Set dependencies (can be used multiple times)")
+	editCmd.Flags().StringSliceVar(&newDependencies, "dep", nil, "Set dependencies (can be used multiple times)")
 	editCmd.Flags().StringVar(&newNotes, "notes", "", "New implementation notes for the task")
 	editCmd.Flags().StringVar(&newPlan, "plan", "", "New implementation plan for the task")
 

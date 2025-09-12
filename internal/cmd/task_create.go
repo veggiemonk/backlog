@@ -25,13 +25,13 @@ backlog create "Fix the login button styling"
 # 2. Task with a Description. Use the -d or --description flag to add more detailed information about the task.
 backlog create "Implement password reset" -d "Users should be able to request a password reset link via their email. This involves creating a new API endpoint and a front-end form."
 
-# 3. Assigning a Task. You can assign a task to one or more team members using the -a or --assignee flag. 
+# 3. Assigning a Task. You can assign a task to one or more team members using the -a or --assigned flag. 
 # Assign to a single person: 
 backlog create "Design the new dashboard" -a "alex"
 # Assign to multiple people: 
 backlog create "Code review for the payment gateway" -a "jordan" -a "casey"
 
-# 4. Adding LabelsUse the -l or --labels flag to categorize the task with comma-separated labels.
+# 4. Adding Labels. Use the -l or --labels flag to categorize the task with comma-separated labels.
 backlog create "Update third-party dependencies" -l "bug,backend,security"
 
 # 5. Setting a Priority
@@ -63,7 +63,7 @@ backlog create "Integration testing" --deps "T15" --deps "T18" --deps "T20"
 # 9. Complex Example (Combining Multiple Flags). Here is a comprehensive example that uses several flags at once to create a very detailed task.
 backlog create "Build the new reporting feature" \
   -d "Create a new section in the app that allows users to generate and export monthly performance reports in PDF format." \
-  -a "@drew" \
+  -a "drew" \
   -l "feature,frontend,backend" \
   --priority "high" \
   --ac "Report generation logic is accurate." \
@@ -77,13 +77,13 @@ backlog create "Build the new reporting feature" \
 var (
 	description  string
 	parent       string
+	priority     string
 	assigned     []string
 	labels       []string
-	priority     string
+	dependencies []string
 	ac           []string
 	plan         string
 	notes        string
-	dependencies []string
 )
 
 func init() {
@@ -91,11 +91,11 @@ func init() {
 
 	createCmd.Flags().StringVarP(&description, "description", "d", "", "Description of the task")
 	createCmd.Flags().StringVarP(&parent, "parent", "p", "", "Parent task ID")
+	createCmd.Flags().StringVar(&priority, "priority", "medium", "Priority of the task (low, medium, high)")
 	createCmd.Flags().StringSliceVarP(&assigned, "assigned", "a", []string{}, "Assignee for the task (can be specified multiple times)")
 	createCmd.Flags().StringSliceVarP(&labels, "labels", "l", []string{}, "Comma-separated labels for the task")
 	createCmd.Flags().StringSliceVar(&dependencies, "deps", []string{}, "Add a dependency (can be used multiple times)")
 	createCmd.Flags().StringSliceVar(&ac, "ac", []string{}, "Acceptance criterion (can be specified multiple times)")
-	createCmd.Flags().StringVar(&priority, "priority", "medium", "Priority of the task (low, medium, high)")
 	createCmd.Flags().StringVar(&plan, "plan", "", "Implementation plan for the task")
 	createCmd.Flags().StringVar(&notes, "notes", "", "Additional notes for the task")
 }

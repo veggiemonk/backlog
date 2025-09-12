@@ -40,7 +40,7 @@ backlog list --depended-on --status "todo" 	# List all the blocking tasks.
 # column visibility
 backlog list --hide-extra 		# Hide extra fields (labels, priority, assigned)
 backlog list -e 				# Hide extra fields (labels, priority, assigned)
-backlog --status "todo" --hide-extra # List "todo" tasks with minimal columns
+backlog list --status "todo" --hide-extra # List "todo" tasks with minimal columns
 
 # sorting
 backlog list --sort "priority" 			# Sort tasks by priority
@@ -88,11 +88,11 @@ func init() {
 	listCmd.Flags().BoolVarP(&filterUnassigned, "unassigned", "u", false, "Filter tasks that have no one assigned")
 	listCmd.Flags().BoolVarP(&hasDependency, "has-dependency", "c", false, "Filter tasks that have dependencies")
 	listCmd.Flags().BoolVarP(&dependedon, "depended-on", "d", false, "Filter tasks that are depended on by other tasks")
-	// column visibility
-	listCmd.Flags().BoolVarP(&hideExtraFields, "hide-extra", "e", false, "Hide extra fields (labels, priority, assigned)")
 	// sorting
 	listCmd.Flags().StringVar(&sortFields, "sort", "", "Sort tasks by comma-separated fields (id, title, status, priority, created, updated)")
 	listCmd.Flags().BoolVarP(&reverseOrder, "reverse", "r", false, "Reverse the order of tasks")
+	// column visibility
+	listCmd.Flags().BoolVarP(&hideExtraFields, "hide-extra", "e", false, "Hide extra fields (labels, priority, assigned)")
 	// output format
 	listCmd.Flags().BoolVarP(&markdownOutput, "markdown", "m", false, "print markdown table")
 	listCmd.Flags().BoolVarP(&jsonOutput, "json", "j", false, "Print JSON output")
