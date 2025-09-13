@@ -104,14 +104,14 @@ backlog edit 42 --dep "T15" --dep "T18" --dep "T20"
       --ac strings                Add a new acceptance criterion (can be used multiple times)
   -a, --assigned strings          Add assigned names for the task (can be used multiple times)
       --check-ac ints             Check an acceptance criterion by its index
-  -D, --deps strings              Set dependencies (can be used multiple times)
+      --dep strings               Set dependencies (can be used multiple times)
   -d, --description string        New description for the task
   -h, --help                      help for edit
   -l, --labels strings            Add labels for the task (can be used multiple times)
       --notes string              New implementation notes for the task
   -p, --parent string             New parent for the task
       --plan string               New implementation plan for the task
-      --priority string           New priority for the task (default "P")
+      --priority string           New priority for the task
       --remove-ac ints            Remove an acceptance criterion by its index
   -A, --remove-assigned strings   Assigned names to remove from the task (can be used multiple times)
   -L, --remove-labels strings     Labels to remove from the task (can be used multiple times)
