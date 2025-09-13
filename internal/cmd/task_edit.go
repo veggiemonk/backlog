@@ -228,14 +228,9 @@ func runEdit(cmd *cobra.Command, args []string) {
 	if oldFilePath == currentFilePath {
 		oldFilePath = ""
 	}
-	gh, err := commit.NewHandle()
-	if err != nil {
-		logging.Error("failed to initialize git", "error", err)
-		os.Exit(1)
-	}
 	// autocommit the change if enabled
 	commitMsg := fmt.Sprintf("feat(task): edit %s - \"%s\"", updatedTask.ID, updatedTask.Title)
-	if err := gh.AutoCommit(currentFilePath, oldFilePath, commitMsg); err != nil {
+	if err := commit.Add(currentFilePath, oldFilePath, commitMsg); err != nil {
 		logging.Warn("auto-commit failed", "task_id", updatedTask.ID, "error", err)
 	}
 }

@@ -44,14 +44,9 @@ func runArchive(cmd *cobra.Command, args []string) {
 	if !autoCommit {
 		return // Auto-commit is disabled
 	}
-	gh, err := commit.NewHandle()
-	if err != nil {
-		logging.Error("failed to initialize git", "error", err)
-		return
-	}
 	// Auto-commit the change if enabled
 	commitMsg := fmt.Sprintf("chore(task): archive %s - \"%s\"", task.ID, task.Title)
-	if err := gh.AutoCommit(newPath, oldPath, commitMsg); err != nil {
+	if err := commit.Add(newPath, oldPath, commitMsg); err != nil {
 		logging.Warn("auto-commit failed", "task_id", task.ID, "error", err)
 	}
 }

@@ -126,15 +126,10 @@ func runCreate(cmd *cobra.Command, args []string) {
 	if !autoCommit {
 		return // Auto-commit is disabled
 	}
-	gh, err := commit.NewHandle()
-	if err != nil {
-		logging.Error("failed to initialize git", "error", err)
-		return
-	}
 	// Auto-commit the change if enabled
 	filePath := store.Path(newTask)
 	commitMsg := fmt.Sprintf("feat(task): create %s - \"%s\"", newTask.ID, newTask.Title)
-	if err := gh.AutoCommit(filePath, "", commitMsg); err != nil {
+	if err := commit.Add(filePath, "", commitMsg); err != nil {
 		logging.Warn("auto-commit failed", "task_id", newTask.ID, "error", err)
 	}
 }

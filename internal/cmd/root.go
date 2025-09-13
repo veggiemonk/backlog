@@ -3,11 +3,9 @@ package cmd
 import (
 	"context"
 	"os"
-	"path/filepath"
 
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
-	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
 )
@@ -61,24 +59,8 @@ func init() {
 		// Initialize logging before anything else
 		logging.Init()
 
-		rootDir, err := commit.FindTopLevelGitDir()
-		if err != nil {
-			logging.Error("getting top level git directory", "err", err)
-		}
-		backlogDir := ""
-		switch tasksDir {
-		case defaultDir, "":
-			if rootDir != "" {
-				backlogDir = filepath.Join(rootDir, tasksDir)
-			} else {
-				backlogDir = defaultDir
-			}
-		default:
-			backlogDir = tasksDir
-		}
-
 		fs := afero.NewOsFs()
-		var store TaskStore = core.NewFileTaskStore(fs, backlogDir)
+		var store TaskStore = core.NewFileTaskStore(fs, tasksDir)
 		cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
 	}
 }

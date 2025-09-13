@@ -46,12 +46,8 @@ func (s *Server) addTools() {
 
 func (h *handler) commit(id, title, path, oldPath, msg string) error {
 	if h.autoCommit {
-		gh, err := commit.NewHandle()
-		if err != nil {
-			return fmt.Errorf("initializing git error: %w", err)
-		}
 		commitMsg := fmt.Sprintf("feat(task): %s %s - \"%s\"", msg, id, title)
-		if err := gh.AutoCommit(path, oldPath, commitMsg); err != nil {
+		if err := commit.Add(path, oldPath, commitMsg); err != nil {
 			return fmt.Errorf("auto-commit failed: %w", err)
 		}
 	}
