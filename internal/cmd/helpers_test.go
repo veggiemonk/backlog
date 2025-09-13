@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"slices"
 	"testing"
 
 	"github.com/spf13/afero"
@@ -11,9 +12,13 @@ import (
 	"github.com/veggiemonk/backlog/internal/core"
 )
 
+type runFunc func(cmd *cobra.Command, args []string)
+
 func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error) {
 	t.Helper()
-
+	if use == "" {
+		return nil, fmt.Errorf("'use' cannot be empty: %v", args)
+	}
 	fs := afero.NewMemMapFs()
 	tasksDir := ".backlog"
 	store := core.NewFileTaskStore(fs, tasksDir)
@@ -23,49 +28,25 @@ func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error)
 	testRootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
 		cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
 	}
-	testListCmd := &cobra.Command{Use: use, Run: run}
+	testCmd := &cobra.Command{Use: use, Run: run}
 
 	setRootPersistentFlags(testRootCmd)
-	testRootCmd.AddCommand(testListCmd)
+	testRootCmd.AddCommand(testCmd)
 	switch use {
 	case "list":
-		setListFlags(testListCmd)
+		setListFlags(testCmd)
 	case "search":
-		setSearchFlags(testListCmd)
+		setSearchFlags(testCmd)
+	case "edit":
+		setEditFlags(testCmd)
+	case "mcp":
+		setMCPFlags(testCmd)
 	default:
 		t.Fatalf("no command called %s", use)
 	}
-
+	args = slices.Insert(args, 0, use)
 	return execute(t, testRootCmd, args...)
 }
-
-type runFunc func(cmd *cobra.Command, args []string)
-
-// type execFunc func(t *testing.T, args ...string) ([]byte, error)
-
-// func makeExecute(t *testing.T, use string, run runFunc) execFunc {
-// 	t.Helper()
-
-// 	fs := afero.NewMemMapFs()
-// 	tasksDir := ".backlog"
-// 	store := core.NewFileTaskStore(fs, tasksDir)
-// 	createTestTasks(t, store)
-// 	// Create fresh command to avoid state pollution
-// 	testRootCmd := &cobra.Command{Use: "backlog"}
-// 	testRootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-// 		cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
-// 	}
-// 	testListCmd := &cobra.Command{Use: use, Run: run}
-
-// 	setRootPersistentFlags(testRootCmd)
-// 	testRootCmd.AddCommand(testListCmd)
-// 	setListFlags(testListCmd)
-
-// 	return func(t *testing.T, args ...string) ([]byte, error) {
-// 		t.Helper()
-// 		return execute(t, testRootCmd, args...)
-// 	}
-// }
 
 func execute(t *testing.T, c *cobra.Command, args ...string) ([]byte, error) {
 	t.Helper()

@@ -10,10 +10,9 @@ import (
 )
 
 func Test_runSearch(t *testing.T) {
-
 	t.Run("basic search by title", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "First", "-j")
+		output, err := exec(t, "search", runSearch, "First", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -23,7 +22,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search by partial title", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -32,7 +31,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search by description", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "First description", "-j")
+		output, err := exec(t, "search", runSearch, "First description", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -42,7 +41,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search by label", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "first", "-j")
+		output, err := exec(t, "search", runSearch, "first", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -52,7 +51,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search by assigned user", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "first-user", "-j")
+		output, err := exec(t, "search", runSearch, "first-user", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -62,7 +61,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search by priority", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "high", "-j")
+		output, err := exec(t, "search", runSearch, "high", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -72,7 +71,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search by acceptance criteria", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "First AC", "-j")
+		output, err := exec(t, "search", runSearch, "First AC", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -82,7 +81,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search by implementation notes", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "implementation notes", "-j")
+		output, err := exec(t, "search", runSearch, "implementation notes", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -91,7 +90,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search by implementation plan", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Second implementation plan", "-j")
+		output, err := exec(t, "search", runSearch, "Second implementation plan", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -101,7 +100,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("case insensitive search", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "FIRST", "-j")
+		output, err := exec(t, "search", runSearch, "FIRST", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -111,7 +110,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with no results", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "nonexistent", "-j")
+		output, err := exec(t, "search", runSearch, "nonexistent", "-j")
 		is.NoErr(err)
 		outputStr := strings.TrimSpace(string(output))
 		is.Equal(outputStr, "[]") // empty JSON array
@@ -119,7 +118,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with status filter", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "-s", "todo", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-s", "todo", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -128,7 +127,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with multiple status filter", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "-s", "todo,in-progress", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-s", "todo,in-progress", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -137,7 +136,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with assigned filter", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "-a", "first-user", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-a", "first-user", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -147,7 +146,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with multiple assigned filter", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "-a", "first-user,second-user", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-a", "first-user,second-user", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -158,7 +157,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with labels filter", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "-l", "first", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-l", "first", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -168,7 +167,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with multiple labels filter", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "-l", "first,second", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-l", "first,second", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -179,7 +178,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with unassigned filter", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "-u", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-u", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -189,7 +188,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with sorting by title", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "--sort", "title", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "--sort", "title", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -199,7 +198,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with sorting by priority", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "--sort", "priority", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "--sort", "priority", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -209,7 +208,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with reverse order", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "-r", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-r", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -219,7 +218,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with combined filters", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "-l", "second", "-s", "todo", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-l", "second", "-s", "todo", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -229,7 +228,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search markdown output format", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "First Task", "-m")
+		output, err := exec(t, "search", runSearch, "First Task", "-m")
 		is.NoErr(err)
 		outputStr := string(output)
 		is.True(strings.Contains(outputStr, "|"))    // markdown table contains pipes
@@ -240,7 +239,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search hide extra fields", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "First Task", "--hide-extra")
+		output, err := exec(t, "search", runSearch, "First Task", "--hide-extra")
 		is.NoErr(err)
 		outputStr := string(output)
 		is.True(strings.Contains(outputStr, "ID"))
@@ -255,7 +254,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search default table output format", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "First Task")
+		output, err := exec(t, "search", runSearch, "First Task")
 		is.NoErr(err)
 		outputStr := string(output)
 		is.True(strings.Contains(outputStr, "ID"))
@@ -269,7 +268,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search JSON output format", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "First Task", "-j")
+		output, err := exec(t, "search", runSearch, "First Task", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -282,7 +281,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search empty results table format", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "nonexistent")
+		output, err := exec(t, "search", runSearch, "nonexistent")
 		is.NoErr(err)
 		outputStr := string(output)
 		is.True(strings.Contains(outputStr, "No tasks found"))
@@ -290,7 +289,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search empty results JSON format", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "nonexistent", "-j")
+		output, err := exec(t, "search", runSearch, "nonexistent", "-j")
 		is.NoErr(err)
 		outputStr := strings.TrimSpace(string(output))
 		is.Equal(outputStr, "[]") // empty JSON array
@@ -300,7 +299,7 @@ func Test_runSearch(t *testing.T) {
 		is := is.NewRelaxed(t)
 
 		// Test short flag for JSON output
-		output, err := exec(t, "search", runSearch, "search", "First Task", "-j")
+		output, err := exec(t, "search", runSearch, "First Task", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -308,19 +307,19 @@ func Test_runSearch(t *testing.T) {
 		is.Equal(tasks[0].Title, "First Task")
 
 		// Test short flag for markdown output
-		output, err = exec(t, "search", runSearch, "search", "First Task", "-m")
+		output, err = exec(t, "search", runSearch, "First Task", "-m")
 		is.NoErr(err)
 		outputStr := string(output)
 		is.True(strings.Contains(outputStr, "|:---"))
 
 		// Test short flag for hide extra fields
-		output, err = exec(t, "search", runSearch, "search", "First Task", "-e")
+		output, err = exec(t, "search", runSearch, "First Task", "-e")
 		is.NoErr(err)
 		outputStr = string(output)
 		is.True(!strings.Contains(outputStr, "LABELS"))
 
 		// Test short flag for reverse order
-		output, err = exec(t, "search", runSearch, "search", "Task", "-r", "-j")
+		output, err = exec(t, "search", runSearch, "Task", "-r", "-j")
 		is.NoErr(err)
 		tasks = []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -328,14 +327,14 @@ func Test_runSearch(t *testing.T) {
 		is.Equal(tasks[0].Title, "In Progress Task")
 
 		// Test short flag for status
-		output, err = exec(t, "search", runSearch, "search", "Task", "-s", "todo", "-j")
+		output, err = exec(t, "search", runSearch, "Task", "-s", "todo", "-j")
 		is.NoErr(err)
 		tasks = []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
 		is.Equal(len(tasks), countTask-1)
 
 		// Test short flag for assigned
-		output, err = exec(t, "search", runSearch, "search", "Task", "-a", "first-user", "-j")
+		output, err = exec(t, "search", runSearch, "Task", "-a", "first-user", "-j")
 		is.NoErr(err)
 		tasks = []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -343,7 +342,7 @@ func Test_runSearch(t *testing.T) {
 		is.Equal(tasks[0].Title, "First Task")
 
 		// Test short flag for labels
-		output, err = exec(t, "search", runSearch, "search", "Task", "-l", "first", "-j")
+		output, err = exec(t, "search", runSearch, "Task", "-l", "first", "-j")
 		is.NoErr(err)
 		tasks = []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -351,7 +350,7 @@ func Test_runSearch(t *testing.T) {
 		is.Equal(tasks[0].Title, "First Task")
 
 		// Test short flag for unassigned
-		output, err = exec(t, "search", runSearch, "search", "Task", "-u", "-j")
+		output, err = exec(t, "search", runSearch, "Task", "-u", "-j")
 		is.NoErr(err)
 		tasks = []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -361,7 +360,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("multiple combined flags", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "-l", "second", "-s", "todo", "--sort", "title", "-r", "--hide-extra", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-l", "second", "-s", "todo", "--sort", "title", "-r", "--hide-extra", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
@@ -373,7 +372,7 @@ func Test_runSearch(t *testing.T) {
 	t.Run("search with parent filter", func(t *testing.T) {
 		is := is.NewRelaxed(t)
 		// Since no parent tasks are created in test data, this should return empty
-		output, err := exec(t, "search", runSearch, "search", "Task", "-p", "1", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-p", "1", "-j")
 		is.NoErr(err)
 		outputStr := strings.TrimSpace(string(output))
 		is.Equal(outputStr, "[]") // empty JSON array
@@ -382,7 +381,7 @@ func Test_runSearch(t *testing.T) {
 	t.Run("search with has-dependency filter", func(t *testing.T) {
 		is := is.NewRelaxed(t)
 		// Since no dependencies are created in test data, this should return empty
-		output, err := exec(t, "search", runSearch, "search", "Task", "-c", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-c", "-j")
 		is.NoErr(err)
 		outputStr := strings.TrimSpace(string(output))
 		is.Equal(outputStr, "[]") // empty JSON array
@@ -391,7 +390,7 @@ func Test_runSearch(t *testing.T) {
 	t.Run("search with depended-on filter", func(t *testing.T) {
 		is := is.NewRelaxed(t)
 		// Since no dependencies are created in test data, this should return empty
-		output, err := exec(t, "search", runSearch, "search", "Task", "-d", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "-d", "-j")
 		is.NoErr(err)
 		outputStr := strings.TrimSpace(string(output))
 		is.Equal(outputStr, "[]") // empty JSON array
@@ -399,7 +398,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with invalid sort field", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "--sort", "invalidfield", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "--sort", "invalidfield", "-j")
 		// Command should still execute but may not sort properly
 		is.NoErr(err)
 		tasks := []*core.Task{}
@@ -409,7 +408,7 @@ func Test_runSearch(t *testing.T) {
 
 	t.Run("search with empty sort field", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		output, err := exec(t, "search", runSearch, "search", "Task", "--sort", "", "-j")
+		output, err := exec(t, "search", runSearch, "Task", "--sort", "", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))

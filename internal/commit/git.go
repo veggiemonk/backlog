@@ -1,7 +1,10 @@
 package commit
 
 import (
+	"errors"
 	"fmt"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/go-git/go-git/v5"
@@ -13,6 +16,7 @@ import (
 type GitHandle struct {
 	repo     *git.Repository
 	worktree *git.Worktree
+	RootDir  string
 }
 
 // NewHandle opens the git repository in the current directory.
@@ -27,10 +31,36 @@ func NewHandle() (*GitHandle, error) {
 		return nil, fmt.Errorf("could not get worktree: %w", err)
 	}
 
+	rootDir, err := FindTopLevelGitDir()
+	if err != nil {
+		return nil, err
+	}
 	return &GitHandle{
 		repo:     repo,
 		worktree: worktree,
+		RootDir:  rootDir,
 	}, nil
+}
+
+func FindTopLevelGitDir() (string, error) {
+	workingDir, err := os.Getwd()
+	if err != nil {
+		return "", err
+	}
+	dir, err := filepath.Abs(workingDir)
+	if err != nil {
+		return "", fmt.Errorf("invalid working dir: %w", err)
+	}
+	for {
+		if _, err := os.Stat(filepath.Join(dir, ".git")); err == nil {
+			return dir, nil
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return "", errors.New("no git repository found")
+		}
+		dir = parent
+	}
 }
 
 // Stage adds the given paths to the git staging area.

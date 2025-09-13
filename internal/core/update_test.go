@@ -1,6 +1,7 @@
 package core_test
 
 import (
+	"slices"
 	"strings"
 	"testing"
 
@@ -120,6 +121,7 @@ func TestUpdateTaskFields(t *testing.T) {
 		updatedTask, err := store.Update(task, params)
 		is.NoErr(err)
 
+		slices.Sort(updatedTask.Assigned)
 		// Verify fields are updated
 		is.Equal(updatedTask.Title, newTitle)
 		is.Equal(updatedTask.Description, newDesc)

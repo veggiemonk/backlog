@@ -14,11 +14,9 @@ backlog mcp [flags]
 
 ```
 
-backlog mcp --http # Start the MCP server using HTTP transport on default port 8106
-
+backlog mcp --http             # Start the MCP server using HTTP transport on default port 8106
 backlog mcp --http --port 4321 # Start the MCP server using HTTP transport on port 4321
-
-backlog mcp # Start the MCP server using stdio transport
+backlog mcp                    # Start the MCP server using stdio transport
 
 ```
 

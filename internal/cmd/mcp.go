@@ -13,11 +13,9 @@ var mcpCmd = &cobra.Command{
 	Short: "Start the MCP server",
 	Long:  `Starts an MCP server to provide programmatic access to backlog tasks.`,
 	Example: `
-backlog mcp --http # Start the MCP server using HTTP transport on default port 8106
-
+backlog mcp --http             # Start the MCP server using HTTP transport on default port 8106
 backlog mcp --http --port 4321 # Start the MCP server using HTTP transport on port 4321
-
-backlog mcp # Start the MCP server using stdio transport
+backlog mcp                    # Start the MCP server using stdio transport
 `,
 	Run: runMcpServer,
 }
@@ -29,8 +27,12 @@ var (
 
 func init() {
 	rootCmd.AddCommand(mcpCmd)
-	mcpCmd.Flags().IntVar(&mcpHTTPPort, "port", 8106, "Port for the MCP server (HTTP transport)")
-	mcpCmd.Flags().BoolVar(&httpTransport, "http", false, "Use HTTP transport instead of stdio")
+	setMCPFlags(mcpCmd)
+}
+
+func setMCPFlags(cmd *cobra.Command) {
+	cmd.Flags().IntVar(&mcpHTTPPort, "port", 8106, "Port for the MCP server (HTTP transport)")
+	cmd.Flags().BoolVar(&httpTransport, "http", false, "Use HTTP transport instead of stdio")
 }
 
 func runMcpServer(cmd *cobra.Command, args []string) {

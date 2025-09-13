@@ -122,25 +122,28 @@ var (
 
 func init() {
 	rootCmd.AddCommand(editCmd)
+	setEditFlags(editCmd)
+}
 
-	editCmd.Flags().StringVarP(&newTitle, "title", "t", "", "New title for the task")
-	editCmd.Flags().StringVarP(&newDescription, "description", "d", "", "New description for the task")
-	editCmd.Flags().StringVarP(&newStatus, "status", "s", "", "New status for the task")
-	editCmd.Flags().StringVar(&newPriority, "priority", "", "New priority for the task")
-	editCmd.Flags().StringVarP(&newParent, "parent", "p", "", "New parent for the task")
-	editCmd.Flags().StringSliceVarP(&addAssigned, "assigned", "a", nil, "Add assigned names for the task (can be used multiple times)")
-	editCmd.Flags().StringSliceVarP(&removeAssigned, "remove-assigned", "A", nil, "Assigned names to remove from the task (can be used multiple times)")
-	editCmd.Flags().StringSliceVarP(&addLabels, "labels", "l", nil, "Add labels for the task (can be used multiple times)")
-	editCmd.Flags().StringSliceVarP(&removeLabels, "remove-labels", "L", nil, "Labels to remove from the task (can be used multiple times)")
-	editCmd.Flags().StringSliceVar(&newDependencies, "dep", nil, "Set dependencies (can be used multiple times)")
-	editCmd.Flags().StringVar(&newNotes, "notes", "", "New implementation notes for the task")
-	editCmd.Flags().StringVar(&newPlan, "plan", "", "New implementation plan for the task")
+func setEditFlags(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&newTitle, "title", "t", "", "New title for the task")
+	cmd.Flags().StringVarP(&newDescription, "description", "d", "", "New description for the task")
+	cmd.Flags().StringVarP(&newStatus, "status", "s", "", "New status for the task")
+	cmd.Flags().StringVar(&newPriority, "priority", "", "New priority for the task")
+	cmd.Flags().StringVarP(&newParent, "parent", "p", "", "New parent for the task")
+	cmd.Flags().StringSliceVarP(&addAssigned, "assigned", "a", nil, "Add assigned names for the task (can be used multiple times)")
+	cmd.Flags().StringSliceVarP(&removeAssigned, "remove-assigned", "A", nil, "Assigned names to remove from the task (can be used multiple times)")
+	cmd.Flags().StringSliceVarP(&addLabels, "labels", "l", nil, "Add labels for the task (can be used multiple times)")
+	cmd.Flags().StringSliceVarP(&removeLabels, "remove-labels", "L", nil, "Labels to remove from the task (can be used multiple times)")
+	cmd.Flags().StringSliceVar(&newDependencies, "dep", nil, "Set dependencies (can be used multiple times)")
+	cmd.Flags().StringVar(&newNotes, "notes", "", "New implementation notes for the task")
+	cmd.Flags().StringVar(&newPlan, "plan", "", "New implementation plan for the task")
 
 	// Acceptance Criteria flags
-	editCmd.Flags().StringSliceVar(&addAC, "ac", nil, "Add a new acceptance criterion (can be used multiple times)")
-	editCmd.Flags().IntSliceVar(&checkAC, "check-ac", nil, "Check an acceptance criterion by its index")
-	editCmd.Flags().IntSliceVar(&uncheckAC, "uncheck-ac", nil, "Uncheck an acceptance criterion by its index")
-	editCmd.Flags().IntSliceVar(&removeAC, "remove-ac", nil, "Remove an acceptance criterion by its index")
+	cmd.Flags().StringSliceVar(&addAC, "ac", nil, "Add a new acceptance criterion (can be used multiple times)")
+	cmd.Flags().IntSliceVar(&checkAC, "check-ac", nil, "Check an acceptance criterion by its index")
+	cmd.Flags().IntSliceVar(&uncheckAC, "uncheck-ac", nil, "Uncheck an acceptance criterion by its index")
+	cmd.Flags().IntSliceVar(&removeAC, "remove-ac", nil, "Remove an acceptance criterion by its index")
 }
 
 func runEdit(cmd *cobra.Command, args []string) {

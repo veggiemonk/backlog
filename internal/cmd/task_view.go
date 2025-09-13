@@ -9,13 +9,7 @@ import (
 	"github.com/veggiemonk/backlog/internal/logging"
 )
 
-// This file is deprecated - the task command has been removed.
-// Task viewing is now handled by the dedicated view command in view.go
-// All other task commands (create, list, edit, search) are now root-level commands.
-
-var (
-	viewJSON bool
-)
+var viewJSON bool
 
 // viewCmd represents the view command
 var viewCmd = &cobra.Command{
