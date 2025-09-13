@@ -102,7 +102,7 @@ func (f *FileTaskStore) Update(task *Task, params EditTaskParams) (*Task, error)
 
 	if params.NewPlan != nil && task.ImplementationPlan != *params.NewPlan {
 		RecordChange(task, "Implementation plan changed")
-		task.ImplementationPlan = fmt.Sprintf("%s", *params.NewPlan)
+		task.ImplementationPlan = fmt.Sprintf("%s\n", *params.NewPlan)
 	}
 
 	if params.NewDependencies != nil && !equalStringSlices(task.Dependencies, params.NewDependencies) {

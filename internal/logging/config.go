@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"fmt"
 	"io"
 	"log/slog"
 	"os"
@@ -8,8 +9,10 @@ import (
 	"strings"
 )
 
-var logger *slog.Logger
-var file *os.File
+var (
+	logger *slog.Logger
+	file   *os.File
+)
 
 // Init initializes the global logger based on environment variables
 // BACKLOG_LOG_FILE: path to log file (optional, defaults to stderr)
@@ -21,11 +24,11 @@ func Init() {
 	// Configure output destination
 	if logFile := os.Getenv("BACKLOG_LOG_FILE"); logFile != "" {
 		// Ensure directory exists
-		if err := os.MkdirAll(filepath.Dir(logFile), 0755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(logFile), 0750); err != nil {
 			// Fall back to stderr if we can't create the directory
 			output = os.Stderr
 		} else {
-			file, err = os.OpenFile(logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
+			file, err = os.OpenFile(logFile, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
 			if err != nil {
 				// Fall back to stderr if we can't open the log file
 				output = os.Stderr
@@ -64,7 +67,9 @@ func Init() {
 
 func Close() {
 	if file != nil {
-		file.Close()
+		if err := file.Close(); err != nil {
+			fmt.Printf("closing file: %v", err)
+		}
 	}
 }
 

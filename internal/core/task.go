@@ -34,7 +34,7 @@ type Task struct {
 	ID           TaskID           `yaml:"id" json:"id"`
 	Title        string           `yaml:"title" json:"title"`
 	Status       Status           `yaml:"status" json:"status"`
-	Parent       TaskID           `yaml:"parent,omitempty" json:"parent,omitempty"`
+	Parent       TaskID           `yaml:"parent" json:"parent"`
 	Assigned     MaybeStringArray `yaml:"assigned,omitempty" json:"assigned,omitempty"`
 	Labels       MaybeStringArray `yaml:"labels,omitempty" json:"labels,omitempty"`
 	Dependencies MaybeStringArray `yaml:"dependencies,omitempty" json:"dependencies,omitempty"`
@@ -251,7 +251,7 @@ var (
 	_ json.Marshaler   = MaybeStringArray{}
 )
 
-func (a *MaybeStringArray) toSlice() []string {
+func (a *MaybeStringArray) ToSlice() []string {
 	if a == nil {
 		return nil
 	}

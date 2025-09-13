@@ -76,10 +76,10 @@ func (f *FileTaskStore) Create(params CreateTaskParams) (*Task, error) {
 		return nil, fmt.Errorf("invalid priority %q: %w", params.Priority, err)
 	}
 	if params.Notes != nil {
-		newTask.ImplementationNotes = *params.Notes
+		newTask.ImplementationNotes = fmt.Sprintf("%s\n", *params.Notes)
 	}
 	if params.Plan != nil {
-		newTask.ImplementationPlan = fmt.Sprintf("%s", *params.Plan)
+		newTask.ImplementationPlan = fmt.Sprintf("%s\n", *params.Plan)
 	}
 	newTask.CreatedAt = time.Now().UTC()
 

@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"slices"
 
 	"github.com/spf13/cobra"
 	"github.com/veggiemonk/backlog/internal/core"
@@ -42,6 +41,7 @@ backlog search "user" --labels --priority --assigned
 	`,
 	Run: runSearch,
 }
+
 var (
 	searchParent        string
 	searchStatus        []string
@@ -59,10 +59,6 @@ var (
 	searchMarkdownOutput bool
 	searchJSONOutput     bool
 )
-
-// markdownOutput bool
-// jsonOutput     bool
-// hideExtraFields bool // defined in task_list.go
 
 func init() {
 	rootCmd.AddCommand(searchCmd)
@@ -108,14 +104,14 @@ func runSearch(cmd *cobra.Command, args []string) {
 		logging.Error("failed to search tasks", "query", query, "error", err)
 		os.Exit(1)
 	}
-	if reverseOrder {
-		slices.Reverse(tasks)
-	}
 	messagePrefix := ""
-	if len(tasks) > 0 && !searchJSONOutput {
-		messagePrefix = fmt.Sprintf("Found %d task(s) matching '%s':", len(tasks), query)
-	} else if len(tasks) == 0 && !searchJSONOutput {
-		messagePrefix = fmt.Sprintf("No tasks found matching '%s'.", query)
+	if !searchJSONOutput {
+		switch {
+		case len(tasks) == 0:
+			messagePrefix = fmt.Sprintf("No tasks found matching '%s'.", query)
+		case len(tasks) > 0:
+			messagePrefix = fmt.Sprintf("Found %d task(s) matching '%s':", len(tasks), query)
+		}
 	}
 
 	if err := renderTaskResults(cmd.OutOrStdout(), tasks, searchJSONOutput, searchMarkdownOutput, searchHideExtraFields, messagePrefix); err != nil {

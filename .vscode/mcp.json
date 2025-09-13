@@ -1,5 +1,4 @@
 {
-  "inputs": [],
   "servers": {
     "backlog": {
       "command": "go",
@@ -8,13 +7,15 @@
       "type": "stdio"
     },
     "gopls": {
+      "type": "stdio",
       "command": "gopls",
-      "args": ["mcp"],
-      "type": "stdio"
+      "args": ["mcp"]
     },
     "memory": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
+      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "type": "stdio"
     }
-  }
+  },
+  "inputs": []
 }

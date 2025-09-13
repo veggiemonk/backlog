@@ -27,7 +27,14 @@ func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error)
 
 	setRootPersistentFlags(testRootCmd)
 	testRootCmd.AddCommand(testListCmd)
-	setListFlags(testListCmd)
+	switch use {
+	case "list":
+		setListFlags(testListCmd)
+	case "search":
+		setSearchFlags(testListCmd)
+	default:
+		t.Fatalf("no command called %s", use)
+	}
 
 	return execute(t, testRootCmd, args...)
 }

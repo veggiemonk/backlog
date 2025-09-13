@@ -2,8 +2,7 @@ package core
 
 import "strings"
 
-// SearchTasks searches for tasks containing the query string in various fields.
-// This consolidates the search functionality previously scattered across multiple functions.
+// Search searches for tasks containing the query string in various fields.
 func (f *FileTaskStore) Search(query string, listParams ListTasksParams) ([]*Task, error) {
 	// Get all tasks and search in memory
 	tasks, err := f.List(ListTasksParams{})
@@ -40,12 +39,26 @@ func (f *FileTaskStore) Search(query string, listParams ListTasksParams) ([]*Tas
 			}
 		}
 
+		// Search in names assigned
 		for _, assignee := range task.Assigned {
 			if strings.Contains(strings.ToLower(assignee), queryLower) {
 				matches = append(matches, task)
 				break
 			}
 		}
+
+		// Search in priority
+		if strings.Contains(strings.ToLower(task.Priority.String()), queryLower) {
+			matches = append(matches, task)
+		}
 	}
-	return matches, nil
+
+	// Apply filtering and sorting to the search results
+	filteredMatches, err := FilterTasks(matches, listParams)
+	if err != nil {
+		return nil, err
+	}
+
+	SortTasks(filteredMatches, listParams.Sort, listParams.Reverse)
+	return filteredMatches, nil
 }
