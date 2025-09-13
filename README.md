@@ -71,6 +71,17 @@ No initialization is needed.
 
 ## Usage Examples
 
+### AI Integration (MCP Server)
+
+```bash
+# Start MCP server for AI agents (backlog mcp --http transport)
+backlog mcp --http  # default port 8106
+backlog mcp --http --port 8106 # specify the port 
+
+# Start MCP server (stdio transport)
+backlog mcp
+```
+
 ### Basic Task Creation
 
 ```bash
@@ -138,16 +149,6 @@ backlog view T01.02
 
 # Edit task
 backlog edit T01 --status "in-progress" --assignee "alex"
-```
-
-### AI Integration (MCP Server)
-
-```bash
-# Start MCP server for AI agents (backlog mcp --http transport)
-backlog mcp --http --port 8106
-
-# Start MCP server (stdio transport)
-backlog mcp
 ```
 
 ## Task File Structure
