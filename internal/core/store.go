@@ -1,9 +1,7 @@
 package core
 
 import (
-	"errors"
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -111,24 +109,21 @@ func (f *FileTaskStore) getNextTaskID(treePath ...int) (TaskID, error) {
 // The ID can be in the format "T123" or just "123".
 func (f *FileTaskStore) findTaskFileByID(id TaskID) (string, error) {
 	var foundPath string
-	walkErr := afero.Walk(f.fs, f.tasksDir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if info.IsDir() {
-			return nil
-		}
-		if strings.HasPrefix(info.Name(), id.Name()) && // Match only the beginning of the filename
-			strings.HasSuffix(info.Name(), ".md") { // Ensure it ends with .md
-			foundPath = path
-			return filepath.SkipDir // Stop walking once the file is found
-		}
-		return nil
-	})
-
-	if walkErr != nil && !errors.Is(walkErr, filepath.SkipDir) {
-		return "", walkErr
+	files, err := afero.ReadDir(f.fs, f.tasksDir)
+	if err != nil {
+		return "", err
 	}
+
+	for _, file := range files {
+		if file.IsDir() {
+			continue
+		}
+		if strings.HasPrefix(file.Name(), id.Name()) && strings.HasSuffix(file.Name(), ".md") {
+			foundPath = filepath.Join(f.tasksDir, file.Name())
+			break
+		}
+	}
+
 	if foundPath != "" {
 		return foundPath, nil
 	}

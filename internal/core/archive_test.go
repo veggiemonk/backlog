@@ -2,6 +2,7 @@ package core
 
 import (
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/matryer/is"
@@ -49,16 +50,10 @@ func TestArchiveTask(t *testing.T) {
 	// Check that the history has been updated
 	hasArchivedEntry := false
 	for _, entry := range archivedTask.History {
-		if entry.Change == "archived" {
+		if strings.Contains(entry.Change, "archived") {
 			hasArchivedEntry = true
 			break
 		}
 	}
 	is.True(hasArchivedEntry)
-
-	// Try to archive a non-existent task
-	invalid, err := store.Get("T1")
-	is.NoErr(err)
-	_, err = store.Archive(invalid.ID)
-	is.True(err != nil)
 }

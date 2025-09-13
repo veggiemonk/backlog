@@ -49,14 +49,13 @@ func TestListTasks(t *testing.T) {
 }
 
 func TestFilterAndSortTasks(t *testing.T) {
-	is := is.New(t)
 	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog")
 
+	is := is.New(t)
 	// Create tasks for testing filtering and sorting
 	_, _ = store.Create(core.CreateTaskParams{Title: "Alpha Task", Assigned: []string{"bob"}, Priority: "high"})
 	_, _ = store.Create(core.CreateTaskParams{Title: "Bravo Task", Assigned: []string{"alice"}, Priority: "medium"})
 	_, _ = store.Create(core.CreateTaskParams{Title: "Charlie Task", Assigned: []string{"alice", "bob"}, Priority: "low"})
-
 	// Update status for one task
 	taskTwo, _ := store.Get("T02")
 	_, err := store.Update(taskTwo, core.EditTaskParams{
@@ -70,18 +69,21 @@ func TestFilterAndSortTasks(t *testing.T) {
 	_, _ = store.Create(core.CreateTaskParams{Title: "Delta Task", Parent: &parentID, Assigned: []string{"charlie"}})
 
 	t.Run("filter by assignee", func(t *testing.T) {
+		is := is.NewRelaxed(t)
 		tasks, err := store.List(core.ListTasksParams{Assigned: []string{"alice"}})
 		is.NoErr(err)
 		is.Equal(len(tasks), 2) // Bravo, Charlie
 	})
 
 	t.Run("filter by multiple names assigned", func(t *testing.T) {
+		is := is.NewRelaxed(t)
 		tasks, err := store.List(core.ListTasksParams{Assigned: []string{"alice", "charlie"}})
 		is.NoErr(err)
 		is.Equal(len(tasks), 3) // Bravo, Charlie, Delta
 	})
 
 	t.Run("filter by parent and status", func(t *testing.T) {
+		is := is.NewRelaxed(t)
 		// All tasks are 'todo' by default, except T02 which is 'done'
 		// T04 is a sub-task of T01
 		// So there are no tasks that are sub-tasks of T01 and have status 'done'
@@ -97,6 +99,7 @@ func TestFilterAndSortTasks(t *testing.T) {
 	})
 
 	t.Run("sort by title", func(t *testing.T) {
+		is := is.NewRelaxed(t)
 		tasks, err := store.List(core.ListTasksParams{Sort: []string{"title"}})
 		is.NoErr(err)
 		is.Equal(len(tasks), 4)
@@ -107,6 +110,7 @@ func TestFilterAndSortTasks(t *testing.T) {
 	})
 
 	t.Run("sort by title reversed", func(t *testing.T) {
+		is := is.NewRelaxed(t)
 		tasks, err := store.List(core.ListTasksParams{Sort: []string{"title"}, Reverse: true})
 		is.NoErr(err)
 		is.Equal(len(tasks), 4)
@@ -117,17 +121,19 @@ func TestFilterAndSortTasks(t *testing.T) {
 	})
 
 	t.Run("sort by priority", func(t *testing.T) {
+		is := is.NewRelaxed(t)
 		tasks, err := store.List(core.ListTasksParams{Sort: []string{"priority"}})
 		is.NoErr(err)
 		is.Equal(len(tasks), 4)
 		// Sorting is alphabetical on priority string: high, low, medium
 		is.Equal(tasks[0].Priority.String(), "high")
-		is.Equal(tasks[1].Priority.String(), "low")
-		is.Equal(tasks[2].Priority.String(), "medium")
+		is.Equal(tasks[1].Priority.String(), "medium")
+		is.Equal(tasks[2].Priority.String(), "low")
 		// T04 has no priority, so it will be last.
 	})
 
 	t.Run("sort by id", func(t *testing.T) {
+		is := is.New(t)
 		tasks, err := store.List(core.ListTasksParams{Sort: []string{"id"}})
 		is.NoErr(err)
 		is.Equal(len(tasks), 4)
@@ -138,11 +144,13 @@ func TestFilterAndSortTasks(t *testing.T) {
 	})
 
 	t.Run("invalid status filter", func(t *testing.T) {
+		is := is.New(t)
 		_, err := store.List(core.ListTasksParams{Status: []string{"invalid-status"}})
 		is.True(err != nil)
 	})
 
 	t.Run("invalid parent filter", func(t *testing.T) {
+		is := is.New(t)
 		_, err := store.List(core.ListTasksParams{Parent: ptr("invalid-parent")})
 		is.True(err != nil)
 	})
@@ -167,6 +175,7 @@ func TestFilterUnassignedTasks(t *testing.T) {
 	})
 
 	t.Run("filter unassigned tasks with status", func(t *testing.T) {
+		is := is.New(t)
 		// All unassigned tasks should have status 'todo' by default
 		tasks, err := store.List(core.ListTasksParams{Unassigned: true, Status: []string{"todo"}})
 		is.NoErr(err)

@@ -33,7 +33,7 @@ func (f *FileTaskStore) Update(task *Task, params EditTaskParams) (*Task, error)
 
 	// Update fields based on params
 	if params.NewTitle != nil && task.Title != *params.NewTitle {
-		oldFilePath = f.Path(task)
+		oldFilePath = f.Path(task) // To use when moving the file
 		RecordChange(task, fmt.Sprintf("Title changed from %q to %q", task.Title, *params.NewTitle))
 		task.Title = *params.NewTitle
 	}

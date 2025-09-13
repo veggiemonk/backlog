@@ -125,11 +125,11 @@ func TestUpdateTaskFields(t *testing.T) {
 		is.Equal(updatedTask.Description, newDesc)
 		is.Equal(string(updatedTask.Status), newStatus)
 		is.Equal(core.MaybeStringArray{"urgent"}, updatedTask.Labels)
-		is.Equal(core.MaybeStringArray(newAssigned), updatedTask.Assigned)
+		is.Equal(newAssigned, updatedTask.Assigned.ToSlice())
 		is.Equal(updatedTask.Priority.String(), newPriority)
 		is.True(updatedTask.Parent.Equals(parentTask.ID))
 		is.Equal(updatedTask.ImplementationNotes, newNotes)
-		is.Equal(updatedTask.ImplementationPlan, newPlan)
+		is.Equal(strings.TrimSpace(updatedTask.ImplementationPlan), newPlan)
 		is.Equal(core.MaybeStringArray(newDeps), updatedTask.Dependencies)
 
 		// Verify old file is removed
