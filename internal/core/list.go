@@ -17,6 +17,7 @@ type ListTasksParams struct {
 	Assigned      []string `json:"assigned,omitempty" jsonschema:"Filter tasks by assignee."`
 	Labels        []string `json:"labels,omitempty" jsonschema:"Filter tasks by label."`
 	Sort          []string `json:"sort,omitempty" jsonschema:"Fields to sort by."`
+	Priority      *string  `json:"priority,omitempty" jsonschema:"Filter tasks by priority."`
 	Unassigned    bool     `json:"unassigned,omitempty" jsonschema:"Filter tasks that have no one assigned."`
 	DependedOn    bool     `json:"depended_on,omitempty" jsonschema:"Filter tasks that other tasks depend on."`
 	HasDependency bool     `json:"has_dependency,omitempty" jsonschema:"Filter tasks that have at least one dependency."`
@@ -59,9 +60,9 @@ func (f *FileTaskStore) loadAll() ([]*Task, error) {
 				return err
 			}
 
-			task, err := parseTask(b, path)
+			task, err := parseTask(b)
 			if err != nil {
-				return fmt.Errorf("parse task: %v", err)
+				return fmt.Errorf("parse task %s: %v", path, err)
 			}
 			tasks = append(tasks, task)
 		}
@@ -81,7 +82,9 @@ func FilterTasks(tasks []*Task, params ListTasksParams) ([]*Task, error) {
 	var statuses []Status
 	var assigned []string
 	var labels []string
+	var priority Priority
 	var isParentSet bool
+	var isPrioritySet bool
 	var err error
 
 	if params.Parent != nil && *params.Parent != "" {
@@ -90,6 +93,13 @@ func FilterTasks(tasks []*Task, params ListTasksParams) ([]*Task, error) {
 			return nil, fmt.Errorf("parent task ID '%s': %w", *params.Parent, err)
 		}
 		isParentSet = true
+	}
+	if params.Priority != nil && *params.Priority != "" {
+		priority, err = ParsePriority(*params.Priority)
+		if err != nil {
+			return nil, fmt.Errorf("priority '%s': %w", *params.Priority, err)
+		}
+		isPrioritySet = true
 	}
 	for _, s := range params.Status {
 		status, err := ParseStatus(s)
@@ -116,6 +126,9 @@ func FilterTasks(tasks []*Task, params ListTasksParams) ([]*Task, error) {
 	filteredTasks := make([]*Task, 0, len(tasks))
 	for _, t := range tasks {
 		if isParentSet && !t.Parent.Equals(parentID) {
+			continue
+		}
+		if isPrioritySet && t.Priority != priority {
 			continue
 		}
 		if params.Unassigned && len(t.Assigned) > 0 {

@@ -29,13 +29,16 @@ func runArchive(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	archivedTask, err := store.Archive(task.ID)
+	// Save path for commit
+	oldPath := store.Path(task)
+
+	newPath, err := store.Archive(task.ID)
 	if err != nil {
 		logging.Error("failed to archive task", "task_id", task.ID, "error", err)
 		os.Exit(1)
 	}
 
-	logging.Info("task archived successfully", "task_id", archivedTask.ID)
+	logging.Info("task archived successfully", "task_id", task.ID)
 	// fmt.Printf("Task %s archived successfully.\n", archivedTask.ID)
 
 	if !autoCommit {
@@ -47,9 +50,8 @@ func runArchive(cmd *cobra.Command, args []string) {
 		return
 	}
 	// Auto-commit the change if enabled
-	filePath := store.Path(archivedTask)
-	commitMsg := fmt.Sprintf("chore(task): archive %s - \"%s\"", archivedTask.ID, archivedTask.Title)
-	if err := gh.AutoCommit([]string{filePath}, commitMsg); err != nil {
-		logging.Warn("auto-commit failed", "task_id", archivedTask.ID, "error", err)
+	commitMsg := fmt.Sprintf("chore(task): archive %s - \"%s\"", task.ID, task.Title)
+	if err := gh.AutoCommit(newPath, oldPath, commitMsg); err != nil {
+		logging.Warn("auto-commit failed", "task_id", task.ID, "error", err)
 	}
 }

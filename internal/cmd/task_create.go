@@ -91,7 +91,7 @@ func init() {
 
 	createCmd.Flags().StringVarP(&description, "description", "d", "", "Description of the task")
 	createCmd.Flags().StringVarP(&parent, "parent", "p", "", "Parent task ID")
-	createCmd.Flags().StringVar(&priority, "priority", "medium", "Priority of the task (low, medium, high)")
+	createCmd.Flags().StringVar(&priority, "priority", "medium", "Priority of the task (low, medium, high, critical)")
 	createCmd.Flags().StringSliceVarP(&assigned, "assigned", "a", []string{}, "Assignee for the task (can be specified multiple times)")
 	createCmd.Flags().StringSliceVarP(&labels, "labels", "l", []string{}, "Comma-separated labels for the task")
 	createCmd.Flags().StringSliceVar(&dependencies, "deps", []string{}, "Add a dependency (can be used multiple times)")
@@ -122,7 +122,6 @@ func runCreate(cmd *cobra.Command, args []string) {
 	}
 
 	logging.Info("task created successfully", "task_id", newTask.ID)
-	// fmt.Printf("Task created successfully: %s\n", newTask.ID)
 
 	if !autoCommit {
 		return // Auto-commit is disabled
@@ -135,7 +134,7 @@ func runCreate(cmd *cobra.Command, args []string) {
 	// Auto-commit the change if enabled
 	filePath := store.Path(newTask)
 	commitMsg := fmt.Sprintf("feat(task): create %s - \"%s\"", newTask.ID, newTask.Title)
-	if err := gh.AutoCommit([]string{filePath}, commitMsg); err != nil {
+	if err := gh.AutoCommit(filePath, "", commitMsg); err != nil {
 		logging.Warn("auto-commit failed", "task_id", newTask.ID, "error", err)
 	}
 }

@@ -27,7 +27,7 @@ type TaskStore interface {
 	List(params core.ListTasksParams) ([]*core.Task, error)
 	Search(query string, listParams core.ListTasksParams) ([]*core.Task, error)
 	Path(t *core.Task) string
-	Archive(id core.TaskID) (*core.Task, error)
+	Archive(id core.TaskID) (string, error)
 }
 
 // Server wraps the MCP server with backlog-specific functionality

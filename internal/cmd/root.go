@@ -27,7 +27,7 @@ type TaskStore interface {
 	List(params core.ListTasksParams) ([]*core.Task, error)
 	Search(query string, listParams core.ListTasksParams) ([]*core.Task, error)
 	Path(t *core.Task) string
-	Archive(id core.TaskID) (*core.Task, error)
+	Archive(id core.TaskID) (string, error)
 }
 
 var _ TaskStore = (*core.FileTaskStore)(nil)
@@ -46,9 +46,14 @@ Backlog helps you manage tasks within your git repository.`,
 	},
 }
 
+func setRootPersistentFlags(cmd *cobra.Command) {
+	cmd.PersistentFlags().StringVar(&tasksDir, "folder", defaultDir, "Directory for backlog tasks")
+	cmd.PersistentFlags().BoolVar(&autoCommit, "auto-commit", true, "Auto-committing changes to git repository")
+}
+
 func init() {
-	rootCmd.PersistentFlags().StringVar(&tasksDir, "folder", defaultDir, "Directory for backlog tasks")
-	rootCmd.PersistentFlags().BoolVar(&autoCommit, "auto-commit", true, "Auto-committing changes to git repository")
+
+	setRootPersistentFlags(rootCmd)
 	rootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
 		// Initialize logging before anything else
 		logging.Init()

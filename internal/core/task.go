@@ -34,7 +34,7 @@ type Task struct {
 	ID           TaskID           `yaml:"id" json:"id"`
 	Title        string           `yaml:"title" json:"title"`
 	Status       Status           `yaml:"status" json:"status"`
-	Parent       TaskID           `yaml:"parent" json:"parent"`
+	Parent       TaskID           `yaml:"parent,omitempty" json:"parent,omitempty"`
 	Assigned     MaybeStringArray `yaml:"assigned,omitempty" json:"assigned,omitempty"`
 	Labels       MaybeStringArray `yaml:"labels,omitempty" json:"labels,omitempty"`
 	Dependencies MaybeStringArray `yaml:"dependencies,omitempty" json:"dependencies,omitempty"`
@@ -45,10 +45,10 @@ type Task struct {
 
 	// --- Markdown Body Fields ---
 
-	Description         string
-	AcceptanceCriteria  []AcceptanceCriterion
-	ImplementationPlan  string
-	ImplementationNotes string
+	Description         string                `json:"description"`
+	AcceptanceCriteria  []AcceptanceCriterion `json:"acceptance_criteria"`
+	ImplementationPlan  string                `json:"implementation_plan"`
+	ImplementationNotes string                `json:"implementation_notes"`
 }
 
 var slugRegex = regexp.MustCompile(`[^a-zA-Z0-9_.\(\)\[\]]+`)

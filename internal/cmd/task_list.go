@@ -3,8 +3,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
-	"slices"
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
@@ -62,6 +62,7 @@ backlog list --status "todo" --json # List "todo" tasks in JSON format
 
 var (
 	filterParent     string
+	filterPriority   string
 	filterStatus     []string
 	filterAssigned   []string
 	filterLabels     []string
@@ -80,35 +81,34 @@ var (
 
 func init() {
 	rootCmd.AddCommand(listCmd)
+	setListFlags(listCmd)
+}
+
+func setListFlags(cmd *cobra.Command) {
 	// filtering
-	listCmd.Flags().StringVarP(&filterParent, "parent", "p", "", "Filter tasks by parent ID")
-	listCmd.Flags().StringSliceVarP(&filterStatus, "status", "s", nil, "Filter tasks by status")
-	listCmd.Flags().StringSliceVarP(&filterAssigned, "assigned", "a", nil, "Filter tasks by assigned names")
-	listCmd.Flags().StringSliceVarP(&filterLabels, "labels", "l", nil, "Filter tasks by labels")
-	listCmd.Flags().BoolVarP(&filterUnassigned, "unassigned", "u", false, "Filter tasks that have no one assigned")
-	listCmd.Flags().BoolVarP(&hasDependency, "has-dependency", "c", false, "Filter tasks that have dependencies")
-	listCmd.Flags().BoolVarP(&dependedon, "depended-on", "d", false, "Filter tasks that are depended on by other tasks")
+	cmd.Flags().StringVarP(&filterParent, "parent", "p", "", "Filter tasks by parent ID")
+	cmd.Flags().StringVar(&filterPriority, "priority", "", "Filter tasks by priority")
+	cmd.Flags().StringSliceVarP(&filterStatus, "status", "s", nil, "Filter tasks by status")
+	cmd.Flags().StringSliceVarP(&filterAssigned, "assigned", "a", nil, "Filter tasks by assigned names")
+	cmd.Flags().StringSliceVarP(&filterLabels, "labels", "l", nil, "Filter tasks by labels")
+	cmd.Flags().BoolVarP(&filterUnassigned, "unassigned", "u", false, "Filter tasks that have no one assigned")
+	cmd.Flags().BoolVarP(&hasDependency, "has-dependency", "c", false, "Filter tasks that have dependencies")
+	cmd.Flags().BoolVarP(&dependedon, "depended-on", "d", false, "Filter tasks that are depended on by other tasks")
 	// sorting
-	listCmd.Flags().StringVar(&sortFields, "sort", "", "Sort tasks by comma-separated fields (id, title, status, priority, created, updated)")
-	listCmd.Flags().BoolVarP(&reverseOrder, "reverse", "r", false, "Reverse the order of tasks")
+	cmd.Flags().StringVar(&sortFields, "sort", "", "Sort tasks by comma-separated fields (id, title, status, priority, created, updated)")
+	cmd.Flags().BoolVarP(&reverseOrder, "reverse", "r", false, "Reverse the order of tasks")
 	// column visibility
-	listCmd.Flags().BoolVarP(&hideExtraFields, "hide-extra", "e", false, "Hide extra fields (labels, priority, assigned)")
+	cmd.Flags().BoolVarP(&hideExtraFields, "hide-extra", "e", false, "Hide extra fields (labels, priority, assigned)")
 	// output format
-	listCmd.Flags().BoolVarP(&markdownOutput, "markdown", "m", false, "print markdown table")
-	listCmd.Flags().BoolVarP(&jsonOutput, "json", "j", false, "Print JSON output")
+	cmd.Flags().BoolVarP(&markdownOutput, "markdown", "m", false, "print markdown table")
+	cmd.Flags().BoolVarP(&jsonOutput, "json", "j", false, "Print JSON output")
 }
 
 func runList(cmd *cobra.Command, args []string) {
-	// Parse sort fields if provided
-	var sortFieldsSlice []string
-	if sortFields != "" {
-		sortFieldsSlice = strings.Split(sortFields, ",")
-		for i, field := range sortFieldsSlice {
-			sortFieldsSlice[i] = strings.TrimSpace(field)
-		}
-	}
+	sortFieldsSlice := parseSortFields(sortFields)
 	params := core.ListTasksParams{
 		Parent:        &filterParent,
+		Priority:      &filterPriority,
 		Status:        filterStatus,
 		Assigned:      filterAssigned,
 		Labels:        filterLabels,
@@ -125,25 +125,51 @@ func runList(cmd *cobra.Command, args []string) {
 		logging.Error("failed to list tasks", "error", err)
 		os.Exit(1)
 	}
-	if reverseOrder {
-		slices.Reverse(tasks)
+	if err := renderTaskResults(cmd.OutOrStdout(), tasks, jsonOutput, markdownOutput, hideExtraFields, ""); err != nil {
+		logging.Error("failed to render task results", "error", err)
+		os.Exit(1)
 	}
+}
+
+// parseSortFields parses a comma-separated string of sort fields
+func parseSortFields(sortFields string) []string {
+	if sortFields == "" {
+		return nil
+	}
+	sortFieldsSlice := strings.Split(sortFields, ",")
+	for i, field := range sortFieldsSlice {
+		sortFieldsSlice[i] = strings.TrimSpace(field)
+	}
+	return sortFieldsSlice
+}
+
+// renderTaskResults renders a slice of tasks using the specified output format
+func renderTaskResults(w io.Writer, tasks []*core.Task, jsonOutput, markdownOutput, hideExtraFields bool, messagePrefix string) error {
 	// Handle empty task list
 	if len(tasks) == 0 {
-		if jsonOutput {
-			fmt.Println("[]")
-		} else {
-			fmt.Println("No tasks found.")
+		switch {
+		case jsonOutput:
+			fmt.Fprintln(w, "[]")
+		case markdownOutput:
+			fmt.Fprintln(w, "| No tasks found. |")
+		default:
+			fmt.Fprintln(w, "No tasks found.")
 		}
-		return
+		return nil
 	}
+
 	// Handle JSON output
 	if jsonOutput {
-		if err := json.NewEncoder(os.Stdout).Encode(tasks); err != nil {
-			logging.Error("failed to encode JSON", "error", err)
-			os.Exit(1)
+		if err := json.NewEncoder(w).Encode(tasks); err != nil {
+			return fmt.Errorf("failed to encode JSON: %w", err)
 		}
-		return
+		return nil
+	}
+
+	// Print message prefix if provided
+	if messagePrefix != "" {
+		fmt.Println(messagePrefix)
+		fmt.Println()
 	}
 
 	// Set table header based on hidden columns
@@ -152,7 +178,7 @@ func runList(cmd *cobra.Command, args []string) {
 		header = append(header, "Labels", "Priority", "Assigned")
 	}
 
-	table := tableWriter(markdownOutput)
+	table := tableWriter(w, markdownOutput)
 	table.Header(header)
 
 	for _, t := range tasks {
@@ -169,18 +195,18 @@ func runList(cmd *cobra.Command, args []string) {
 			)
 		}
 		if err := table.Append(row); err != nil {
-			logging.Error("failed to append table row", "task_id", t.ID, "error", err)
-			os.Exit(1)
+			return fmt.Errorf("failed to append table row for task %s: %w", t.ID, err)
 		}
 	}
 
 	if err := table.Render(); err != nil {
-		logging.Error("failed to render table", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to render table: %w", err)
 	}
+
+	return nil
 }
 
-func tableWriter(md bool) *tablewriter.Table {
+func tableWriter(w io.Writer, md bool) *tablewriter.Table {
 	cfg := tablewriter.Config{
 		Header: tw.CellConfig{
 			Formatting: tw.CellFormatting{
@@ -205,6 +231,6 @@ func tableWriter(md bool) *tablewriter.Table {
 			tablewriter.WithRowAutoWrap(tw.WrapNone),
 		)
 	}
-	table := tablewriter.NewTable(os.Stdout, opts...)
+	table := tablewriter.NewTable(w, opts...)
 	return table
 }

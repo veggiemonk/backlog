@@ -23,8 +23,14 @@ func TestArchiveTask(t *testing.T) {
 	is.NoErr(err)
 
 	// Now, archive the task
-	archivedTask, err := store.Archive(createdTask.ID)
+	archivedTaskPath, err := store.Archive(createdTask.ID)
 	is.NoErr(err)
+
+	b, err := afero.ReadFile(fs, archivedTaskPath)
+	is.NoErr(err)
+	archivedTask, err := parseTask(b)
+	is.NoErr(err)
+
 	is.Equal(archivedTask.Status, StatusArchived)
 
 	// Check that the file has been moved

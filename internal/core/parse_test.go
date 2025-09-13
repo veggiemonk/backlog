@@ -1,6 +1,7 @@
 package core
 
 import (
+	"encoding/json"
 	"strings"
 	"testing"
 
@@ -106,4 +107,36 @@ func TestWriteTask(t *testing.T) {
 	is.True(strings.Contains(content, "- test"))
 	is.True(strings.Contains(content, "- unit"))
 	is.True(strings.Contains(content, "priority: high"))
+}
+
+func TestParseJSONArray(t *testing.T) {
+	is := is.New(t)
+
+	output := `[
+  {
+    "id": "01",
+    "title": "Initial Task",
+    "status": "todo",
+    "parent": "",
+    "assigned": "initial-user",
+    "labels": "bug",
+    "priority": 2,
+    "created_at": "2025-09-13T09:00:59.522213Z",
+    "description": "Initial description.",
+    "acceptance_criteria": [
+      {
+        "text": "Initial AC.",
+        "checked": false,
+        "index": 1
+      }
+    ],
+    "implementation_plan": "Initial implementation plan.",
+    "implementation_notes": "Initial implementation notes."
+  }
+]`
+	var tasks []Task
+	err := json.Unmarshal([]byte(output), &tasks)
+	is.NoErr(err)
+
+	is.Equal(len(tasks), 1)
 }

@@ -222,9 +222,8 @@ func runEdit(cmd *cobra.Command, args []string) {
 
 	// paths to commit
 	currentFilePath := store.Path(updatedTask)
-	changedPaths := []string{currentFilePath}
-	if oldFilePath != currentFilePath {
-		changedPaths = append(changedPaths, oldFilePath)
+	if oldFilePath == currentFilePath {
+		oldFilePath = ""
 	}
 	gh, err := commit.NewHandle()
 	if err != nil {
@@ -233,7 +232,7 @@ func runEdit(cmd *cobra.Command, args []string) {
 	}
 	// autocommit the change if enabled
 	commitMsg := fmt.Sprintf("feat(task): edit %s - \"%s\"", updatedTask.ID, updatedTask.Title)
-	if err := gh.AutoCommit(changedPaths, commitMsg); err != nil {
+	if err := gh.AutoCommit(currentFilePath, oldFilePath, commitMsg); err != nil {
 		logging.Warn("auto-commit failed", "task_id", updatedTask.ID, "error", err)
 	}
 }

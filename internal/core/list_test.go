@@ -225,3 +225,7 @@ func TestDependents(t *testing.T) {
 		is.Equal(len(tasks), 1) // Medium task is done, should still return base level tasks
 	})
 }
+
+func ptr[T any](v T) *T {
+	return &v
+}

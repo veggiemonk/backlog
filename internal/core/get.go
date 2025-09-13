@@ -15,16 +15,16 @@ func (f *FileTaskStore) Get(id string) (*Task, error) {
 
 	filePath, err := f.findTaskFileByID(taskID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("find task file: %w", err)
 	}
 	b, err := afero.ReadFile(f.fs, filePath)
 	if err != nil {
 		return nil, err
 	}
 
-	task, err := parseTask(b, filePath)
+	task, err := parseTask(b)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse task %s: %v", filePath, err)
 	}
 
 	return task, nil

@@ -69,9 +69,18 @@ func (g *GitHandle) Commit(message string) error {
 }
 
 // AutoCommit stages and commits files if the auto-commit feature is enabled.
-func (g *GitHandle) AutoCommit(paths []string, message string) error {
-	logging.Info("auto-committing changes", "paths", paths, "message", message)
-	if err := g.Stage(paths, paths); err != nil {
+func (g *GitHandle) AutoCommit(path string, oldPath string, message string) error {
+	logging.Info("auto-committing changes", "path", path, "oldPath", oldPath, "message", message)
+	paths := []string{path}
+	if path == "" {
+		logging.Info("no changes to commit")
+		return nil
+	}
+	oldPaths := []string{oldPath}
+	if oldPath == "" {
+		oldPaths = nil
+	}
+	if err := g.Stage(paths, oldPaths); err != nil {
 		return fmt.Errorf("auto-commit failed during staging: %w", err)
 	}
 

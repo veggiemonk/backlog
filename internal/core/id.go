@@ -28,6 +28,9 @@ type TaskID struct {
 
 // parseTaskID parses a task ID string (e.g., "T1.2.3" or "1.2.3") into a TaskID struct.
 func parseTaskID(id string) (TaskID, error) {
+	if id == "" {
+		return TaskID{}, nil
+	}
 	if strings.HasPrefix(id, TaskIDPrefix) {
 		id = id[1:]
 	}
@@ -57,7 +60,7 @@ func (t *TaskID) UnmarshalText(text []byte) error {
 }
 
 func (t TaskID) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf(`"%s"`, t.String())), nil
+	return fmt.Appendf(nil, `"%s"`, t.String()), nil
 }
 
 func (t *TaskID) UnmarshalJSON(data []byte) error {

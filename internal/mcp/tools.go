@@ -44,15 +44,14 @@ func (s *Server) addTools() {
 	}, s.handler.archive)
 }
 
-func (h *handler) commit(task *core.Task, msg string) error {
+func (h *handler) commit(id, title, path, oldPath, msg string) error {
 	if h.autoCommit {
 		gh, err := commit.NewHandle()
 		if err != nil {
 			return fmt.Errorf("initializing git error: %w", err)
 		}
-		filePath := h.store.Path(task)
-		commitMsg := fmt.Sprintf("feat(task): %s %s - \"%s\"", msg, task.ID, task.Title)
-		if err := gh.AutoCommit([]string{filePath}, commitMsg); err != nil {
+		commitMsg := fmt.Sprintf("feat(task): %s %s - \"%s\"", msg, id, title)
+		if err := gh.AutoCommit(path, oldPath, commitMsg); err != nil {
 			return fmt.Errorf("auto-commit failed: %w", err)
 		}
 	}
@@ -68,7 +67,8 @@ func (h *handler) create(ctx context.Context, req *mcp.CallToolRequest, params c
 	if err != nil {
 		return nil, nil, err
 	}
-	if err := h.commit(task, "create"); err != nil {
+	path := h.store.Path(task)
+	if err := h.commit(task.ID.Name(), task.Title, path, "", "create"); err != nil {
 		// Log the error but do not fail the creation
 		logging.Warn("auto-commit failed for task creation", "task_id", task.ID, "error", err)
 	}
@@ -94,15 +94,21 @@ func (h *handler) edit(ctx context.Context, req *mcp.CallToolRequest, params cor
 	if err != nil {
 		return nil, nil, err
 	}
-	if err := h.commit(task, "edit"); err != nil {
-		// Log the error but do not fail the edit
-		logging.Warn("auto-commit failed for task edit", "task_id", task.ID, "error", err)
-	}
 	// Get a summary of the changes by capturing the last history entry
 	historyBefore := len(task.History)
-	task, err = h.store.Update(task, params)
+	updatedTask, err := h.store.Update(task, params)
 	if err != nil {
 		return nil, nil, err
+	}
+	if err := h.commit(
+		updatedTask.ID.Name(),
+		updatedTask.Title,
+		h.store.Path(updatedTask),
+		h.store.Path(task),
+		"edit",
+	); err != nil {
+		// Log the error but do not fail the edit
+		logging.Warn("auto-commit failed for task edit", "task_id", task.ID, "error", err)
 	}
 	historyAfter := len(task.History)
 
@@ -198,22 +204,23 @@ func (h *handler) archive(ctx context.Context, req *mcp.CallToolRequest, params 
 	if err != nil {
 		return nil, nil, err
 	}
+	oldPath := h.store.Path(task)
 
-	archivedTask, err := h.store.Archive(task.ID)
+	archivedPath, err := h.store.Archive(task.ID)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	if err := h.commit(archivedTask, "archive"); err != nil {
+	if err := h.commit(task.ID.Name(), task.Title, archivedPath, oldPath, "archive"); err != nil {
 		// Log the error but do not fail the archive
-		logging.Warn("auto-commit failed for task archive", "task_id", archivedTask.ID, "error", err)
+		logging.Warn("auto-commit failed for task archive", "task_id", task.ID, "error", err)
 	}
 
-	summary := fmt.Sprintf("Task %s archived successfully:\n\n", archivedTask.ID.Name())
-	summary += fmt.Sprintf("- Title: %s\n", archivedTask.Title)
-	summary += fmt.Sprintf("- Status: %s\n", archivedTask.Status)
+	summary := fmt.Sprintf("Task %s archived successfully:\n\n", task.ID.Name())
+	summary += fmt.Sprintf("- Title: %s\n", task.Title)
+	summary += fmt.Sprintf("- Status: %s\n", task.Status)
 	summary += "- The task has been moved to the archived directory\n"
 
 	content := &mcp.TextContent{Text: summary}
-	return &mcp.CallToolResult{Content: []mcp.Content{content}}, archivedTask, nil
+	return &mcp.CallToolResult{Content: []mcp.Content{content}}, task, nil
 }
