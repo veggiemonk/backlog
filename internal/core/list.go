@@ -115,7 +115,7 @@ func FilterTasks(tasks []*Task, params ListTasksParams) ([]*Task, error) {
 		labels = append(labels, strings.TrimSpace(l)) // clean up to ensure string equality
 	}
 
-	if !isParentSet && len(statuses) == 0 && len(assigned) == 0 && len(labels) == 0 && !params.Unassigned && !params.DependedOn && !params.HasDependency {
+	if !isParentSet && !isPrioritySet && len(statuses) == 0 && len(assigned) == 0 && len(labels) == 0 && !params.Unassigned && !params.DependedOn && !params.HasDependency {
 		return tasks, nil
 	}
 
@@ -200,6 +200,10 @@ func atLeastOneIntersect[S ~[]E, E comparable](got, want S) bool {
 // Supported sort fields: id, title, status, priority, created, updated
 func SortTasks(tasks []*Task, sortFields []string, reverse bool) {
 	if len(sortFields) == 0 {
+		// No sorting requested, but still apply reverse if requested
+		if reverse {
+			slices.Reverse(tasks)
+		}
 		return
 	}
 	sort.Slice(tasks, func(i, j int) bool {
@@ -222,7 +226,13 @@ func SortTasks(tasks []*Task, sortFields []string, reverse bool) {
 			case "status":
 				cmp = strings.Compare(string(t1.Status), string(t2.Status))
 			case "priority":
-				cmp = strings.Compare(strings.ToLower(t1.Priority.String()), strings.ToLower(t2.Priority.String()))
+				// Sort by priority value (higher priority comes first)
+				if int(t1.Priority) > int(t2.Priority) {
+					return true
+				} else if int(t1.Priority) < int(t2.Priority) {
+					return false
+				}
+				cmp = 0
 			case "created":
 				if t1.CreatedAt.Before(t2.CreatedAt) {
 					return true

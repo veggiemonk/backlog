@@ -134,8 +134,14 @@ func Test_runList(t *testing.T) {
 		is.NoErr(json.Unmarshal(output, &tasks))
 		is.Equal(len(tasks), countTask)
 		is.Equal(tasks[0].Title, "High Priority Task")
-		is.Equal(tasks[1].Title, "Unlabeled Task")
-		is.Equal(tasks[2].Title, "Unassigned Task")
+		is.Equal(tasks[1].Title, "Fifth Task")
+		is.Equal(tasks[2].Title, "First Task")
+		is.Equal(tasks[3].Title, "Fourth Task")
+		is.Equal(tasks[4].Title, "Second Task")
+		is.Equal(tasks[5].Title, "Third Task")
+		is.Equal(tasks[6].Title, "In Progress Task")
+		is.Equal(tasks[7].Title, "Unassigned Task")
+		is.Equal(tasks[8].Title, "Unlabeled Task")
 	})
 
 	t.Run("markdown output format", func(t *testing.T) {
@@ -245,7 +251,7 @@ func Test_runList(t *testing.T) {
 		tasks = []*core.Task{}
 		is.NoErr(json.Unmarshal(output, &tasks))
 		is.Equal(len(tasks), countTask)
-		is.Equal(tasks[0].Title, "Unlabeled Task")
+		is.Equal(tasks[0].Title, "In Progress Task") // the last task is
 
 		// Test short flag for unassigned
 		output, err = exec(t, "list", runList, "list", "-u", "-j")
