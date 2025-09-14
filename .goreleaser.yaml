@@ -23,11 +23,13 @@ builds:
       # trims path
       - -trimpath
     ldflags:
-      - -s -w 
+      - -s -w
 
 # https://github.com/goreleaser/example-supply-chain
 checksum:
   name_template: "checksums.txt"
+
+report_sizes: true
 
 sboms:
   - artifacts: archive
@@ -51,7 +53,7 @@ dockers_v2:
         Backlog is a zero-configuration task manager written in Go where tasks live inside a Git repository. It leverages plain Markdown files for task storage and a comprehensive command-line interface (CLI) for interaction. This design makes it exceptionally well-suited for AI agents thanks to its MCP (Model Context Protocol) integration.
     annotations:
       "index:org.opencontainers.image.description": |
-          Backlog is a zero-configuration task manager written in Go where tasks live inside a Git repository. It leverages plain Markdown files for task storage and a comprehensive command-line interface (CLI) for interaction. This design makes it exceptionally well-suited for AI agents thanks to its MCP (Model Context Protocol) integration.
+        Backlog is a zero-configuration task manager written in Go where tasks live inside a Git repository. It leverages plain Markdown files for task storage and a comprehensive command-line interface (CLI) for interaction. This design makes it exceptionally well-suited for AI agents thanks to its MCP (Model Context Protocol) integration.
 
 changelog:
   sort: asc
