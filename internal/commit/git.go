@@ -1,3 +1,4 @@
+// Package commit only purpose is to commit tasks.
 package commit
 
 import (
@@ -35,7 +36,7 @@ func FindTopLevelGitDir() (string, error) {
 	}
 }
 
-// Add stages and commits files.
+// Add stages and commits files. Will not commit if repo is dirty.
 func Add(path, oldPath, message string) error {
 	repoRoot, err := FindTopLevelGitDir()
 	if err != nil {
