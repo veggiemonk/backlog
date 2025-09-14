@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/go-git/go-git/v6"
@@ -40,7 +41,9 @@ func Add(path, oldPath, message string) error {
 	if err != nil {
 		return err
 	}
-	repo, err := git.PlainOpen(repoRoot)
+	repo, err := git.PlainOpenWithOptions(repoRoot, &git.PlainOpenOptions{
+		DetectDotGit: true,
+	})
 	if err != nil {
 		return fmt.Errorf("not a git repository: %w", err)
 	}
@@ -48,15 +51,30 @@ func Add(path, oldPath, message string) error {
 	if err != nil {
 		return fmt.Errorf("could not get worktree: %w", err)
 	}
+	status, err := worktree.Status()
+	if err != nil {
+		return fmt.Errorf("could not get status: %w", err)
+	}
+	if !status.IsClean() {
+		logging.Warn("the repository status is not clean, skip commit")
+		return nil
+	}
 	logging.Info("auto-committing changes", "path", path, "oldPath", oldPath, "message", message)
 	if path == "" {
 		logging.Info("no changes to commit")
 		return nil
 	}
+	if strings.HasPrefix(path, repoRoot) {
+		path = path[len(repoRoot)+1:]
+	}
 	if _, err = worktree.Add(path); err != nil {
 		return fmt.Errorf("error staging file %s: %w", path, err)
 	}
+	// used in case of a rename (change of title)
 	if oldPath != "" {
+		if oldPath != "" && strings.HasPrefix(oldPath, repoRoot) {
+			oldPath = oldPath[len(repoRoot)+1:]
+		}
 		_, err := worktree.Add(oldPath)
 		if err != nil {
 			return fmt.Errorf("error staging file %s: %w", path, err)
