@@ -1,0 +1,88 @@
+baseURL = 'https://veggiemonk.github.io/backlog'
+languageCode = 'en-us'
+title = 'Backlog Documentation'
+theme = 'geekdoc'
+
+# Hugo configuration
+enableRobotsTXT = true
+enableGitInfo = true
+enableEmoji = true
+
+[params]
+# General settings
+description = "Zero-configuration task manager for developers and AI agents"
+keywords = ["task management", "cli", "ai agents", "mcp", "golang", "git"]
+
+# GitHub integration
+github_repo = 'https://github.com/veggiemonk/backlog'
+github_branch = 'main'
+edit_page = true
+
+# Search configuration
+search_enabled = true
+
+# Geekdoc specific
+geekdocRepo = 'https://github.com/veggiemonk/backlog'
+geekdocEditPage = true
+geekdocSearch = true
+geekdocSearchShowParent = true
+geekdocDarkMode = true
+geekdocLegalNotice = 'https://github.com/veggiemonk/backlog/blob/main/LICENSE'
+geekdocPrivacyPolicy = false
+
+[markup]
+[markup.goldmark]
+[markup.goldmark.renderer]
+unsafe = true
+[markup.highlight]
+style = 'github'
+lineNos = true
+anchorLineNos = false
+codeFences = true
+guessSyntax = false
+# hl_Lines = ''
+noClasses = false
+noHl = false
+tabWidth = 2
+
+[outputs]
+home = ['HTML', 'RSS', 'JSON']
+page = ['HTML']
+section = ['HTML', 'RSS']
+
+[outputFormats.SearchIndex]
+mediaType = 'application/json'
+baseName = 'search'
+isPlainText = true
+notAlternative = true
+
+# Main menu configuration
+[[menu.main]]
+name = "Home"
+url = "/"
+weight = 10
+
+[[menu.main]]
+name = "Getting Started"
+url = "/getting-started/"
+weight = 20
+
+[[menu.main]]
+name = "CLI Reference"
+url = "/cli/"
+weight = 30
+
+[[menu.main]]
+name = "AI Integration"
+url = "/ai-integration/"
+weight = 40
+
+[[menu.main]]
+name = "Development"
+url = "/development/"
+weight = 50
+
+[[menu.main]]
+name = "About"
+url = "/about/"
+weight = 60

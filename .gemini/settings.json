@@ -5,8 +5,12 @@
   "contextFileName": ["AGENTS.md", "GEMINI.md"],
   "showMemoryUsage": true,
   "showLineNumbers": true,
-  "allowMCPServers": ["gopls", "backlog"],
+  "allowMCPServers": ["sequential-thinking", "gopls", "backlog"],
   "mcpServers": {
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
     "gopls": {
       "command": "gopls",
       "args": ["mcp"],

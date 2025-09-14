@@ -32,8 +32,10 @@ tidy: ## Run go mod tidy on all modules
 	go mod tidy
 	
 docs: ## Generate documentation
+	cp ./docs/index.md index.md
 	rm -rf ./docs/cli
 	go generate -x ./...
+	mv index.md ./docs/index.md
 
 clean: ## Clean up build artifacts
 	rm -rf bin/
