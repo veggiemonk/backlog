@@ -1,0 +1,2075 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  class="color-toggle-hidden"
+  
+>
+  <head><script src="/backlog/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=backlog/livereload" data-no-instant defer></script>
+    <meta charset="UTF-8" />
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light dark" />
+<meta name="generator" content="Hugo 0.150.0">
+
+
+  <meta name="description" content="Detailed recreation plan with development phases and acceptance criteria for the Backlog project" />
+  <meta name="keywords" content="task management,cli,ai agents,mcp,golang,git" />
+
+    <title>Project Plan | Backlog Documentation</title>
+
+    <link rel="icon" type="image/svg+xml" href="/backlog/favicon/favicon.svg" />
+<link
+  rel="icon"
+  type="image/png"
+  sizes="32x32"
+  href="/backlog/favicon/favicon-32x32.png"
+/>
+<link
+  rel="icon"
+  type="image/png"
+  sizes="16x16"
+  href="/backlog/favicon/favicon-16x16.png"
+/>
+
+    
+
+    
+  <meta
+    property="og:title"
+    content="Project Plan"
+  />
+  <meta property="og:site_name" content="Backlog Documentation" />
+  <meta property="og:description" content="Detailed recreation plan with development phases and acceptance criteria for the Backlog project" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/backlog/development/plan/" />
+
+<meta property="article:section" content="Development" />
+    <meta
+      property="article:modified_time"
+      content="2025-09-14T23:59:01+02:00"
+    />
+
+
+  <meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Project Plan" />
+  <meta name="twitter:description" content="Detailed recreation plan with development phases and acceptance criteria for the Backlog project" />
+
+
+  <script type="application/ld+json">
+  {
+      "@context": "http://schema.org",
+      "@type": "TechArticle",
+      "articleSection": "Development",
+      "name": "Project Plan",
+      "url" : "http://localhost:1313/backlog/development/plan/",
+      "headline": "Project Plan",
+      "description": "Detailed recreation plan with development phases and acceptance criteria for the Backlog project",
+      "wordCount" : "1085",
+      "inLanguage": "en",
+      "isFamilyFriendly": "true",
+      "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "http://localhost:1313/backlog/development/plan/"
+      },
+      "copyrightHolder" : "Backlog Documentation",
+      "copyrightYear" : "0001",
+      "dateCreated": "0001-01-01T00:00:00.00Z",
+      "datePublished": "0001-01-01T00:00:00.00Z",
+      "dateModified": "2025-09-14T23:59:01.00Z",
+      "publisher":{
+          "@type":"Organization",
+          "name": "Backlog Documentation",
+          "url": "http://localhost:1313/backlog/",
+          "logo": {
+              "@type": "ImageObject",
+              "url": "http://localhost:1313/backlog/brand.svg",
+              "width":"32",
+              "height":"32"
+          }
+      }
+  }
+  </script>
+
+
+    
+  <script src="/backlog/"></script>
+<script src="/backlog/"></script>
+
+<link
+  rel="preload"
+  as="font"
+  href="/backlog/fonts/Metropolis.woff2"
+  type="font/woff2"
+  crossorigin="anonymous"
+/>
+<link
+  rel="preload"
+  as="font"
+  href="/backlog/fonts/LiberationSans.woff2"
+  type="font/woff2"
+  crossorigin="anonymous"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="all"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="screen and (max-width: 45rem)"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="print"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="all"
+/>
+  <link href="http://localhost:1313/backlog/development/plan/" rel="canonical" type="text/html" />
+
+<!-- Made with Geekdoc theme https://github.com/thegeeklab/hugo-geekdoc -->
+
+    
+
+  </head>
+
+  <body itemscope itemtype="https://schema.org/WebPage">
+    <div class="w-full flex justify-center">
+      <a href="#main-content" id="gdoc-to-main" class="gdoc-markdown__link">Skip to main content</a>
+    </div>
+
+    
+
+
+
+    <div
+      class="wrapper "
+    >
+      
+      <header class="gdoc-header">
+  <div class="container flex align-center justify-between">
+    
+      <label for="menu-control" class="gdoc-nav__control">
+        <div tabindex="0" role="button" aria-pressed="false">
+          <input type="checkbox" class="hidden" id="menu-control" />
+
+          <svg class="gdoc-icon gdoc_menu">
+            <title>Open Navigation</title>
+            <use xlink:href="#gdoc_menu"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_arrow_back">
+            <title>Close Navigation</title>
+            <use xlink:href="#gdoc_arrow_back"></use>
+          </svg>
+        </div>
+      </label>
+    
+    <div>
+      <a class="gdoc-brand gdoc-header__link flex gap-16 align-center" href="http://localhost:1313/backlog/">
+        <img
+          class="gdoc-brand__img"
+          src="/backlog/brand.svg"
+          alt=""
+        />
+        <div>
+          <div class="gdoc-brand__title">Backlog Documentation</div>
+          
+        </div>
+      </a>
+    </div>
+    <div class="gdoc-menu-header flex gap-16">
+      <span class="gdoc-menu-header__items">
+        
+
+
+        <span id="gdoc-color-theme" tabindex="0" role="button" aria-pressed="false">
+          <svg class="gdoc-icon gdoc_brightness_dark">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_dark"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_brightness_light">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_light"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_brightness_auto">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_auto"></use>
+          </svg>
+        </span>
+
+        <span class="gdoc-menu-header__home">
+          <a href="http://localhost:1313/backlog/" class="gdoc-header__link">
+            <svg class="gdoc-icon gdoc_home">
+              <title>Back to homepage</title>
+              <use xlink:href="#gdoc_home"></use>
+            </svg>
+          </a>
+        </span>
+
+        
+
+      </span>
+      <span class="gdoc-menu-header__control">
+        <label for="menu-header-control">
+          <div tabindex="0" role="button" aria-pressed="false">
+            <input type="checkbox" class="hidden" id="menu-header-control" />
+
+            <svg class="gdoc-icon gdoc_keyboard_arrow_right">
+              <use xlink:href="#gdoc_keyboard_arrow_right"></use>
+              <title>Close Menu Bar</title>
+            </svg>
+
+            <svg class="gdoc-icon gdoc_keyboard_arrow_left">
+              <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+              <title>Open Menu Bar</title>
+            </svg>
+          </div>
+        </label>
+      </span>
+    </div>
+  </div>
+</header>
+
+
+
+      <main class="container flex flex-even">
+        
+          <aside class="gdoc-nav">
+            <nav>
+  
+  <script defer src="/backlog/"></script><div class="gdoc-search flex align-center">
+    <svg class="gdoc-icon gdoc_search"><use xlink:href="#gdoc_search"></use></svg>
+    <input
+      type="text"
+      id="gdoc-search-input"
+      class="gdoc-search__input"
+      placeholder="Search..."
+      aria-label="Search"
+      maxlength="64"
+      data-site-base-url="http://localhost:1313/backlog/"
+      data-site-lang="en"
+    />
+    <ul id="gdoc-search-results" class="gdoc-search__list"></ul>
+  </div>
+
+
+
+
+  <section class="gdoc-nav--main">
+    <h2>Navigation</h2>
+    
+      
+
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="gdoc-nav__toggle" id="navtree-d5dae258"
+                
+              
+            />
+            <label
+              
+                for="navtree-d5dae258" class="flex justify-between align-center"
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/"
+                    class="gdoc-nav__entry"
+                  >
+                    CLI Reference
+                  </a>
+                </span>
+              
+              
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_left">
+                  <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+                </svg>
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_down">
+                  <use xlink:href="#gdoc_keyboard_arrow_down"></use>
+                </svg>
+              
+            </label>
+
+            
+              
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_create/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog create
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_list/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog list
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_edit/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog edit
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_view/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog view
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_search/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog search
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_archive/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog archive
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_mcp/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog mcp
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_version/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog version
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="gdoc-nav__toggle" id="navtree-134cefbb"
+                checked
+              
+            />
+            <label
+              
+                for="navtree-134cefbb" class="flex justify-between align-center"
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/"
+                    class="gdoc-nav__entry"
+                  >
+                    Development
+                  </a>
+                </span>
+              
+              
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_left">
+                  <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+                </svg>
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_down">
+                  <use xlink:href="#gdoc_keyboard_arrow_down"></use>
+                </svg>
+              
+            </label>
+
+            
+              
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/analysis/"
+                    class="gdoc-nav__entry"
+                  >
+                    Technical Analysis
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/plan/"
+                    class="gdoc-nav__entry is-active"
+                  >
+                    Project Plan
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+
+
+
+
+
+    
+  </section>
+
+  
+
+
+  <section class="gdoc-nav--more">
+    
+  </section>
+</nav>
+
+          </aside>
+        
+
+
+        <div class="gdoc-page">
+          
+  
+
+
+  
+
+
+
+
+
+
+<div
+  class="gdoc-page__header flex flex-wrap
+  
+    justify-between
+  
+  hidden-mobile
+  "
+  itemprop="breadcrumb"
+>
+  
+    <div>
+      <svg class="gdoc-icon gdoc_path hidden-mobile"><use xlink:href="#gdoc_path"></use></svg>
+      <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+        
+        
+        
+        
+  
+  
+    
+    
+    
+    
+  
+  
+    
+    
+    
+    
+  
+  
+    <li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/backlog/' href='/backlog/'><span itemprop='name'>Backlog</span></a><meta itemprop='position' content='2' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/backlog/development/' href='/backlog/development/'><span itemprop='name'>Development</span></a><meta itemprop='position' content='3' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><span itemprop='name'>Project Plan</span><meta itemprop='position' content='4' /></li>
+  
+
+  
+
+  
+
+      </ol>
+    </div>
+  
+  
+</div>
+
+
+
+  <article
+    class="gdoc-markdown gdoc-markdown__align--left"
+    id="main-content" tabindex="-1"
+  >
+    <h1>Project Plan</h1>
+    
+    <div class="flex align-center gdoc-page__anchorwrap">
+    <h1 id="github-pages-documentation-website-plan"
+    >
+        GitHub Pages Documentation Website Plan
+    </h1>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#github-pages-documentation-website-plan" class="gdoc-page__anchor clip flex align-center" title="Anchor to: GitHub Pages Documentation Website Plan" aria-label="Anchor to: GitHub Pages Documentation Website Plan" href="#github-pages-documentation-website-plan">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="overview"
+    >
+        Overview
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#overview" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Overview" aria-label="Anchor to: Overview" href="#overview">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Create a small documentation website hosted on GitHub Pages to present all the backlog project documentation in an organized, searchable format.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="website-structure--navigation"
+    >
+        Website Structure &amp; Navigation
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#website-structure--navigation" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Website Structure &amp; Navigation" aria-label="Anchor to: Website Structure &amp; Navigation" href="#website-structure--navigation">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="main-navigation"
+    >
+        Main Navigation
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#main-navigation" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Main Navigation" aria-label="Anchor to: Main Navigation" href="#main-navigation">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ul>
+<li><strong>Home</strong> - Project overview and quick start</li>
+<li><strong>Getting Started</strong> - Installation and basic usage</li>
+<li><strong>CLI Reference</strong> - Auto-generated command documentation</li>
+<li><strong>AI Integration</strong> - MCP server setup and usage</li>
+<li><strong>Development</strong> - Architecture, analysis, and contribution guide</li>
+<li><strong>About</strong> - Project inspiration and credits</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="content-organization"
+    >
+        Content Organization
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#content-organization" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Content Organization" aria-label="Anchor to: Content Organization" href="#content-organization">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<pre tabindex="0"><code>content/
+├── _index.md          # Home page (from README.md)
+├── getting-started.md # Quick start guide
+├── cli/               # CLI reference (existing)
+│   ├── _index.md
+│   ├── backlog.md
+│   ├── backlog_create.md
+│   └── ... (other CLI docs)
+├── ai-integration.md  # MCP integration guide
+├── development/       # Development docs
+│   ├── _index.md
+│   ├── architecture.md
+│   ├── analysis.md    # Existing technical analysis
+│   └── plan.md        # Existing project plan
+└── about.md           # Project background
+</code></pre><div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="technical-approach"
+    >
+        Technical Approach
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#technical-approach" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Technical Approach" aria-label="Anchor to: Technical Approach" href="#technical-approach">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="static-site-generator-hugo"
+    >
+        Static Site Generator: Hugo
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#static-site-generator-hugo" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Static Site Generator: Hugo" aria-label="Anchor to: Static Site Generator: Hugo" href="#static-site-generator-hugo">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ul>
+<li><strong>Why Hugo</strong>: Fast builds, excellent GitHub Pages support, powerful theming</li>
+<li><strong>Theme</strong>: Use a clean, documentation-focused theme (Docsy, Book, or Geekdoc)</li>
+<li><strong>Features</strong>: Built-in search, syntax highlighting, mobile-responsive, taxonomies</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="implementation-steps"
+    >
+        Implementation Steps
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#implementation-steps" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Implementation Steps" aria-label="Anchor to: Implementation Steps" href="#implementation-steps">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ol>
+<li>Initialize Hugo site with <code>hugo.toml</code> configuration</li>
+<li>Select and configure a documentation theme</li>
+<li>Create content structure and organize existing documentation</li>
+<li>Set up GitHub Actions for automated deployment</li>
+<li>Configure custom domain and search functionality</li>
+</ol>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="key-features"
+    >
+        Key Features
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#key-features" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Key Features" aria-label="Anchor to: Key Features" href="#key-features">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ul>
+<li><strong>Automatic CLI docs</strong>: Integrate existing CLI documentation</li>
+<li><strong>Built-in search</strong>: Hugo&rsquo;s native search functionality</li>
+<li><strong>Mobile responsive</strong>: Modern, accessible design</li>
+<li><strong>Lightning fast</strong>: Sub-second build times</li>
+<li><strong>Easy maintenance</strong>: Markdown-based content with front matter</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="task-breakdown"
+    >
+        Task Breakdown
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#task-breakdown" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Task Breakdown" aria-label="Anchor to: Task Breakdown" href="#task-breakdown">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="t15---github-pages-documentation-website"
+    >
+        T15 - GitHub Pages Documentation Website
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#t15---github-pages-documentation-website" class="gdoc-page__anchor clip flex align-center" title="Anchor to: T15 - GitHub Pages Documentation Website" aria-label="Anchor to: T15 - GitHub Pages Documentation Website" href="#t15---github-pages-documentation-website">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p><strong>Priority</strong>: High
+<strong>Labels</strong>: documentation, website, github-pages, hugo
+<strong>Description</strong>: Create a small documentation website hosted on GitHub Pages to present all the backlog project documentation in an organized, searchable format for both human users and AI agents.</p>
+<p><strong>Acceptance Criteria</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> Website is accessible via GitHub Pages URL</li>
+<li><input disabled="" type="checkbox"> All existing documentation is properly integrated</li>
+<li><input disabled="" type="checkbox"> Navigation is intuitive and complete</li>
+<li><input disabled="" type="checkbox"> Site is mobile responsive</li>
+<li><input disabled="" type="checkbox"> Search functionality works correctly</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="t1501---hugo-site-configuration"
+    >
+        T15.01 - Hugo Site Configuration
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#t1501---hugo-site-configuration" class="gdoc-page__anchor clip flex align-center" title="Anchor to: T15.01 - Hugo Site Configuration" aria-label="Anchor to: T15.01 - Hugo Site Configuration" href="#t1501---hugo-site-configuration">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p><strong>Priority</strong>: High
+<strong>Labels</strong>: hugo, configuration, setup
+<strong>Description</strong>: Initialize Hugo site with proper configuration and theme setup for GitHub Pages deployment.</p>
+<p><strong>Acceptance Criteria</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> <code>hugo.toml</code> configured with site metadata and settings</li>
+<li><input disabled="" type="checkbox"> Documentation theme selected and installed (Docsy, Book, or Geekdoc)</li>
+<li><input disabled="" type="checkbox"> Basic site structure established with content/ directory</li>
+<li><input disabled="" type="checkbox"> Theme customization and branding applied</li>
+<li><input disabled="" type="checkbox"> Local development environment works (<code>hugo server</code>)</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="t1502---content-organization-and-migration"
+    >
+        T15.02 - Content Organization and Migration
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#t1502---content-organization-and-migration" class="gdoc-page__anchor clip flex align-center" title="Anchor to: T15.02 - Content Organization and Migration" aria-label="Anchor to: T15.02 - Content Organization and Migration" href="#t1502---content-organization-and-migration">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p><strong>Priority</strong>: High
+<strong>Labels</strong>: content, migration, documentation
+<strong>Description</strong>: Organize existing documentation content into the new Hugo site structure and create missing content pages.</p>
+<p><strong>Acceptance Criteria</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> README.md content migrated to content/_index.md homepage</li>
+<li><input disabled="" type="checkbox"> CLI documentation integrated from docs/cli/ with proper front matter</li>
+<li><input disabled="" type="checkbox"> Technical analysis and plan moved to development section</li>
+<li><input disabled="" type="checkbox"> Getting started guide created with Hugo shortcodes</li>
+<li><input disabled="" type="checkbox"> AI integration guide created with code examples</li>
+<li><input disabled="" type="checkbox"> About page created with project background</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="t1503---theme-customization-and-navigation"
+    >
+        T15.03 - Theme Customization and Navigation
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#t1503---theme-customization-and-navigation" class="gdoc-page__anchor clip flex align-center" title="Anchor to: T15.03 - Theme Customization and Navigation" aria-label="Anchor to: T15.03 - Theme Customization and Navigation" href="#t1503---theme-customization-and-navigation">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p><strong>Priority</strong>: Medium
+<strong>Labels</strong>: themes, navigation, ui, branding
+<strong>Description</strong>: Customize Hugo theme for consistent branding and create intuitive navigation structure.</p>
+<p><strong>Acceptance Criteria</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> Site navigation configured in hugo.toml or menu files</li>
+<li><input disabled="" type="checkbox"> Custom CSS/SCSS for branding and styling</li>
+<li><input disabled="" type="checkbox"> Responsive design tested on mobile and desktop</li>
+<li><input disabled="" type="checkbox"> Logo and favicon added to site</li>
+<li><input disabled="" type="checkbox"> Footer with project links and credits</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="t1504---search-and-interactive-features"
+    >
+        T15.04 - Search and Interactive Features
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#t1504---search-and-interactive-features" class="gdoc-page__anchor clip flex align-center" title="Anchor to: T15.04 - Search and Interactive Features" aria-label="Anchor to: T15.04 - Search and Interactive Features" href="#t1504---search-and-interactive-features">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p><strong>Priority</strong>: Medium
+<strong>Labels</strong>: search, interactivity, user-experience
+<strong>Description</strong>: Implement search functionality and interactive elements to enhance user experience.</p>
+<p><strong>Acceptance Criteria</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> Search functionality configured (Fuse.js, Algolia, or built-in)</li>
+<li><input disabled="" type="checkbox"> Search index includes all content including CLI docs</li>
+<li><input disabled="" type="checkbox"> Search results page with proper formatting</li>
+<li><input disabled="" type="checkbox"> Code copy buttons and syntax highlighting working</li>
+<li><input disabled="" type="checkbox"> Table of contents generation for long pages</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="t1505---github-pages-deployment"
+    >
+        T15.05 - GitHub Pages Deployment
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#t1505---github-pages-deployment" class="gdoc-page__anchor clip flex align-center" title="Anchor to: T15.05 - GitHub Pages Deployment" aria-label="Anchor to: T15.05 - GitHub Pages Deployment" href="#t1505---github-pages-deployment">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p><strong>Priority</strong>: High
+<strong>Labels</strong>: deployment, github-pages, automation, ci-cd
+<strong>Description</strong>: Configure GitHub Actions workflow for automated Hugo site deployment to GitHub Pages.</p>
+<p><strong>Acceptance Criteria</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> GitHub Actions workflow created for Hugo builds</li>
+<li><input disabled="" type="checkbox"> Workflow triggers on pushes to main branch and documentation changes</li>
+<li><input disabled="" type="checkbox"> Hugo extended version used for SCSS processing</li>
+<li><input disabled="" type="checkbox"> Site deploys automatically with proper base URL configuration</li>
+<li><input disabled="" type="checkbox"> Custom domain configured (if desired)</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="t1506---content-enhancement-and-seo"
+    >
+        T15.06 - Content Enhancement and SEO
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#t1506---content-enhancement-and-seo" class="gdoc-page__anchor clip flex align-center" title="Anchor to: T15.06 - Content Enhancement and SEO" aria-label="Anchor to: T15.06 - Content Enhancement and SEO" href="#t1506---content-enhancement-and-seo">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p><strong>Priority</strong>: Low
+<strong>Labels</strong>: content, seo, performance, user-experience
+<strong>Description</strong>: Enhance content with better formatting, SEO optimization, and performance improvements.</p>
+<p><strong>Acceptance Criteria</strong>:</p>
+<ul>
+<li><input disabled="" type="checkbox"> SEO meta tags and Open Graph data configured</li>
+<li><input disabled="" type="checkbox"> Site performance optimized (images, CSS, JS minification)</li>
+<li><input disabled="" type="checkbox"> Analytics integration (if desired)</li>
+<li><input disabled="" type="checkbox"> Sitemap and robots.txt generation</li>
+<li><input disabled="" type="checkbox"> Cross-references and internal linking between pages</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="hugo-configuration-structure"
+    >
+        Hugo Configuration Structure
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#hugo-configuration-structure" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Hugo Configuration Structure" aria-label="Anchor to: Hugo Configuration Structure" href="#hugo-configuration-structure">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="hugotoml"
+    >
+        hugo.toml
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#hugotoml" class="gdoc-page__anchor clip flex align-center" title="Anchor to: hugo.toml" aria-label="Anchor to: hugo.toml" href="#hugotoml">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-toml" data-lang="toml"><span class="line"><span class="cl"><span class="nx">baseURL</span> <span class="p">=</span> <span class="s1">&#39;https://veggiemonk.github.io/backlog&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">languageCode</span> <span class="p">=</span> <span class="s1">&#39;en-us&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">title</span> <span class="p">=</span> <span class="s1">&#39;Backlog Documentation&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">theme</span> <span class="p">=</span> <span class="s1">&#39;docsy&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">params</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">github_repo</span> <span class="p">=</span> <span class="s1">&#39;https://github.com/veggiemonk/backlog&#39;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">github_branch</span> <span class="p">=</span> <span class="s1">&#39;main&#39;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">edit_page</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">search_enabled</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[</span><span class="nx">markup</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="nx">markup</span><span class="p">.</span><span class="nx">goldmark</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="p">[</span><span class="nx">markup</span><span class="p">.</span><span class="nx">goldmark</span><span class="p">.</span><span class="nx">renderer</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">unsafe</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">  <span class="p">[</span><span class="nx">markup</span><span class="p">.</span><span class="nx">highlight</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">style</span> <span class="p">=</span> <span class="s1">&#39;github&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">lineNos</span> <span class="p">=</span> <span class="kc">true</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">menu</span><span class="p">.</span><span class="nx">main</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span> <span class="p">=</span> <span class="s2">&#34;Home&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">url</span> <span class="p">=</span> <span class="s2">&#34;/&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">weight</span> <span class="p">=</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">menu</span><span class="p">.</span><span class="nx">main</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span> <span class="p">=</span> <span class="s2">&#34;Getting Started&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">url</span> <span class="p">=</span> <span class="s2">&#34;/getting-started/&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">weight</span> <span class="p">=</span> <span class="mi">20</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="p">[[</span><span class="nx">menu</span><span class="p">.</span><span class="nx">main</span><span class="p">]]</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">name</span> <span class="p">=</span> <span class="s2">&#34;CLI Reference&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">url</span> <span class="p">=</span> <span class="s2">&#34;/cli/&#34;</span>
+</span></span><span class="line"><span class="cl">  <span class="nx">weight</span> <span class="p">=</span> <span class="mi">30</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="content-structure-with-front-matter"
+    >
+        Content Structure with Front Matter
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#content-structure-with-front-matter" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Content Structure with Front Matter" aria-label="Anchor to: Content Structure with Front Matter" href="#content-structure-with-front-matter">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">title: &#34;Getting Started&#34;
+</span></span><span class="line"><span class="cl">description: &#34;Quick start guide for Backlog&#34;
+</span></span><span class="line"><span class="cl">weight: 20
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gh"># Getting Started
+</span></span></span><span class="line"><span class="cl"><span class="gh"></span>
+</span></span><span class="line"><span class="cl">Your content here...
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="github-actions-workflow"
+    >
+        GitHub Actions Workflow
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#github-actions-workflow" class="gdoc-page__anchor clip flex align-center" title="Anchor to: GitHub Actions Workflow" aria-label="Anchor to: GitHub Actions Workflow" href="#github-actions-workflow">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Deploy Hugo site to GitHub Pages</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">on</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">push</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;main&#34;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">paths</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&#34;content/**&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;hugo.toml&#34;</span><span class="p">,</span><span class="w"> </span><span class="s2">&#34;.github/workflows/hugo.yml&#34;</span><span class="p">]</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">workflow_dispatch</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">permissions</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l">read</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">pages</span><span class="p">:</span><span class="w"> </span><span class="l">write</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">id-token</span><span class="p">:</span><span class="w"> </span><span class="l">write</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">concurrency</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">group</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;pages&#34;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">cancel-in-progress</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">jobs</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">build</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu-latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Checkout</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/checkout@v4</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Setup Hugo</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">peaceiris/actions-hugo@v2</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">hugo-version</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;latest&#39;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">extended</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Build</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l">hugo --minify</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Upload artifact</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/upload-pages-artifact@v3</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">with</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">          </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="l">./public</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">deploy</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">github-pages</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="nt">url</span><span class="p">:</span><span class="w"> </span><span class="l">${{ steps.deployment.outputs.page_url }}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l">ubuntu-latest</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">needs</span><span class="p">:</span><span class="w"> </span><span class="l">build</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nt">steps</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span>- <span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l">Deploy to GitHub Pages</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l">deployment</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l">actions/deploy-pages@v4</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="success-metrics"
+    >
+        Success Metrics
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#success-metrics" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Success Metrics" aria-label="Anchor to: Success Metrics" href="#success-metrics">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ul>
+<li><input disabled="" type="checkbox"> Website loads in under 1 second</li>
+<li><input disabled="" type="checkbox"> All documentation is accessible and well-organized</li>
+<li><input disabled="" type="checkbox"> Users can easily find CLI command information</li>
+<li><input disabled="" type="checkbox"> AI agents can reference the documentation effectively</li>
+<li><input disabled="" type="checkbox"> Site works well on mobile devices</li>
+<li><input disabled="" type="checkbox"> Search returns relevant results quickly</li>
+<li><input disabled="" type="checkbox"> Build time is under 30 seconds</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="hugo-advantages-over-jekyll"
+    >
+        Hugo Advantages Over Jekyll
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/plan/#hugo-advantages-over-jekyll" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Hugo Advantages Over Jekyll" aria-label="Anchor to: Hugo Advantages Over Jekyll" href="#hugo-advantages-over-jekyll">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ol>
+<li><strong>Speed</strong>: Hugo builds sites 10-100x faster than Jekyll</li>
+<li><strong>Single Binary</strong>: No Ruby dependencies or gem management</li>
+<li><strong>Built-in Features</strong>: Search, image processing, taxonomies included</li>
+<li><strong>Modern Themes</strong>: Better selection of documentation themes</li>
+<li><strong>Shortcodes</strong>: Powerful content templating system</li>
+<li><strong>Asset Pipeline</strong>: Built-in SCSS/PostCSS processing</li>
+<li><strong>Multilingual</strong>: Native support for multiple languages</li>
+</ol>
+<p>This Hugo-based approach will provide a faster, more maintainable, and feature-rich documentation website while still leveraging GitHub Pages for hosting.</p>
+
+  </article>
+
+
+
+          
+          
+          <div class="gdoc-page__footer flex flex-wrap justify-between">
+            
+              
+
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+          
+          
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+
+  
+
+
+
+
+<span class="gdoc-page__nav">
+  
+    <a
+      class="gdoc-page__nav--prev flex align-center"
+      href="/backlog/development/analysis/"
+      title="Technical Analysis"
+    >
+      <i class="gdoc-icon">gdoc_arrow_left_alt</i>
+      Technical Analysis
+    </a>
+  
+</span>
+<span class="gdoc-page__nav">
+  
+</span>
+
+            
+          </div>
+          
+        </div>
+      </main>
+
+      <footer class="gdoc-footer">
+  <nav class="container flex">
+    <div>
+      <section class="flex flex-wrap align-center">
+        <span class="gdoc-footer__item gdoc-footer__item--row">
+          Built with <a href="https://gohugo.io/" class="gdoc-footer__link">Hugo</a> and <svg class="gdoc-icon gdoc_heart"><use xlink:href="#gdoc_heart"></use></svg>
+
+        </span>
+        
+          <span class="gdoc-footer__item gdoc-footer__item--row">
+            <a href="https://github.com/veggiemonk/backlog/blob/main/LICENSE" class="gdoc-footer__link">
+              Legal Notice
+            </a>
+          </span>
+        
+        
+      </section>
+      
+    </div>
+    
+      <div class="flex flex-25 justify-end">
+        <span class="gdoc-footer__item text-right">
+          <a class="gdoc-footer__link fake-link" href="#" aria-label="Back to top">
+            <svg class="gdoc-icon gdoc_keyboard_arrow_up">
+              <use xlink:href="#gdoc_keyboard_arrow_up"></use>
+            </svg>
+            <span class="hidden-mobile">Back to top</span>
+          </a>
+        </span>
+      </div>
+    
+  </nav>
+</footer>
+
+    </div>
+
+    
+  </body>
+</html>

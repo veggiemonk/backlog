@@ -1,0 +1,2070 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  class="color-toggle-hidden"
+  
+>
+  <head><script src="/backlog/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=backlog/livereload" data-no-instant defer></script>
+    <meta charset="UTF-8" />
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light dark" />
+<meta name="generator" content="Hugo 0.150.0">
+
+
+  <meta name="description" content="Comprehensive technical analysis of the Backlog codebase, architecture, and implementation patterns" />
+  <meta name="keywords" content="task management,cli,ai agents,mcp,golang,git" />
+
+    <title>Technical Analysis | Backlog Documentation</title>
+
+    <link rel="icon" type="image/svg+xml" href="/backlog/favicon/favicon.svg" />
+<link
+  rel="icon"
+  type="image/png"
+  sizes="32x32"
+  href="/backlog/favicon/favicon-32x32.png"
+/>
+<link
+  rel="icon"
+  type="image/png"
+  sizes="16x16"
+  href="/backlog/favicon/favicon-16x16.png"
+/>
+
+    
+
+    
+  <meta
+    property="og:title"
+    content="Technical Analysis"
+  />
+  <meta property="og:site_name" content="Backlog Documentation" />
+  <meta property="og:description" content="Comprehensive technical analysis of the Backlog codebase, architecture, and implementation patterns" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/backlog/development/analysis/" />
+
+<meta property="article:section" content="Development" />
+    <meta
+      property="article:modified_time"
+      content="2025-09-14T23:59:01+02:00"
+    />
+
+
+  <meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Technical Analysis" />
+  <meta name="twitter:description" content="Comprehensive technical analysis of the Backlog codebase, architecture, and implementation patterns" />
+
+
+  <script type="application/ld+json">
+  {
+      "@context": "http://schema.org",
+      "@type": "TechArticle",
+      "articleSection": "Development",
+      "name": "Technical Analysis",
+      "url" : "http://localhost:1313/backlog/development/analysis/",
+      "headline": "Technical Analysis",
+      "description": "Comprehensive technical analysis of the Backlog codebase, architecture, and implementation patterns",
+      "wordCount" : "2036",
+      "inLanguage": "en",
+      "isFamilyFriendly": "true",
+      "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "http://localhost:1313/backlog/development/analysis/"
+      },
+      "copyrightHolder" : "Backlog Documentation",
+      "copyrightYear" : "0001",
+      "dateCreated": "0001-01-01T00:00:00.00Z",
+      "datePublished": "0001-01-01T00:00:00.00Z",
+      "dateModified": "2025-09-14T23:59:01.00Z",
+      "publisher":{
+          "@type":"Organization",
+          "name": "Backlog Documentation",
+          "url": "http://localhost:1313/backlog/",
+          "logo": {
+              "@type": "ImageObject",
+              "url": "http://localhost:1313/backlog/brand.svg",
+              "width":"32",
+              "height":"32"
+          }
+      }
+  }
+  </script>
+
+
+    
+  <script src="/backlog/"></script>
+<script src="/backlog/"></script>
+
+<link
+  rel="preload"
+  as="font"
+  href="/backlog/fonts/Metropolis.woff2"
+  type="font/woff2"
+  crossorigin="anonymous"
+/>
+<link
+  rel="preload"
+  as="font"
+  href="/backlog/fonts/LiberationSans.woff2"
+  type="font/woff2"
+  crossorigin="anonymous"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="all"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="screen and (max-width: 45rem)"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="print"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="all"
+/>
+  <link href="http://localhost:1313/backlog/development/analysis/" rel="canonical" type="text/html" />
+
+<!-- Made with Geekdoc theme https://github.com/thegeeklab/hugo-geekdoc -->
+
+    
+
+  </head>
+
+  <body itemscope itemtype="https://schema.org/WebPage">
+    <div class="w-full flex justify-center">
+      <a href="#main-content" id="gdoc-to-main" class="gdoc-markdown__link">Skip to main content</a>
+    </div>
+
+    
+
+
+
+    <div
+      class="wrapper "
+    >
+      
+      <header class="gdoc-header">
+  <div class="container flex align-center justify-between">
+    
+      <label for="menu-control" class="gdoc-nav__control">
+        <div tabindex="0" role="button" aria-pressed="false">
+          <input type="checkbox" class="hidden" id="menu-control" />
+
+          <svg class="gdoc-icon gdoc_menu">
+            <title>Open Navigation</title>
+            <use xlink:href="#gdoc_menu"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_arrow_back">
+            <title>Close Navigation</title>
+            <use xlink:href="#gdoc_arrow_back"></use>
+          </svg>
+        </div>
+      </label>
+    
+    <div>
+      <a class="gdoc-brand gdoc-header__link flex gap-16 align-center" href="http://localhost:1313/backlog/">
+        <img
+          class="gdoc-brand__img"
+          src="/backlog/brand.svg"
+          alt=""
+        />
+        <div>
+          <div class="gdoc-brand__title">Backlog Documentation</div>
+          
+        </div>
+      </a>
+    </div>
+    <div class="gdoc-menu-header flex gap-16">
+      <span class="gdoc-menu-header__items">
+        
+
+
+        <span id="gdoc-color-theme" tabindex="0" role="button" aria-pressed="false">
+          <svg class="gdoc-icon gdoc_brightness_dark">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_dark"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_brightness_light">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_light"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_brightness_auto">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_auto"></use>
+          </svg>
+        </span>
+
+        <span class="gdoc-menu-header__home">
+          <a href="http://localhost:1313/backlog/" class="gdoc-header__link">
+            <svg class="gdoc-icon gdoc_home">
+              <title>Back to homepage</title>
+              <use xlink:href="#gdoc_home"></use>
+            </svg>
+          </a>
+        </span>
+
+        
+
+      </span>
+      <span class="gdoc-menu-header__control">
+        <label for="menu-header-control">
+          <div tabindex="0" role="button" aria-pressed="false">
+            <input type="checkbox" class="hidden" id="menu-header-control" />
+
+            <svg class="gdoc-icon gdoc_keyboard_arrow_right">
+              <use xlink:href="#gdoc_keyboard_arrow_right"></use>
+              <title>Close Menu Bar</title>
+            </svg>
+
+            <svg class="gdoc-icon gdoc_keyboard_arrow_left">
+              <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+              <title>Open Menu Bar</title>
+            </svg>
+          </div>
+        </label>
+      </span>
+    </div>
+  </div>
+</header>
+
+
+
+      <main class="container flex flex-even">
+        
+          <aside class="gdoc-nav">
+            <nav>
+  
+  <script defer src="/backlog/"></script><div class="gdoc-search flex align-center">
+    <svg class="gdoc-icon gdoc_search"><use xlink:href="#gdoc_search"></use></svg>
+    <input
+      type="text"
+      id="gdoc-search-input"
+      class="gdoc-search__input"
+      placeholder="Search..."
+      aria-label="Search"
+      maxlength="64"
+      data-site-base-url="http://localhost:1313/backlog/"
+      data-site-lang="en"
+    />
+    <ul id="gdoc-search-results" class="gdoc-search__list"></ul>
+  </div>
+
+
+
+
+  <section class="gdoc-nav--main">
+    <h2>Navigation</h2>
+    
+      
+
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="gdoc-nav__toggle" id="navtree-d5dae258"
+                
+              
+            />
+            <label
+              
+                for="navtree-d5dae258" class="flex justify-between align-center"
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/"
+                    class="gdoc-nav__entry"
+                  >
+                    CLI Reference
+                  </a>
+                </span>
+              
+              
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_left">
+                  <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+                </svg>
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_down">
+                  <use xlink:href="#gdoc_keyboard_arrow_down"></use>
+                </svg>
+              
+            </label>
+
+            
+              
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_create/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog create
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_list/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog list
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_edit/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog edit
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_view/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog view
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_search/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog search
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_archive/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog archive
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_mcp/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog mcp
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_version/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog version
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="gdoc-nav__toggle" id="navtree-134cefbb"
+                checked
+              
+            />
+            <label
+              
+                for="navtree-134cefbb" class="flex justify-between align-center"
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/"
+                    class="gdoc-nav__entry"
+                  >
+                    Development
+                  </a>
+                </span>
+              
+              
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_left">
+                  <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+                </svg>
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_down">
+                  <use xlink:href="#gdoc_keyboard_arrow_down"></use>
+                </svg>
+              
+            </label>
+
+            
+              
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/analysis/"
+                    class="gdoc-nav__entry is-active"
+                  >
+                    Technical Analysis
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/plan/"
+                    class="gdoc-nav__entry"
+                  >
+                    Project Plan
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+
+
+
+
+
+    
+  </section>
+
+  
+
+
+  <section class="gdoc-nav--more">
+    
+  </section>
+</nav>
+
+          </aside>
+        
+
+
+        <div class="gdoc-page">
+          
+  
+
+
+  
+
+
+
+
+
+
+<div
+  class="gdoc-page__header flex flex-wrap
+  
+    justify-between
+  
+  hidden-mobile
+  "
+  itemprop="breadcrumb"
+>
+  
+    <div>
+      <svg class="gdoc-icon gdoc_path hidden-mobile"><use xlink:href="#gdoc_path"></use></svg>
+      <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+        
+        
+        
+        
+  
+  
+    
+    
+    
+    
+  
+  
+    
+    
+    
+    
+  
+  
+    <li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/backlog/' href='/backlog/'><span itemprop='name'>Backlog</span></a><meta itemprop='position' content='2' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/backlog/development/' href='/backlog/development/'><span itemprop='name'>Development</span></a><meta itemprop='position' content='3' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><span itemprop='name'>Technical Analysis</span><meta itemprop='position' content='4' /></li>
+  
+
+  
+
+  
+
+      </ol>
+    </div>
+  
+  
+</div>
+
+
+
+  <article
+    class="gdoc-markdown gdoc-markdown__align--left"
+    id="main-content" tabindex="-1"
+  >
+    <h1>Technical Analysis</h1>
+    
+    <div class="flex align-center gdoc-page__anchorwrap">
+    <h1 id="backlog-tool---comprehensive-technical-analysis"
+    >
+        Backlog Tool - Comprehensive Technical Analysis
+    </h1>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#backlog-tool---comprehensive-technical-analysis" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Backlog Tool - Comprehensive Technical Analysis" aria-label="Anchor to: Backlog Tool - Comprehensive Technical Analysis" href="#backlog-tool---comprehensive-technical-analysis">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="executive-summary"
+    >
+        Executive Summary
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#executive-summary" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Executive Summary" aria-label="Anchor to: Executive Summary" href="#executive-summary">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The <code>backlog</code> project is a well-architected, Go-based CLI tool for task management that is offline-first and developer-centric. Its core design principle is storing tasks as individual Markdown files within a Git repository, making it highly portable and transparent. The codebase demonstrates strong adherence to modern Go practices, including clean separation of concerns, dependency injection for testability, and a robust CLI implementation. A key feature is its built-in Model Context Protocol (MCP) server, which exposes its functionality to AI agents, positioning it as a forward-thinking tool for AI-assisted development workflows. While the current implementation is performant for small to medium-sized projects, its scalability is limited by the design choice of reading all task files into memory for certain operations.</p>
+<hr>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="1-project-architecture-and-structure"
+    >
+        1. Project Architecture and Structure
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#1-project-architecture-and-structure" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 1. Project Architecture and Structure" aria-label="Anchor to: 1. Project Architecture and Structure" href="#1-project-architecture-and-structure">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The project follows a standard and effective Go project layout, with a clear separation of concerns that enhances maintainability and testability.</p>
+<ul>
+<li><strong><code>main.go</code></strong>: The application&rsquo;s entry point. It&rsquo;s minimal and delegates all work to the <code>internal/cmd</code> package. It also includes a <code>//go:generate</code> directive to automate documentation generation.</li>
+<li><strong><code>internal/</code></strong>: This directory contains all the core application logic, ensuring that no other project can import it and depend on its internal implementation details.
+<ul>
+<li><strong><code>core/</code></strong>: This is the heart of the application, containing the business logic and data structures. It defines the <code>Task</code> struct, the <code>FileTaskStore</code> for data persistence, and the logic for all CRUD (Create, Read, Update, Delete), search, and archive operations. It is completely decoupled from the CLI and any other presentation layer.</li>
+<li><strong><code>cmd/</code></strong>: This package implements the command-line interface using the <strong>Cobra</strong> library. Each command (e.g., <code>create</code>, <code>list</code>, <code>edit</code>) is in its own file (<code>task_create.go</code>, <code>task_list.go</code>), which keeps the code organized. It acts as the presentation layer, translating user input into calls to the <code>core</code> package.</li>
+<li><strong><code>commit/</code></strong>: This small package handles the Git integration. Its primary responsibility is to automatically commit changes to task files after an operation, providing a versioned history of the backlog.</li>
+<li><strong><code>mcp/</code></strong>: This package implements the Model Context Protocol (MCP) server, exposing the <code>core</code> functionality as a set of tools for AI agents. This is a key architectural feature that separates human-computer interaction (CLI) from agent-computer interaction (MCP).</li>
+<li><strong><code>logging/</code></strong>: A dedicated package for configuring and providing a global logger using Go&rsquo;s standard <code>log/slog</code> library. It is configurable via environment variables.</li>
+<li><strong><code>tools/</code></strong>: Contains utility programs for development, such as the documentation generator (<code>docgen</code>).</li>
+</ul>
+</li>
+</ul>
+<p>This layered architecture is a significant strength, allowing each part of the system to be developed and tested independently.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="2-core-functionality-and-features"
+    >
+        2. Core Functionality and Features
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#2-core-functionality-and-features" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 2. Core Functionality and Features" aria-label="Anchor to: 2. Core Functionality and Features" href="#2-core-functionality-and-features">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The tool is rich with features designed for developers and AI agents:</p>
+<ul>
+<li><strong>File-Based Storage</strong>: Tasks are stored as human-readable Markdown files with YAML frontmatter.</li>
+<li><strong>Git-Native</strong>: The entire state is stored within a Git repository, and task modifications are automatically committed.</li>
+<li><strong>Hierarchical Tasks</strong>: Supports parent-child task relationships with a dot-notation ID system (e.g., <code>T01</code>, <code>T01.01</code>).</li>
+<li><strong>Rich Metadata</strong>: Tasks support assignees, labels, priorities, dependencies, and acceptance criteria.</li>
+<li><strong>Powerful CLI</strong>: A comprehensive CLI for all task management operations, with filtering, sorting, and multiple output formats (table, JSON, Markdown).</li>
+<li><strong>AI Integration</strong>: An MCP server exposes all core functionality as tools (<code>task_create</code>, <code>task_edit</code>, etc.) for programmatic use by AI agents.</li>
+<li><strong>Offline-First</strong>: Works entirely offline, with all data stored locally.</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="3-code-quality-and-patterns"
+    >
+        3. Code Quality and Patterns
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#3-code-quality-and-patterns" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 3. Code Quality and Patterns" aria-label="Anchor to: 3. Code Quality and Patterns" href="#3-code-quality-and-patterns">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The codebase exhibits a high level of quality and adheres to modern Go idioms.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="dependency-injection"
+    >
+        Dependency Injection
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#dependency-injection" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Dependency Injection" aria-label="Anchor to: Dependency Injection" href="#dependency-injection">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The <code>FileTaskStore</code> is initialized with an <code>afero.Fs</code> interface. This is a prime example of dependency injection, allowing the filesystem to be replaced with an in-memory mock for testing.</p>
+<p><strong>File</strong>: <code>internal/core/store.go</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// The store takes a filesystem interface, not a concrete implementation.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="nf">NewFileTaskStore</span><span class="p">(</span><span class="nx">fs</span><span class="w"> </span><span class="nx">afero</span><span class="p">.</span><span class="nx">Fs</span><span class="p">,</span><span class="w"> </span><span class="nx">tasksDir</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="nx">FileTaskStore</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="nx">FileTaskStore</span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nx">fs</span><span class="p">:</span><span class="w">       </span><span class="nx">fs</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nx">tasksDir</span><span class="p">:</span><span class="w"> </span><span class="nx">tasksDir</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="interface-driven-design"
+    >
+        Interface-Driven Design
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#interface-driven-design" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Interface-Driven Design" aria-label="Anchor to: Interface-Driven Design" href="#interface-driven-design">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The <code>cmd</code> package depends on a <code>TaskStore</code> interface, not the concrete <code>FileTaskStore</code> implementation. This decouples the CLI from the storage layer.</p>
+<p><strong>File</strong>: <code>internal/cmd/root.go</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">type</span><span class="w"> </span><span class="nx">TaskStore</span><span class="w"> </span><span class="kd">interface</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nf">Get</span><span class="p">(</span><span class="nx">id</span><span class="w"> </span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">core</span><span class="p">.</span><span class="nx">Task</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nf">Create</span><span class="p">(</span><span class="nx">params</span><span class="w"> </span><span class="nx">core</span><span class="p">.</span><span class="nx">CreateTaskParams</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="nx">core</span><span class="p">.</span><span class="nx">Task</span><span class="p">,</span><span class="w"> </span><span class="kt">error</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// ... and other methods</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="custom-types-for-type-safety"
+    >
+        Custom Types for Type Safety
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#custom-types-for-type-safety" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Custom Types for Type Safety" aria-label="Anchor to: Custom Types for Type Safety" href="#custom-types-for-type-safety">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The project uses custom types like <code>TaskID</code>, <code>Status</code>, and <code>Priority</code> instead of primitive strings. This improves type safety and allows for custom validation and behavior. The <code>MaybeStringArray</code> type is a clever solution for unmarshaling YAML fields that can be either a single string or a list of strings.</p>
+<p><strong>File</strong>: <code>internal/core/task.go</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="c1">// Custom type for handling flexible string/[]string YAML fields.</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">type</span><span class="w"> </span><span class="nx">MaybeStringArray</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">func</span><span class="w"> </span><span class="p">(</span><span class="nx">a</span><span class="w"> </span><span class="o">*</span><span class="nx">MaybeStringArray</span><span class="p">)</span><span class="w"> </span><span class="nf">UnmarshalYAML</span><span class="p">(</span><span class="nx">value</span><span class="w"> </span><span class="o">*</span><span class="nx">yaml</span><span class="p">.</span><span class="nx">Node</span><span class="p">)</span><span class="w"> </span><span class="kt">error</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// ... implementation</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="clear-error-wrapping"
+    >
+        Clear Error Wrapping
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#clear-error-wrapping" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Clear Error Wrapping" aria-label="Anchor to: Clear Error Wrapping" href="#clear-error-wrapping">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Errors are wrapped with context using <code>fmt.Errorf(&quot;...: %w&quot;, err)</code>, which makes debugging easier.</p>
+<p><strong>File</strong>: <code>internal/core/create.go</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="k">if</span><span class="w"> </span><span class="nx">err</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="kc">nil</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="kc">nil</span><span class="p">,</span><span class="w"> </span><span class="nx">fmt</span><span class="p">.</span><span class="nf">Errorf</span><span class="p">(</span><span class="s">&#34;could not get next task ID: %w&#34;</span><span class="p">,</span><span class="w"> </span><span class="nx">err</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="4-dependencies-and-technologies-used"
+    >
+        4. Dependencies and Technologies Used
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#4-dependencies-and-technologies-used" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 4. Dependencies and Technologies Used" aria-label="Anchor to: 4. Dependencies and Technologies Used" href="#4-dependencies-and-technologies-used">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The <code>go.mod</code> file reveals a carefully selected set of high-quality libraries:</p>
+<ul>
+<li><strong><code>github.com/spf13/cobra</code></strong>: A powerful library for creating modern CLI applications.</li>
+<li><strong><code>github.com/spf13/afero</code></strong>: A filesystem abstraction system that is crucial for the project&rsquo;s testability.</li>
+<li><strong><code>go.yaml.in/yaml/v4</code></strong>: Used for marshaling and unmarshaling the YAML frontmatter in task files.</li>
+<li><strong><code>github.com/go-git/go-git/v6</code></strong>: A pure Go implementation of Git used for the automatic commit feature.</li>
+<li><strong><code>github.com/modelcontextprotocol/go-sdk</code></strong>: The official Go SDK for building the MCP server.</li>
+<li><strong><code>github.com/agnivade/levenshtein</code></strong>: Used for fuzzy string matching when parsing <code>Status</code> and <code>Priority</code> inputs, making the CLI more user-friendly.</li>
+<li><strong><code>github.com/olekukonko/tablewriter</code></strong>: Used to render clean, formatted tables in the CLI output.</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="5-cli-implementation-details"
+    >
+        5. CLI Implementation Details
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#5-cli-implementation-details" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 5. CLI Implementation Details" aria-label="Anchor to: 5. CLI Implementation Details" href="#5-cli-implementation-details">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The CLI is implemented cleanly in the <code>internal/cmd</code> package.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="command-structure"
+    >
+        Command Structure
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#command-structure" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Command Structure" aria-label="Anchor to: Command Structure" href="#command-structure">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p><code>root.go</code> defines the root <code>backlog</code> command and persistent flags (<code>--folder</code>, <code>--auto-commit</code>). Each subcommand is in its own file (e.g., <code>task_create.go</code>).</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="flag-handling"
+    >
+        Flag Handling
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#flag-handling" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Flag Handling" aria-label="Anchor to: Flag Handling" href="#flag-handling">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Flags are defined in <code>init()</code> functions and their values are captured into package-level variables. This is a standard Cobra pattern.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="context-for-state-management"
+    >
+        Context for State Management
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#context-for-state-management" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Context for State Management" aria-label="Anchor to: Context for State Management" href="#context-for-state-management">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The <code>TaskStore</code> instance is created in a <code>PersistentPreRun</code> function in <code>root.go</code> and passed to subcommand runners via the <code>context.Context</code>. This is an excellent way to provide shared dependencies to commands without using global variables.</p>
+<p><strong>File</strong>: <code>internal/cmd/root.go</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-go" data-lang="go"><span class="line"><span class="cl"><span class="kd">func</span><span class="w"> </span><span class="nf">init</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="c1">// ...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="nx">rootCmd</span><span class="p">.</span><span class="nx">PersistentPreRun</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="kd">func</span><span class="p">(</span><span class="nx">cmd</span><span class="w"> </span><span class="o">*</span><span class="nx">cobra</span><span class="p">.</span><span class="nx">Command</span><span class="p">,</span><span class="w"> </span><span class="nx">args</span><span class="w"> </span><span class="p">[]</span><span class="kt">string</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="c1">// ...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nx">fs</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nx">afero</span><span class="p">.</span><span class="nf">NewOsFs</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="kd">var</span><span class="w"> </span><span class="nx">store</span><span class="w"> </span><span class="nx">TaskStore</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="nx">core</span><span class="p">.</span><span class="nf">NewFileTaskStore</span><span class="p">(</span><span class="nx">fs</span><span class="p">,</span><span class="w"> </span><span class="nx">tasksDir</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">        </span><span class="nx">cmd</span><span class="p">.</span><span class="nf">SetContext</span><span class="p">(</span><span class="nx">context</span><span class="p">.</span><span class="nf">WithValue</span><span class="p">(</span><span class="nx">cmd</span><span class="p">.</span><span class="nf">Context</span><span class="p">(),</span><span class="w"> </span><span class="nx">ctxKeyStore</span><span class="p">,</span><span class="w"> </span><span class="nx">store</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="p">}</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="6-data-storage-mechanisms"
+    >
+        6. Data Storage Mechanisms
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#6-data-storage-mechanisms" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 6. Data Storage Mechanisms" aria-label="Anchor to: 6. Data Storage Mechanisms" href="#6-data-storage-mechanisms">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The storage mechanism is a core concept of the tool.</p>
+<ul>
+<li><strong>Directory</strong>: All tasks are stored in the <code>.backlog/</code> directory by default.</li>
+<li><strong>File Naming</strong>: Files follow the convention <code>T{ID}-{slugified-title}.md</code> (e.g., <code>T01.01-add_google_oauth.md</code>). The slug is generated from the task title.</li>
+<li><strong>File Format</strong>: Each file is a Markdown document with a YAML frontmatter block.
+<ul>
+<li>The <strong>frontmatter</strong> contains structured metadata like <code>id</code>, <code>title</code>, <code>status</code>, <code>parent</code>, <code>labels</code>, etc.</li>
+<li>The <strong>body</strong> is Markdown and contains sections for <code>Description</code>, <code>Acceptance Criteria</code>, <code>Implementation Plan</code>, and <code>Implementation Notes</code>. The <code>task.Bytes()</code> method in <code>internal/core/task.go</code> programmatically constructs this file content.</li>
+</ul>
+</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="7-task-management-features"
+    >
+        7. Task Management Features
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#7-task-management-features" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 7. Task Management Features" aria-label="Anchor to: 7. Task Management Features" href="#7-task-management-features">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The tool supports a comprehensive set of task management features.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="hierarchical-tasks"
+    >
+        Hierarchical Tasks
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#hierarchical-tasks" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Hierarchical Tasks" aria-label="Anchor to: Hierarchical Tasks" href="#hierarchical-tasks">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The <code>TaskID</code> type (<code>internal/core/id.go</code>) is an array of integers, naturally representing a hierarchy. The <code>getNextTaskID</code> function in <code>internal/core/store.go</code> contains the logic to find the next available ID at any level of the hierarchy.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="acceptance-criteria-ac"
+    >
+        Acceptance Criteria (AC)
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#acceptance-criteria-ac" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Acceptance Criteria (AC)" aria-label="Anchor to: Acceptance Criteria (AC)" href="#acceptance-criteria-ac">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The <code>update_ac.go</code> file contains a dedicated <code>ACManager</code> to handle adding, removing, checking, and unchecking AC items by index, which is a robust way to manage list-based modifications.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="dependencies"
+    >
+        Dependencies
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#dependencies" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Dependencies" aria-label="Anchor to: Dependencies" href="#dependencies">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Tasks can declare dependencies on other tasks via the <code>dependencies</code> field. The <code>core.Create</code> and <code>core.Update</code> functions validate that these dependencies exist.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="8-error-handling-and-logging"
+    >
+        8. Error Handling and Logging
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#8-error-handling-and-logging" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 8. Error Handling and Logging" aria-label="Anchor to: 8. Error Handling and Logging" href="#8-error-handling-and-logging">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="logging"
+    >
+        Logging
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#logging" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Logging" aria-label="Anchor to: Logging" href="#logging">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The <code>internal/logging/config.go</code> package provides a centralized logging setup using <code>log/slog</code>. It&rsquo;s configurable via environment variables for level (<code>BACKLOG_LOG_LEVEL</code>), format (<code>BACKLOG_LOG_FORMAT</code>), and output file (<code>BACKLOG_LOG_FILE</code>), which is excellent for debugging.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="error-propagation"
+    >
+        Error Propagation
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#error-propagation" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Error Propagation" aria-label="Anchor to: Error Propagation" href="#error-propagation">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Errors are generally handled at the <code>cmd</code> layer. The <code>core</code> functions return errors, and the command runners check for <code>err != nil</code>, log the error, and then call <code>os.Exit(1)</code>. This is a standard and effective pattern for CLI tools.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="9-testing-coverage"
+    >
+        9. Testing Coverage
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#9-testing-coverage" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 9. Testing Coverage" aria-label="Anchor to: 9. Testing Coverage" href="#9-testing-coverage">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The project has a strong testing culture.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="test-infrastructure"
+    >
+        Test Infrastructure
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#test-infrastructure" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Test Infrastructure" aria-label="Anchor to: Test Infrastructure" href="#test-infrastructure">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ul>
+<li><strong>Makefile</strong>: The <code>Makefile</code> includes <code>test</code> and <code>cover</code> targets, making it easy to run tests and check coverage.</li>
+<li><strong>Filesystem Mocking</strong>: The use of <code>afero.NewMemMapFs()</code> in test files (e.g., <code>internal/core/create_test.go</code>) is the cornerstone of the testing strategy. It allows the storage layer to be tested thoroughly and quickly without touching the actual disk.</li>
+<li><strong>Test Structure</strong>: Tests are well-organized. For example, <code>internal/cmd/task_list_test.go</code> and <code>task_search_test.go</code> contain comprehensive table-driven tests covering many combinations of flags and filters.</li>
+<li><strong>Assertion Library</strong>: <code>github.com/matryer/is</code> is used for assertions, leading to readable and concise test code.</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="10-performance-considerations"
+    >
+        10. Performance Considerations
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#10-performance-considerations" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 10. Performance Considerations" aria-label="Anchor to: 10. Performance Considerations" href="#10-performance-considerations">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The primary performance consideration is the <code>loadAll()</code> method in <code>internal/core/list.go</code>.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="current-approach"
+    >
+        Current Approach
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#current-approach" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Current Approach" aria-label="Anchor to: Current Approach" href="#current-approach">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>For <code>list</code> and <code>search</code> operations, the tool reads every single task file in the <code>.backlog</code> directory into memory, parses it, and then performs filtering or searching.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="impact"
+    >
+        Impact
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#impact" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Impact" aria-label="Anchor to: Impact" href="#impact">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>This approach is simple and works well for hundreds of tasks. However, for a project with thousands of tasks, the I/O and parsing overhead on every command run would lead to noticeable latency.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="11-security-aspects"
+    >
+        11. Security Aspects
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#11-security-aspects" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 11. Security Aspects" aria-label="Anchor to: 11. Security Aspects" href="#11-security-aspects">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>As a local CLI tool, the security attack surface is minimal. However, the following points are relevant:</p>
+<ul>
+<li><strong>File Path Sanitization</strong>: The <code>slugRegex</code> in <code>internal/core/task.go</code> sanitizes the task title before creating a filename, which helps prevent path traversal or other filename-based attacks.</li>
+<li><strong>MCP Server</strong>: The MCP server (<code>internal/cmd/mcp.go</code>) binds to <code>localhost</code> by default when using HTTP transport. This is a secure default, as it prevents external network access. If a user were to expose this on a public interface, it would need to be secured.</li>
+<li><strong>Command Injection</strong>: The <code>commit</code> package uses the <code>go-git</code> library, which is a pure Go implementation. This avoids calling the <code>git</code> executable directly and eliminates the risk of command injection vulnerabilities.</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="12-areas-for-improvement"
+    >
+        12. Areas for Improvement
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#12-areas-for-improvement" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 12. Areas for Improvement" aria-label="Anchor to: 12. Areas for Improvement" href="#12-areas-for-improvement">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="performance-optimization"
+    >
+        Performance Optimization
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#performance-optimization" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Performance Optimization" aria-label="Anchor to: Performance Optimization" href="#performance-optimization">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>To improve scalability, an index file (e.g., a single JSON or Gob file) could be maintained in the <code>.backlog</code> directory. This index would store essential metadata for all tasks. The <code>list</code> and <code>search</code> commands could read this single file instead of all individual task files, resorting to reading the full file only for <code>view</code> or <code>edit</code> operations. This would trade some of the &ldquo;pure Markdown&rdquo; simplicity for a significant performance gain.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="refactor-shared-cli-flags"
+    >
+        Refactor Shared CLI Flags
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#refactor-shared-cli-flags" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Refactor Shared CLI Flags" aria-label="Anchor to: Refactor Shared CLI Flags" href="#refactor-shared-cli-flags">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The flags for filtering and sorting are duplicated across <code>task_list.go</code> and <code>task_search.go</code>. This logic could be extracted into a shared helper function to reduce code duplication and ensure consistency.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="consolidate-utility-functions"
+    >
+        Consolidate Utility Functions
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#consolidate-utility-functions" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Consolidate Utility Functions" aria-label="Anchor to: Consolidate Utility Functions" href="#consolidate-utility-functions">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The <code>ptr</code> helper function is defined in multiple places (<code>internal/core/archive.go</code>, <code>internal/cmd/helpers_test.go</code>, etc.). It should be moved to a common internal utility package.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="interactive-edit-mode"
+    >
+        Interactive Edit Mode
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#interactive-edit-mode" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Interactive Edit Mode" aria-label="Anchor to: Interactive Edit Mode" href="#interactive-edit-mode">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The <code>edit</code> command could be greatly enhanced by launching a TUI (Terminal User Interface) form, allowing the user to edit all fields of a task in an interactive session.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="13-technical-debt"
+    >
+        13. Technical Debt
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#13-technical-debt" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 13. Technical Debt" aria-label="Anchor to: 13. Technical Debt" href="#13-technical-debt">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The codebase is remarkably clean and appears to have very little technical debt. The documentation is thorough, the code is well-commented where necessary, and the architecture is sound. The aforementioned duplication of CLI flags is a minor form of technical debt but is easily addressable. The project&rsquo;s extensive use of its own <code>backlog</code> system for task management (as seen in the <code>.backlog</code> directory) is a testament to its quality and a great example of &ldquo;dogfooding&rdquo;.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="14-scalability-considerations"
+    >
+        14. Scalability Considerations
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#14-scalability-considerations" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 14. Scalability Considerations" aria-label="Anchor to: 14. Scalability Considerations" href="#14-scalability-considerations">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The primary scalability bottleneck is the file-based storage model combined with the <code>loadAll()</code> pattern.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="current-limitation"
+    >
+        Current Limitation
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#current-limitation" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Current Limitation" aria-label="Anchor to: Current Limitation" href="#current-limitation">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The system will likely perform well up to a few thousand tasks. Beyond that, the latency of reading and parsing thousands of files on every <code>list</code> or <code>search</code> command will become prohibitive.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="scaling-path"
+    >
+        Scaling Path
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#scaling-path" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Scaling Path" aria-label="Anchor to: Scaling Path" href="#scaling-path">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>If massive scale were a requirement, the <code>TaskStore</code> interface provides the perfect abstraction point. A new implementation (e.g., <code>SqliteTaskStore</code>) could be created to use a more scalable backend like SQLite. This would require a migration path but could be done without changing the <code>cmd</code> or <code>mcp</code> layers, demonstrating the strength of the current architecture. However, this would be a fundamental departure from the project&rsquo;s core &ldquo;files in Git&rdquo; philosophy.</p>
+<hr>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="conclusion"
+    >
+        Conclusion
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/development/analysis/#conclusion" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Conclusion" aria-label="Anchor to: Conclusion" href="#conclusion">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The <code>backlog</code> tool represents an excellent example of modern Go development practices. Its architecture is clean, its testing is comprehensive, and its feature set is well-designed for its target audience of developers. The integration of MCP for AI agent interaction is particularly forward-thinking. While there are opportunities for performance optimization and feature enhancements, the current implementation provides a solid foundation that balances simplicity, functionality, and maintainability. The project successfully achieves its goal of being a transparent, Git-native task management tool that developers can understand, modify, and extend.</p>
+
+  </article>
+
+
+
+          
+          
+          <div class="gdoc-page__footer flex flex-wrap justify-between">
+            
+              
+
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+          
+          
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+          
+            
+            
+          
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+
+  
+
+
+
+
+<span class="gdoc-page__nav">
+  
+    <a
+      class="gdoc-page__nav--prev flex align-center"
+      href="/backlog/development/"
+      title="Development"
+    >
+      <i class="gdoc-icon">gdoc_arrow_left_alt</i>
+      Development
+    </a>
+  
+</span>
+<span class="gdoc-page__nav">
+  
+    <a
+      class="gdoc-page__nav--next flex align-center"
+      href="/backlog/development/plan/"
+      title="Project Plan"
+    >
+      Project Plan
+      <i class="gdoc-icon">gdoc_arrow_right_alt</i>
+    </a>
+  
+</span>
+
+            
+          </div>
+          
+        </div>
+      </main>
+
+      <footer class="gdoc-footer">
+  <nav class="container flex">
+    <div>
+      <section class="flex flex-wrap align-center">
+        <span class="gdoc-footer__item gdoc-footer__item--row">
+          Built with <a href="https://gohugo.io/" class="gdoc-footer__link">Hugo</a> and <svg class="gdoc-icon gdoc_heart"><use xlink:href="#gdoc_heart"></use></svg>
+
+        </span>
+        
+          <span class="gdoc-footer__item gdoc-footer__item--row">
+            <a href="https://github.com/veggiemonk/backlog/blob/main/LICENSE" class="gdoc-footer__link">
+              Legal Notice
+            </a>
+          </span>
+        
+        
+      </section>
+      
+    </div>
+    
+      <div class="flex flex-25 justify-end">
+        <span class="gdoc-footer__item text-right">
+          <a class="gdoc-footer__link fake-link" href="#" aria-label="Back to top">
+            <svg class="gdoc-icon gdoc_keyboard_arrow_up">
+              <use xlink:href="#gdoc_keyboard_arrow_up"></use>
+            </svg>
+            <span class="hidden-mobile">Back to top</span>
+          </a>
+        </span>
+      </div>
+    
+  </nav>
+</footer>
+
+    </div>
+
+    
+  </body>
+</html>

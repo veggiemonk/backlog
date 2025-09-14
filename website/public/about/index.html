@@ -1,0 +1,1929 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  class="color-toggle-hidden"
+  
+>
+  <head><script src="/backlog/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=backlog/livereload" data-no-instant defer></script>
+    <meta charset="UTF-8" />
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light dark" />
+<meta name="generator" content="Hugo 0.150.0">
+
+
+  <meta name="description" content="Project background, philosophy, and inspiration" />
+  <meta name="keywords" content="task management,cli,ai agents,mcp,golang,git" />
+
+    <title>About | Backlog Documentation</title>
+
+    <link rel="icon" type="image/svg+xml" href="/backlog/favicon/favicon.svg" />
+<link
+  rel="icon"
+  type="image/png"
+  sizes="32x32"
+  href="/backlog/favicon/favicon-32x32.png"
+/>
+<link
+  rel="icon"
+  type="image/png"
+  sizes="16x16"
+  href="/backlog/favicon/favicon-16x16.png"
+/>
+
+    
+
+    
+  <meta
+    property="og:title"
+    content="About"
+  />
+  <meta property="og:site_name" content="Backlog Documentation" />
+  <meta property="og:description" content="Project background, philosophy, and inspiration" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/backlog/about/" />
+
+<meta property="article:section" content="" />
+    <meta
+      property="article:modified_time"
+      content="2025-09-14T23:59:01+02:00"
+    />
+
+
+  <meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="About" />
+  <meta name="twitter:description" content="Project background, philosophy, and inspiration" />
+
+
+  <script type="application/ld+json">
+  {
+      "@context": "http://schema.org",
+      "@type": "TechArticle",
+      "articleSection": "",
+      "name": "About",
+      "url" : "http://localhost:1313/backlog/about/",
+      "headline": "About",
+      "description": "Project background, philosophy, and inspiration",
+      "wordCount" : "612",
+      "inLanguage": "en",
+      "isFamilyFriendly": "true",
+      "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "http://localhost:1313/backlog/about/"
+      },
+      "copyrightHolder" : "Backlog Documentation",
+      "copyrightYear" : "0001",
+      "dateCreated": "0001-01-01T00:00:00.00Z",
+      "datePublished": "0001-01-01T00:00:00.00Z",
+      "dateModified": "2025-09-14T23:59:01.00Z",
+      "publisher":{
+          "@type":"Organization",
+          "name": "Backlog Documentation",
+          "url": "http://localhost:1313/backlog/",
+          "logo": {
+              "@type": "ImageObject",
+              "url": "http://localhost:1313/backlog/brand.svg",
+              "width":"32",
+              "height":"32"
+          }
+      }
+  }
+  </script>
+
+
+    
+  <script src="/backlog/"></script>
+<script src="/backlog/"></script>
+
+<link
+  rel="preload"
+  as="font"
+  href="/backlog/fonts/Metropolis.woff2"
+  type="font/woff2"
+  crossorigin="anonymous"
+/>
+<link
+  rel="preload"
+  as="font"
+  href="/backlog/fonts/LiberationSans.woff2"
+  type="font/woff2"
+  crossorigin="anonymous"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="all"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="screen and (max-width: 45rem)"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="print"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="all"
+/>
+  <link href="http://localhost:1313/backlog/about/" rel="canonical" type="text/html" />
+
+<!-- Made with Geekdoc theme https://github.com/thegeeklab/hugo-geekdoc -->
+
+    
+
+  </head>
+
+  <body itemscope itemtype="https://schema.org/WebPage">
+    <div class="w-full flex justify-center">
+      <a href="#main-content" id="gdoc-to-main" class="gdoc-markdown__link">Skip to main content</a>
+    </div>
+
+    
+
+
+
+    <div
+      class="wrapper "
+    >
+      
+      <header class="gdoc-header">
+  <div class="container flex align-center justify-between">
+    
+      <label for="menu-control" class="gdoc-nav__control">
+        <div tabindex="0" role="button" aria-pressed="false">
+          <input type="checkbox" class="hidden" id="menu-control" />
+
+          <svg class="gdoc-icon gdoc_menu">
+            <title>Open Navigation</title>
+            <use xlink:href="#gdoc_menu"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_arrow_back">
+            <title>Close Navigation</title>
+            <use xlink:href="#gdoc_arrow_back"></use>
+          </svg>
+        </div>
+      </label>
+    
+    <div>
+      <a class="gdoc-brand gdoc-header__link flex gap-16 align-center" href="http://localhost:1313/backlog/">
+        <img
+          class="gdoc-brand__img"
+          src="/backlog/brand.svg"
+          alt=""
+        />
+        <div>
+          <div class="gdoc-brand__title">Backlog Documentation</div>
+          
+        </div>
+      </a>
+    </div>
+    <div class="gdoc-menu-header flex gap-16">
+      <span class="gdoc-menu-header__items">
+        
+
+
+        <span id="gdoc-color-theme" tabindex="0" role="button" aria-pressed="false">
+          <svg class="gdoc-icon gdoc_brightness_dark">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_dark"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_brightness_light">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_light"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_brightness_auto">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_auto"></use>
+          </svg>
+        </span>
+
+        <span class="gdoc-menu-header__home">
+          <a href="http://localhost:1313/backlog/" class="gdoc-header__link">
+            <svg class="gdoc-icon gdoc_home">
+              <title>Back to homepage</title>
+              <use xlink:href="#gdoc_home"></use>
+            </svg>
+          </a>
+        </span>
+
+        
+
+      </span>
+      <span class="gdoc-menu-header__control">
+        <label for="menu-header-control">
+          <div tabindex="0" role="button" aria-pressed="false">
+            <input type="checkbox" class="hidden" id="menu-header-control" />
+
+            <svg class="gdoc-icon gdoc_keyboard_arrow_right">
+              <use xlink:href="#gdoc_keyboard_arrow_right"></use>
+              <title>Close Menu Bar</title>
+            </svg>
+
+            <svg class="gdoc-icon gdoc_keyboard_arrow_left">
+              <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+              <title>Open Menu Bar</title>
+            </svg>
+          </div>
+        </label>
+      </span>
+    </div>
+  </div>
+</header>
+
+
+
+      <main class="container flex flex-even">
+        
+          <aside class="gdoc-nav">
+            <nav>
+  
+  <script defer src="/backlog/"></script><div class="gdoc-search flex align-center">
+    <svg class="gdoc-icon gdoc_search"><use xlink:href="#gdoc_search"></use></svg>
+    <input
+      type="text"
+      id="gdoc-search-input"
+      class="gdoc-search__input"
+      placeholder="Search..."
+      aria-label="Search"
+      maxlength="64"
+      data-site-base-url="http://localhost:1313/backlog/"
+      data-site-lang="en"
+    />
+    <ul id="gdoc-search-results" class="gdoc-search__list"></ul>
+  </div>
+
+
+
+
+  <section class="gdoc-nav--main">
+    <h2>Navigation</h2>
+    
+      
+
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="gdoc-nav__toggle" id="navtree-d5dae258"
+                
+              
+            />
+            <label
+              
+                for="navtree-d5dae258" class="flex justify-between align-center"
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/"
+                    class="gdoc-nav__entry"
+                  >
+                    CLI Reference
+                  </a>
+                </span>
+              
+              
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_left">
+                  <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+                </svg>
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_down">
+                  <use xlink:href="#gdoc_keyboard_arrow_down"></use>
+                </svg>
+              
+            </label>
+
+            
+              
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_create/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog create
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_list/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog list
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_edit/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog edit
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_view/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog view
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_search/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog search
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_archive/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog archive
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_mcp/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog mcp
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_version/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog version
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="gdoc-nav__toggle" id="navtree-134cefbb"
+                
+              
+            />
+            <label
+              
+                for="navtree-134cefbb" class="flex justify-between align-center"
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/"
+                    class="gdoc-nav__entry"
+                  >
+                    Development
+                  </a>
+                </span>
+              
+              
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_left">
+                  <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+                </svg>
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_down">
+                  <use xlink:href="#gdoc_keyboard_arrow_down"></use>
+                </svg>
+              
+            </label>
+
+            
+              
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/analysis/"
+                    class="gdoc-nav__entry"
+                  >
+                    Technical Analysis
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/plan/"
+                    class="gdoc-nav__entry"
+                  >
+                    Project Plan
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+
+
+
+
+
+    
+  </section>
+
+  
+
+
+  <section class="gdoc-nav--more">
+    
+  </section>
+</nav>
+
+          </aside>
+        
+
+
+        <div class="gdoc-page">
+          
+  
+
+
+  
+
+
+
+
+
+
+<div
+  class="gdoc-page__header flex flex-wrap
+  
+    justify-between
+  
+  hidden-mobile
+  "
+  itemprop="breadcrumb"
+>
+  
+    <div>
+      <svg class="gdoc-icon gdoc_path hidden-mobile"><use xlink:href="#gdoc_path"></use></svg>
+      <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+        
+        
+        
+        
+  
+  
+    
+    
+    
+    
+  
+  
+    <li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/backlog/' href='/backlog/'><span itemprop='name'>Backlog</span></a><meta itemprop='position' content='2' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><span itemprop='name'>About</span><meta itemprop='position' content='3' /></li>
+  
+
+  
+
+      </ol>
+    </div>
+  
+  
+</div>
+
+
+
+  <article
+    class="gdoc-markdown gdoc-markdown__align--left"
+    id="main-content" tabindex="-1"
+  >
+    <h1>About</h1>
+    
+    <div class="flex align-center gdoc-page__anchorwrap">
+    <h1 id="about-backlog"
+    >
+        About Backlog
+    </h1>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#about-backlog" class="gdoc-page__anchor clip flex align-center" title="Anchor to: About Backlog" aria-label="Anchor to: About Backlog" href="#about-backlog">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="project-background"
+    >
+        Project Background
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#project-background" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Project Background" aria-label="Anchor to: Project Background" href="#project-background">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+
+
+
+<blockquote class="gdoc-hint note">
+  <div class="gdoc-hint__title flex gap-8 align-center"><i class="fa note"></i>
+      <span>Note</span></div>
+  <div class="gdoc-hint__text">The context window deteriorates rapidly on large-scale projects. A workaround many developers have found is to ask AI agents to &ldquo;make a plan for X, write it to a markdown file and keep it updated with the ongoing tasks&rdquo;.</div>
+</blockquote>
+
+<p>This technique has worked incredibly well, making refactoring and other significant code changes more resilient to failures, retries, or rate-limiting from AI models.</p>
+<p>However, this approach often cluttered repository root directories with files like <code>plan.md</code> or <code>refactor_this_big_codebase.md</code>. To solve this problem, <strong>Backlog</strong> was created as an MCP server that developers could understand and trust to handle these details, providing a much better experience when using AI tools for complex tasks.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="philosophy"
+    >
+        Philosophy
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#philosophy" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Philosophy" aria-label="Anchor to: Philosophy" href="#philosophy">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+
+
+
+<div class="gdoc-columns gdoc-columns--regular flex gap-16 flex-mobile-column">
+    <div class="gdoc-columns__content gdoc-markdown--nested flex-even">
+      <div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="simplicity-over-features"
+    >
+        Simplicity Over Features
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#simplicity-over-features" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Simplicity Over Features" aria-label="Anchor to: Simplicity Over Features" href="#simplicity-over-features">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Backlog aims to handle fewer use cases well rather than many use cases poorly. It focuses on the core workflow of task management for developer-AI collaboration.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="ai-first-design"
+    >
+        AI-First Design
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#ai-first-design" class="gdoc-page__anchor clip flex align-center" title="Anchor to: AI-First Design" aria-label="Anchor to: AI-First Design" href="#ai-first-design">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Unlike traditional task managers designed for humans first, Backlog was designed from the ground up to work seamlessly with AI agents while still being useful for human developers.</p>
+</div>
+    <div class="gdoc-columns__content gdoc-markdown--nested flex-even">
+      <div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="transparency"
+    >
+        Transparency
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#transparency" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Transparency" aria-label="Anchor to: Transparency" href="#transparency">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Everything is stored as human-readable Markdown files in Git. No databases, no proprietary formats, no lock-in.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="developer-control"
+    >
+        Developer Control
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#developer-control" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Developer Control" aria-label="Anchor to: Developer Control" href="#developer-control">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>You own your data completely. Everything lives in your Git repository and can be edited manually if needed.</p>
+</div>
+</div>
+
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="development-story"
+    >
+        Development Story
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#development-story" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Development Story" aria-label="Anchor to: Development Story" href="#development-story">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+
+
+
+<blockquote class="gdoc-hint tip">
+  <div class="gdoc-hint__title flex gap-8 align-center"><i class="fa tip"></i>
+      <span>AI-Assisted Development</span></div>
+  <div class="gdoc-hint__text">While this codebase is mostly hand-written, the documentation, comments, examples, and some tests were generated with AI assistance.</div>
+</blockquote>
+
+<p>The author found that AI agents yield better results when:</p>
+<ol>
+<li><strong>The project structure is already established</strong> exactly as desired</li>
+<li><strong>The libraries and dependencies are already chosen</strong> and configured</li>
+<li><strong>The code style and patterns are already defined</strong> consistently</li>
+</ol>
+<p>After establishing these foundations, AI assistance becomes much more effective for implementation details.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="tools-used"
+    >
+        Tools Used
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#tools-used" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Tools Used" aria-label="Anchor to: Tools Used" href="#tools-used">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>The project was developed using several AI tools (all paid tier):</p>
+
+
+
+<div class="gdoc-columns gdoc-columns--regular flex gap-16 flex-mobile-column">
+    <div class="gdoc-columns__content gdoc-markdown--nested flex-even">
+      <div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="primary-tools"
+    >
+        Primary Tools
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#primary-tools" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Primary Tools" aria-label="Anchor to: Primary Tools" href="#primary-tools">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ul>
+<li><strong>gemini-2.5-pro</strong> - Primary development assistance</li>
+<li><strong>claude-sonnet4</strong> - Code review and documentation</li>
+</ul>
+</div>
+    <div class="gdoc-columns__content gdoc-markdown--nested flex-even">
+      <div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="supporting-tools"
+    >
+        Supporting Tools
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#supporting-tools" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Supporting Tools" aria-label="Anchor to: Supporting Tools" href="#supporting-tools">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ul>
+<li><strong>github-copilot</strong> - Code completion and suggestions</li>
+<li><strong>amp</strong> - Additional AI assistance</li>
+</ul>
+</div>
+</div>
+
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="inspiration"
+    >
+        Inspiration
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#inspiration" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Inspiration" aria-label="Anchor to: Inspiration" href="#inspiration">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>This project is inspired by:</p>
+
+<div class="gdoc-expand">
+  <label class="gdoc-expand__head flex justify-between" for="ee7e0e13-4">
+    <span>Backlog.md</span>
+    <span>↕</span>
+  </label>
+  <input id="ee7e0e13-4" type="checkbox" class="gdoc-expand__control hidden" />
+  <div class="gdoc-markdown--nested gdoc-expand__content">
+    <a
+  class="gdoc-markdown__link"
+  href="https://github.com/MrLesk/Backlog.md"
+>Backlog.md</a> - Simple markdown-based task tracking that demonstrated the power of storing tasks as plain markdown files.
+  </div>
+</div>
+
+
+<div class="gdoc-expand">
+  <label class="gdoc-expand__head flex justify-between" for="5b411073-5">
+    <span>TaskWing</span>
+    <span>↕</span>
+  </label>
+  <input id="5b411073-5" type="checkbox" class="gdoc-expand__control hidden" />
+  <div class="gdoc-markdown--nested gdoc-expand__content">
+    <a
+  class="gdoc-markdown__link"
+  href="https://github.com/josephgoksu/TaskWing"
+>TaskWing</a> - CLI task management that showed how effective command-line interfaces can be for developer workflows.
+  </div>
+</div>
+
+<p>But Backlog aims to be simpler while being specifically optimized for AI-friendly workflows.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="mcp-server-resources"
+    >
+        MCP Server Resources
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#mcp-server-resources" class="gdoc-page__anchor clip flex align-center" title="Anchor to: MCP Server Resources" aria-label="Anchor to: MCP Server Resources" href="#mcp-server-resources">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>For MCP server implementation, excellent examples can be found in:</p>
+<ul>
+<li><a
+  class="gdoc-markdown__link"
+  href="https://github.com/modelcontextprotocol/go-sdk"
+><strong>go-sdk</strong></a> - Official Go SDK for MCP servers</li>
+<li><a
+  class="gdoc-markdown__link"
+  href="https://github.com/GoogleCloudPlatform/gke-mcp"
+><strong>GoogleCloudPlatform/gke-mcp</strong></a> - Production MCP server example</li>
+</ul>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="example-usage"
+    >
+        Example Usage
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#example-usage" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Example Usage" aria-label="Anchor to: Example Usage" href="#example-usage">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+
+
+
+<blockquote class="gdoc-hint tip">
+  <div class="gdoc-hint__title flex gap-8 align-center"><i class="fa tip"></i>
+      <span>Tip</span></div>
+  <div class="gdoc-hint__text">You can see Backlog in action by examining the <a
+  class="gdoc-markdown__link"
+  href="https://github.com/veggiemonk/backlog/tree/main/.backlog"
+>.backlog</a> folder in this repository, which contains the actual tasks used to develop this project.</div>
+</blockquote>
+
+<p>The backlog was generated using this prompt:</p>
+
+<details>
+  <summary>Details</summary>
+  <pre tabindex="0"><code>If you were to recreate this project from scratch, make a plan and break it down into tasks using backlog break down prompt.
+Write that plan to a markdown file called &#34;./docs/plan.md&#34;.
+Check that the plan in ./docs/plan.md is consistent with the list of tasks in the backlog.
+Add implementation plan to relevant tasks
+All tasks should have at least one acceptance criteria.
+
+Read the full instructions for backlog: ./internal/mcp/prompt.md
+</code></pre></details>
+
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="contributing"
+    >
+        Contributing
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#contributing" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Contributing" aria-label="Anchor to: Contributing" href="#contributing">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+
+
+
+<div class="gdoc-columns gdoc-columns--regular flex gap-16 flex-mobile-column">
+    <div class="gdoc-columns__content gdoc-markdown--nested flex-even">
+      <div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="getting-started"
+    >
+        Getting Started
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#getting-started" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Getting Started" aria-label="Anchor to: Getting Started" href="#getting-started">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Backlog is open source and welcomes contributions. See the <a
+  class="gdoc-markdown__link"
+  href="/backlog/development/"
+>Development Guide</a> for technical details.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="resources"
+    >
+        Resources
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#resources" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Resources" aria-label="Anchor to: Resources" href="#resources">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ul>
+<li><strong>Repository</strong>: <a
+  class="gdoc-markdown__link"
+  href="https://github.com/veggiemonk/backlog"
+>github.com/veggiemonk/backlog</a></li>
+<li><strong>Issues</strong>: <a
+  class="gdoc-markdown__link"
+  href="https://github.com/veggiemonk/backlog/issues"
+>GitHub Issues</a></li>
+<li><strong>Discussions</strong>: <a
+  class="gdoc-markdown__link"
+  href="https://github.com/veggiemonk/backlog/discussions"
+>GitHub Discussions</a></li>
+</ul></div>
+    <div class="gdoc-columns__content gdoc-markdown--nested flex-even">
+      <div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="quick-links"
+    >
+        Quick Links
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#quick-links" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Quick Links" aria-label="Anchor to: Quick Links" href="#quick-links">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ul>
+<li><a
+  class="gdoc-markdown__link"
+  href="/backlog/getting-started/"
+><strong>Getting Started</strong></a> - Installation and basic usage</li>
+<li><a
+  class="gdoc-markdown__link"
+  href="/backlog/cli/"
+><strong>CLI Reference</strong></a> - Complete command documentation</li>
+<li><a
+  class="gdoc-markdown__link"
+  href="/backlog/ai-integration/"
+><strong>AI Integration</strong></a> - MCP setup guide</li>
+</ul>
+</div>
+</div>
+
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="license"
+    >
+        License
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#license" class="gdoc-page__anchor clip flex align-center" title="Anchor to: License" aria-label="Anchor to: License" href="#license">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>This project is released under the <strong>MIT License</strong>. See the <a
+  class="gdoc-markdown__link"
+  href="https://github.com/veggiemonk/backlog/blob/main/LICENSE"
+>LICENSE</a> file in the repository for details.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="contact"
+    >
+        Contact
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#contact" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Contact" aria-label="Anchor to: Contact" href="#contact">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+
+
+
+<div class="gdoc-columns gdoc-columns--regular flex gap-16 flex-mobile-column">
+    <div class="gdoc-columns__content gdoc-markdown--nested flex-even">
+      <div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="project-details"
+    >
+        Project Details
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#project-details" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Project Details" aria-label="Anchor to: Project Details" href="#project-details">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ul>
+<li><strong>Repository</strong>: <a
+  class="gdoc-markdown__link"
+  href="https://github.com/veggiemonk/backlog"
+>github.com/veggiemonk/backlog</a></li>
+<li><strong>Issues</strong>: <a
+  class="gdoc-markdown__link"
+  href="https://github.com/veggiemonk/backlog/issues"
+>GitHub Issues</a></li>
+<li><strong>Author</strong>: <a
+  class="gdoc-markdown__link"
+  href="https://github.com/veggiemonk"
+>veggiemonk</a></li>
+</ul>
+</div>
+    <div class="gdoc-columns__content gdoc-markdown--nested flex-even">
+      <div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="documentation"
+    >
+        Documentation
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/about/#documentation" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Documentation" aria-label="Anchor to: Documentation" href="#documentation">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ul>
+<li><strong>User Guide</strong>: <a
+  class="gdoc-markdown__link"
+  href="/backlog/getting-started/"
+>Getting Started</a></li>
+<li><strong>Technical Docs</strong>: <a
+  class="gdoc-markdown__link"
+  href="/backlog/development/"
+>Development</a></li>
+<li><strong>API Reference</strong>: <a
+  class="gdoc-markdown__link"
+  href="/backlog/cli/"
+>CLI Commands</a></li>
+</ul>
+</div>
+</div>
+
+<hr>
+
+
+
+<blockquote class="gdoc-hint important">
+  <div class="gdoc-hint__title flex gap-8 align-center"><i class="fa important"></i>
+      <span>Project Mission</span></div>
+  <div class="gdoc-hint__text"><em>&ldquo;The goal is to provide a frictionless collaboration between AI agents and developers&rdquo;</em></div>
+</blockquote>
+
+
+  </article>
+
+
+
+          
+          
+          <div class="gdoc-page__footer flex flex-wrap justify-between">
+            
+              
+
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+
+  
+
+
+
+
+<span class="gdoc-page__nav">
+  
+</span>
+<span class="gdoc-page__nav">
+  
+</span>
+
+            
+          </div>
+          
+        </div>
+      </main>
+
+      <footer class="gdoc-footer">
+  <nav class="container flex">
+    <div>
+      <section class="flex flex-wrap align-center">
+        <span class="gdoc-footer__item gdoc-footer__item--row">
+          Built with <a href="https://gohugo.io/" class="gdoc-footer__link">Hugo</a> and <svg class="gdoc-icon gdoc_heart"><use xlink:href="#gdoc_heart"></use></svg>
+
+        </span>
+        
+          <span class="gdoc-footer__item gdoc-footer__item--row">
+            <a href="https://github.com/veggiemonk/backlog/blob/main/LICENSE" class="gdoc-footer__link">
+              Legal Notice
+            </a>
+          </span>
+        
+        
+      </section>
+      
+    </div>
+    
+      <div class="flex flex-25 justify-end">
+        <span class="gdoc-footer__item text-right">
+          <a class="gdoc-footer__link fake-link" href="#" aria-label="Back to top">
+            <svg class="gdoc-icon gdoc_keyboard_arrow_up">
+              <use xlink:href="#gdoc_keyboard_arrow_up"></use>
+            </svg>
+            <span class="hidden-mobile">Back to top</span>
+          </a>
+        </span>
+      </div>
+    
+  </nav>
+</footer>
+
+    </div>
+
+    
+  </body>
+</html>

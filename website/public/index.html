@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  class="color-toggle-hidden"
+  
+>
+  <head><script src="/backlog/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=backlog/livereload" data-no-instant defer></script>
+    <meta charset="UTF-8" />
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light dark" />
+<meta name="generator" content="Hugo 0.150.0">
+
+
+  <meta name="description" content="Zero-configuration task manager for developers and AI agents" />
+  <meta name="keywords" content="task management,cli,ai agents,mcp,golang,git" />
+
+    <title>Backlog Documentation</title>
+
+    <link rel="icon" type="image/svg+xml" href="/backlog/favicon/favicon.svg" />
+<link
+  rel="icon"
+  type="image/png"
+  sizes="32x32"
+  href="/backlog/favicon/favicon-32x32.png"
+/>
+<link
+  rel="icon"
+  type="image/png"
+  sizes="16x16"
+  href="/backlog/favicon/favicon-16x16.png"
+/>
+
+    
+
+    
+  <meta property="og:site_name" content="Backlog Documentation" />
+  <meta property="og:description" content="Zero-configuration task manager for developers and AI agents" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="http://localhost:1313/backlog/" />
+
+
+
+
+  <meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Backlog" />
+  <meta name="twitter:description" content="Zero-configuration task manager for developers and AI agents" />
+
+
+  <script type="application/ld+json">
+  {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "name": "Backlog Documentation",
+      "url": "http://localhost:1313/backlog/",
+      "description": "Zero-configuration task manager for developers and AI agents",
+      "inLanguage": "en"
+  }
+  </script>
+
+
+    
+  <script src="/backlog/"></script>
+<script src="/backlog/"></script>
+
+<link
+  rel="preload"
+  as="font"
+  href="/backlog/fonts/Metropolis.woff2"
+  type="font/woff2"
+  crossorigin="anonymous"
+/>
+<link
+  rel="preload"
+  as="font"
+  href="/backlog/fonts/LiberationSans.woff2"
+  type="font/woff2"
+  crossorigin="anonymous"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="all"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="screen and (max-width: 45rem)"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="print"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="all"
+/>
+  <link href="http://localhost:1313/backlog/" rel="canonical" type="text/html" />
+
+<!-- Made with Geekdoc theme https://github.com/thegeeklab/hugo-geekdoc -->
+
+    
+
+  </head>
+
+  <body itemscope itemtype="https://schema.org/WebPage">
+    <div class="w-full flex justify-center">
+      <a href="#main-content" id="gdoc-to-main" class="gdoc-markdown__link">Skip to main content</a>
+    </div>
+
+    
+
+
+
+    <div
+      class="wrapper "
+    >
+      
+      <header class="gdoc-header">
+  <div class="container flex align-center justify-between">
+    
+    <div>
+      <a class="gdoc-brand gdoc-header__link flex gap-16 align-center" href="http://localhost:1313/backlog/">
+        <img
+          class="gdoc-brand__img"
+          src="/backlog/brand.svg"
+          alt=""
+        />
+        <div>
+          <div class="gdoc-brand__title">Backlog Documentation</div>
+          
+        </div>
+      </a>
+    </div>
+    <div class="gdoc-menu-header flex gap-16">
+      <span class="gdoc-menu-header__items">
+        
+
+
+        <span id="gdoc-color-theme" tabindex="0" role="button" aria-pressed="false">
+          <svg class="gdoc-icon gdoc_brightness_dark">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_dark"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_brightness_light">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_light"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_brightness_auto">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_auto"></use>
+          </svg>
+        </span>
+
+        <span class="gdoc-menu-header__home">
+          <a href="http://localhost:1313/backlog/" class="gdoc-header__link">
+            <svg class="gdoc-icon gdoc_home">
+              <title>Back to homepage</title>
+              <use xlink:href="#gdoc_home"></use>
+            </svg>
+          </a>
+        </span>
+
+        
+
+      </span>
+      <span class="gdoc-menu-header__control">
+        <label for="menu-header-control">
+          <div tabindex="0" role="button" aria-pressed="false">
+            <input type="checkbox" class="hidden" id="menu-header-control" />
+
+            <svg class="gdoc-icon gdoc_keyboard_arrow_right">
+              <use xlink:href="#gdoc_keyboard_arrow_right"></use>
+              <title>Close Menu Bar</title>
+            </svg>
+
+            <svg class="gdoc-icon gdoc_keyboard_arrow_left">
+              <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+              <title>Open Menu Bar</title>
+            </svg>
+          </div>
+        </label>
+      </span>
+    </div>
+  </div>
+</header>
+
+
+
+      <main class="container flex flex-even">
+        
+
+
+        <div class="gdoc-page">
+          
+  
+
+
+  
+
+
+
+
+
+
+<div
+  class="gdoc-page__header flex flex-wrap
+  
+    justify-between
+  
+  hidden-mobile
+  "
+  itemprop="breadcrumb"
+>
+  
+    <div>
+      <svg class="gdoc-icon gdoc_path hidden-mobile"><use xlink:href="#gdoc_path"></use></svg>
+      <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+        
+        
+        
+        
+  
+  
+    <li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><span itemprop='name'>Backlog</span><meta itemprop='position' content='2' /></li>
+  
+
+      </ol>
+    </div>
+  
+  
+</div>
+
+
+
+  <article
+    class="gdoc-markdown gdoc-markdown__align--center"
+    id="main-content" tabindex="-1"
+  >
+    <h1>Backlog</h1>
+    <p>
+
+
+<span class="gdoc-button gdoc-button--large">
+  <a
+    class="gdoc-button__link" href="/backlog/getting-started/"
+  >
+    Get Started
+  </a>
+</span>
+
+
+
+
+<span class="gdoc-button gdoc-button--large">
+  <a
+    class="gdoc-button__link" href="https://github.com/veggiemonk/backlog"
+  >
+    GitHub
+  </a>
+</span>
+</p>
+<div class="gdoc-page__anchorwrap">
+    <h2 id="zero-configuration-task-manager-for-developers-and-ai-agents"
+    >
+        Zero-configuration task manager for developers and AI agents
+    </h2>
+</div>
+<p>Backlog is a task manager written in Go where tasks live inside a Git repository. It leverages plain Markdown files for task storage and a comprehensive command-line interface (CLI) for interaction. This design makes it exceptionally well-suited for AI agents thanks to its MCP (Model Context Protocol) integration.</p>
+
+
+
+<div class="gdoc-columns gdoc-columns--regular flex gap-16 flex-mobile-column">
+    <div class="gdoc-columns__content gdoc-markdown--nested flex-even">
+      <div class="gdoc-page__anchorwrap">
+    <h2 id="features"
+    >
+        Features
+    </h2>
+</div>
+<ul>
+<li><strong>Task Management</strong>: Create, edit, list, and view tasks with rich metadata</li>
+<li><strong>Hierarchical Structure</strong>: Support for parent-child-grandchild task relationships (T01 → T01.01 → T01.01.01)</li>
+<li><strong>Search &amp; Filter</strong>: Find tasks by content, status, parent relationships, and labels</li>
+<li><strong>AI-Friendly</strong>: MCP server integration for seamless AI agent collaboration</li>
+</ul>
+</div>
+    <div class="gdoc-columns__content gdoc-markdown--nested flex-even">
+      <div class="gdoc-page__anchorwrap">
+    <h2 id="benefits"
+    >
+        Benefits
+    </h2>
+</div>
+<ul>
+<li><strong>Git Integration</strong>: Tasks are stored as Markdown files with automatic Git commits</li>
+<li><strong>Offline-First</strong>: Works completely offline with local Git repository storage</li>
+<li><strong>Portable</strong>: Entire project state contained within the Git repository</li>
+<li><strong>Zero Configuration</strong>: No setup files or databases required</li>
+</ul>
+</div>
+</div>
+
+<div class="gdoc-page__anchorwrap">
+    <h2 id="quick-start"
+    >
+        Quick Start
+    </h2>
+</div>
+<div class="gdoc-page__anchorwrap">
+    <h3 id="installation"
+    >
+        Installation
+    </h3>
+</div>
+
+
+
+<div class="gdoc-tabs">
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-install"
+      id="tabs-install-0"
+      checked="checked"
+    />
+    <label for="tabs-install-0" class="gdoc-tabs__label">
+      From Source
+    </label>
+    <div class="gdoc-markdown--nested gdoc-tabs__content">
+      <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/veggiemonk/backlog
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> backlog
+</span></span><span class="line"><span class="cl">go build .
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-install"
+      id="tabs-install-1"
+      
+    />
+    <label for="tabs-install-1" class="gdoc-tabs__label">
+      Go Install
+    </label>
+    <div class="gdoc-markdown--nested gdoc-tabs__content">
+      <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">go install github.com/veggiemonk/backlog@latest
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-install"
+      id="tabs-install-2"
+      
+    />
+    <label for="tabs-install-2" class="gdoc-tabs__label">
+      Download Binary
+    </label>
+    <div class="gdoc-markdown--nested gdoc-tabs__content">
+      Download the latest binary from the <a
+  class="gdoc-markdown__link"
+  href="https://github.com/veggiemonk/backlog/releases"
+>releases page</a>.
+    </div>
+</div>
+
+<div class="gdoc-page__anchorwrap">
+    <h3 id="basic-usage"
+    >
+        Basic Usage
+    </h3>
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Create a simple task</span>
+</span></span><span class="line"><span class="cl">backlog create <span class="s2">&#34;Fix the login button styling&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create task with metadata</span>
+</span></span><span class="line"><span class="cl">backlog create <span class="s2">&#34;Implement password reset&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -d <span class="s2">&#34;Users should be able to request a password reset link via email&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -a <span class="s2">&#34;alex&#34;</span> -l <span class="s2">&#34;backend,security&#34;</span> --priority <span class="s2">&#34;high&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># List all tasks</span>
+</span></span><span class="line"><span class="cl">backlog list
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># View specific task</span>
+</span></span><span class="line"><span class="cl">backlog view T01
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="gdoc-page__anchorwrap">
+    <h2 id="ai-agent-integration"
+    >
+        AI Agent Integration
+    </h2>
+</div>
+<p>Start the MCP server to enable AI agent interaction:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Start MCP server for AI agents</span>
+</span></span><span class="line"><span class="cl">backlog mcp --http --port <span class="m">8106</span>  <span class="c1"># HTTP transport</span>
+</span></span><span class="line"><span class="cl">backlog mcp                     <span class="c1"># STDIO transport (default)</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>AI agents can then:</p>
+<ul>
+<li>Create tasks from conversation context</li>
+<li>Break down large tasks into subtasks</li>
+<li>Update task status and assignments</li>
+<li>Search and analyze task patterns</li>
+</ul>
+<div class="gdoc-page__anchorwrap">
+    <h2 id="why-backlog"
+    >
+        Why Backlog?
+    </h2>
+</div>
+
+
+
+<blockquote class="gdoc-hint note">
+  <div class="gdoc-hint__title flex gap-8 align-center"><i class="fa note"></i>
+      <span>Note</span></div>
+  <div class="gdoc-hint__text"><strong>For Humans</strong>: The context window deteriorates rapidly on large-scale projects. A workaround is to ask AI agents to &ldquo;make a plan for X, write it to a markdown file and keep it updated with the ongoing tasks&rdquo;. This technique has worked incredibly well, making refactoring and other significant code changes more resilient to failures.</div>
+</blockquote>
+
+
+
+
+<blockquote class="gdoc-hint tip">
+  <div class="gdoc-hint__title flex gap-8 align-center"><i class="fa tip"></i>
+      <span>Tip</span></div>
+  <div class="gdoc-hint__text"><strong>For AI Agents</strong>: Backlog provides a structured MCP server that AI tools can understand and trust to handle task management details, providing a much better experience when using AI tools for complex tasks.</div>
+</blockquote>
+
+
+  </article>
+
+
+
+          
+          
+          <div class="gdoc-page__footer flex flex-wrap justify-between">
+            
+              
+
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+
+  
+
+
+
+
+<span class="gdoc-page__nav">
+  
+</span>
+<span class="gdoc-page__nav">
+  
+</span>
+
+            
+          </div>
+          
+        </div>
+      </main>
+
+      <footer class="gdoc-footer">
+  <nav class="container flex">
+    <div>
+      <section class="flex flex-wrap align-center">
+        <span class="gdoc-footer__item gdoc-footer__item--row">
+          Built with <a href="https://gohugo.io/" class="gdoc-footer__link">Hugo</a> and <svg class="gdoc-icon gdoc_heart"><use xlink:href="#gdoc_heart"></use></svg>
+
+        </span>
+        
+          <span class="gdoc-footer__item gdoc-footer__item--row">
+            <a href="https://github.com/veggiemonk/backlog/blob/main/LICENSE" class="gdoc-footer__link">
+              Legal Notice
+            </a>
+          </span>
+        
+        
+      </section>
+      
+    </div>
+    
+      <div class="flex flex-25 justify-end">
+        <span class="gdoc-footer__item text-right">
+          <a class="gdoc-footer__link fake-link" href="#" aria-label="Back to top">
+            <svg class="gdoc-icon gdoc_keyboard_arrow_up">
+              <use xlink:href="#gdoc_keyboard_arrow_up"></use>
+            </svg>
+            <span class="hidden-mobile">Back to top</span>
+          </a>
+        </span>
+      </div>
+    
+  </nav>
+</footer>
+
+    </div>
+
+    
+  </body>
+</html>

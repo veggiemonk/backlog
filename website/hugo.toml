@@ -1,12 +1,17 @@
 baseURL = 'https://veggiemonk.github.io/backlog'
 languageCode = 'en-us'
-title = 'Backlog Documentation'
-theme = 'geekdoc'
+title = 'Backlog MCP Documentation'
+theme = 'PaperMod'
 
 # Hugo configuration
 enableRobotsTXT = true
 enableGitInfo = true
 enableEmoji = true
+
+[module]
+[[module.imports]]
+path = 'github.com/adityatelange/hugo-PaperMod'
+
 
 [params]
 # General settings
@@ -21,14 +26,14 @@ edit_page = true
 # Search configuration
 search_enabled = true
 
-# Geekdoc specific
-geekdocRepo = 'https://github.com/veggiemonk/backlog'
-geekdocEditPage = true
-geekdocSearch = true
-geekdocSearchShowParent = true
-geekdocDarkMode = true
-geekdocLegalNotice = 'https://github.com/veggiemonk/backlog/blob/main/LICENSE'
-geekdocPrivacyPolicy = false
+# # Geekdoc specific
+# geekdocRepo = 'https://github.com/veggiemonk/backlog'
+# geekdocEditPage = true
+# geekdocSearch = true
+# geekdocSearchShowParent = true
+# geekdocDarkMode = true
+# geekdocLegalNotice = 'https://github.com/veggiemonk/backlog/blob/main/LICENSE'
+# geekdocPrivacyPolicy = false
 
 [markup]
 [markup.goldmark]

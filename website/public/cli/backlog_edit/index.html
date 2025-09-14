@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  class="color-toggle-hidden"
+  
+>
+  <head><script src="/backlog/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=backlog/livereload" data-no-instant defer></script>
+    <meta charset="UTF-8" />
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light dark" />
+<meta name="generator" content="Hugo 0.150.0">
+
+
+  <meta name="description" content="Edit an existing task by providing its ID and flags for the fields to update." />
+  <meta name="keywords" content="task management,cli,ai agents,mcp,golang,git" />
+
+    <title>backlog edit | Backlog Documentation</title>
+
+    <link rel="icon" type="image/svg+xml" href="/backlog/favicon/favicon.svg" />
+<link
+  rel="icon"
+  type="image/png"
+  sizes="32x32"
+  href="/backlog/favicon/favicon-32x32.png"
+/>
+<link
+  rel="icon"
+  type="image/png"
+  sizes="16x16"
+  href="/backlog/favicon/favicon-16x16.png"
+/>
+
+    
+
+    
+  <meta
+    property="og:title"
+    content="backlog edit"
+  />
+  <meta property="og:site_name" content="Backlog Documentation" />
+  <meta property="og:description" content="Edit an existing task by providing its ID and flags for the fields to update." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/backlog/cli/backlog_edit/" />
+
+<meta property="article:section" content="CLI" />
+    <meta
+      property="article:modified_time"
+      content="2025-09-14T23:59:01+02:00"
+    />
+
+
+  <meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="backlog edit" />
+  <meta name="twitter:description" content="Edit an existing task by providing its ID and flags for the fields to update." />
+
+
+  <script type="application/ld+json">
+  {
+      "@context": "http://schema.org",
+      "@type": "TechArticle",
+      "articleSection": "CLI",
+      "name": "backlog edit",
+      "url" : "http://localhost:1313/backlog/cli/backlog_edit/",
+      "headline": "backlog edit",
+      "description": "Edit an existing task by providing its ID and flags for the fields to update.",
+      "wordCount" : "110",
+      "inLanguage": "en",
+      "isFamilyFriendly": "true",
+      "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "http://localhost:1313/backlog/cli/backlog_edit/"
+      },
+      "copyrightHolder" : "Backlog Documentation",
+      "copyrightYear" : "0001",
+      "dateCreated": "0001-01-01T00:00:00.00Z",
+      "datePublished": "0001-01-01T00:00:00.00Z",
+      "dateModified": "2025-09-14T23:59:01.00Z",
+      "publisher":{
+          "@type":"Organization",
+          "name": "Backlog Documentation",
+          "url": "http://localhost:1313/backlog/",
+          "logo": {
+              "@type": "ImageObject",
+              "url": "http://localhost:1313/backlog/brand.svg",
+              "width":"32",
+              "height":"32"
+          }
+      }
+  }
+  </script>
+
+
+    
+  <script src="/backlog/"></script>
+<script src="/backlog/"></script>
+
+<link
+  rel="preload"
+  as="font"
+  href="/backlog/fonts/Metropolis.woff2"
+  type="font/woff2"
+  crossorigin="anonymous"
+/>
+<link
+  rel="preload"
+  as="font"
+  href="/backlog/fonts/LiberationSans.woff2"
+  type="font/woff2"
+  crossorigin="anonymous"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="all"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="screen and (max-width: 45rem)"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="print"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="all"
+/>
+  <link href="http://localhost:1313/backlog/cli/backlog_edit/" rel="canonical" type="text/html" />
+
+<!-- Made with Geekdoc theme https://github.com/thegeeklab/hugo-geekdoc -->
+
+    
+
+  </head>
+
+  <body itemscope itemtype="https://schema.org/WebPage">
+    <div class="w-full flex justify-center">
+      <a href="#main-content" id="gdoc-to-main" class="gdoc-markdown__link">Skip to main content</a>
+    </div>
+
+    
+
+
+
+    <div
+      class="wrapper "
+    >
+      
+      <header class="gdoc-header">
+  <div class="container flex align-center justify-between">
+    
+      <label for="menu-control" class="gdoc-nav__control">
+        <div tabindex="0" role="button" aria-pressed="false">
+          <input type="checkbox" class="hidden" id="menu-control" />
+
+          <svg class="gdoc-icon gdoc_menu">
+            <title>Open Navigation</title>
+            <use xlink:href="#gdoc_menu"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_arrow_back">
+            <title>Close Navigation</title>
+            <use xlink:href="#gdoc_arrow_back"></use>
+          </svg>
+        </div>
+      </label>
+    
+    <div>
+      <a class="gdoc-brand gdoc-header__link flex gap-16 align-center" href="http://localhost:1313/backlog/">
+        <img
+          class="gdoc-brand__img"
+          src="/backlog/brand.svg"
+          alt=""
+        />
+        <div>
+          <div class="gdoc-brand__title">Backlog Documentation</div>
+          
+        </div>
+      </a>
+    </div>
+    <div class="gdoc-menu-header flex gap-16">
+      <span class="gdoc-menu-header__items">
+        
+
+
+        <span id="gdoc-color-theme" tabindex="0" role="button" aria-pressed="false">
+          <svg class="gdoc-icon gdoc_brightness_dark">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_dark"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_brightness_light">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_light"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_brightness_auto">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_auto"></use>
+          </svg>
+        </span>
+
+        <span class="gdoc-menu-header__home">
+          <a href="http://localhost:1313/backlog/" class="gdoc-header__link">
+            <svg class="gdoc-icon gdoc_home">
+              <title>Back to homepage</title>
+              <use xlink:href="#gdoc_home"></use>
+            </svg>
+          </a>
+        </span>
+
+        
+
+      </span>
+      <span class="gdoc-menu-header__control">
+        <label for="menu-header-control">
+          <div tabindex="0" role="button" aria-pressed="false">
+            <input type="checkbox" class="hidden" id="menu-header-control" />
+
+            <svg class="gdoc-icon gdoc_keyboard_arrow_right">
+              <use xlink:href="#gdoc_keyboard_arrow_right"></use>
+              <title>Close Menu Bar</title>
+            </svg>
+
+            <svg class="gdoc-icon gdoc_keyboard_arrow_left">
+              <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+              <title>Open Menu Bar</title>
+            </svg>
+          </div>
+        </label>
+      </span>
+    </div>
+  </div>
+</header>
+
+
+
+      <main class="container flex flex-even">
+        
+          <aside class="gdoc-nav">
+            <nav>
+  
+  <script defer src="/backlog/"></script><div class="gdoc-search flex align-center">
+    <svg class="gdoc-icon gdoc_search"><use xlink:href="#gdoc_search"></use></svg>
+    <input
+      type="text"
+      id="gdoc-search-input"
+      class="gdoc-search__input"
+      placeholder="Search..."
+      aria-label="Search"
+      maxlength="64"
+      data-site-base-url="http://localhost:1313/backlog/"
+      data-site-lang="en"
+    />
+    <ul id="gdoc-search-results" class="gdoc-search__list"></ul>
+  </div>
+
+
+
+
+  <section class="gdoc-nav--main">
+    <h2>Navigation</h2>
+    
+      
+
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="gdoc-nav__toggle" id="navtree-d5dae258"
+                checked
+              
+            />
+            <label
+              
+                for="navtree-d5dae258" class="flex justify-between align-center"
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/"
+                    class="gdoc-nav__entry"
+                  >
+                    CLI Reference
+                  </a>
+                </span>
+              
+              
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_left">
+                  <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+                </svg>
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_down">
+                  <use xlink:href="#gdoc_keyboard_arrow_down"></use>
+                </svg>
+              
+            </label>
+
+            
+              
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_create/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog create
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_list/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog list
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_edit/"
+                    class="gdoc-nav__entry is-active"
+                  >
+                    backlog edit
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_view/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog view
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_search/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog search
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_archive/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog archive
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_mcp/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog mcp
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_version/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog version
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="gdoc-nav__toggle" id="navtree-134cefbb"
+                
+              
+            />
+            <label
+              
+                for="navtree-134cefbb" class="flex justify-between align-center"
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/"
+                    class="gdoc-nav__entry"
+                  >
+                    Development
+                  </a>
+                </span>
+              
+              
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_left">
+                  <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+                </svg>
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_down">
+                  <use xlink:href="#gdoc_keyboard_arrow_down"></use>
+                </svg>
+              
+            </label>
+
+            
+              
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/analysis/"
+                    class="gdoc-nav__entry"
+                  >
+                    Technical Analysis
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/plan/"
+                    class="gdoc-nav__entry"
+                  >
+                    Project Plan
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+
+
+
+
+
+    
+  </section>
+
+  
+
+
+  <section class="gdoc-nav--more">
+    
+  </section>
+</nav>
+
+          </aside>
+        
+
+
+        <div class="gdoc-page">
+          
+  
+
+
+  
+
+
+
+
+
+
+<div
+  class="gdoc-page__header flex flex-wrap
+  
+    justify-between
+  
+  hidden-mobile
+  "
+  itemprop="breadcrumb"
+>
+  
+    <div>
+      <svg class="gdoc-icon gdoc_path hidden-mobile"><use xlink:href="#gdoc_path"></use></svg>
+      <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+        
+        
+        
+        
+  
+  
+    
+    
+    
+    
+  
+  
+    
+    
+    
+    
+  
+  
+    <li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/backlog/' href='/backlog/'><span itemprop='name'>Backlog</span></a><meta itemprop='position' content='2' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/backlog/cli/' href='/backlog/cli/'><span itemprop='name'>CLI Reference</span></a><meta itemprop='position' content='3' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><span itemprop='name'>backlog edit</span><meta itemprop='position' content='4' /></li>
+  
+
+  
+
+  
+
+      </ol>
+    </div>
+  
+  
+</div>
+
+
+
+  <article
+    class="gdoc-markdown gdoc-markdown__align--left"
+    id="main-content" tabindex="-1"
+  >
+    <h1>backlog edit</h1>
+    
+    <div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="backlog-edit"
+    >
+        backlog edit
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/cli/backlog_edit/#backlog-edit" class="gdoc-page__anchor clip flex align-center" title="Anchor to: backlog edit" aria-label="Anchor to: backlog edit" href="#backlog-edit">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Edit an existing task.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="synopsis"
+    >
+        Synopsis
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/cli/backlog_edit/#synopsis" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Synopsis" aria-label="Anchor to: Synopsis" href="#synopsis">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Edit an existing task by providing its ID and flags for the fields to update. This allows for partial updates, so you only change what you need.</p>
+<pre tabindex="0"><code>backlog edit &lt;id&gt; [flags]
+</code></pre>
+<div class="gdoc-expand">
+  <label class="gdoc-expand__head flex justify-between" for="4f84516e-0">
+    <span>Show Examples</span>
+    <span>true</span>
+  </label>
+  <input id="4f84516e-0" type="checkbox" class="gdoc-expand__control hidden" />
+  <div class="gdoc-markdown--nested gdoc-expand__content">
+    <div class="gdoc-tabs">
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-edit-examples"
+      id="tabs-edit-examples-0"
+      checked="checked"
+    />
+    <label for="tabs-edit-examples-0" class="gdoc-tabs__label">
+      Basic Edits
+    </label>
+    <div class="gdoc-markdown--nested gdoc-tabs__content">
+      <div class="flex align-center gdoc-page__anchorwrap">
+    <h5 id="1-changing-the-title"
+    >
+        1. Changing the Title
+    </h5>
+    <a data-clipboard-text="http://localhost:1313/backlog/cli/backlog_edit/#1-changing-the-title" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 1. Changing the Title" aria-label="Anchor to: 1. Changing the Title" href="#1-changing-the-title">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Use <code>-t</code> or <code>--title</code> to rename the task.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog edit T42 -t <span class="s2">&#34;Fix the main login button styling&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h5 id="2-updating-the-description"
+    >
+        2. Updating the Description
+    </h5>
+    <a data-clipboard-text="http://localhost:1313/backlog/cli/backlog_edit/#2-updating-the-description" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 2. Updating the Description" aria-label="Anchor to: 2. Updating the Description" href="#2-updating-the-description">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Use <code>-d</code> or <code>--description</code> to replace the description.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog edit T42 -d <span class="s2">&#34;The login button is misaligned on mobile. It should be centered.&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h5 id="3-changing-the-status"
+    >
+        3. Changing the Status
+    </h5>
+    <a data-clipboard-text="http://localhost:1313/backlog/cli/backlog_edit/#3-changing-the-status" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 3. Changing the Status" aria-label="Anchor to: 3. Changing the Status" href="#3-changing-the-status">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Update progress with <code>-s</code> or <code>--status</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog edit T42 -s <span class="s2">&#34;in-progress&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-edit-examples"
+      id="tabs-edit-examples-1"
+<pre><code>/&gt;
+&lt;label for=&quot;tabs-edit-examples-1&quot; class=&quot;gdoc-tabs__label&quot;&gt;
+  Metadata Edits
+&lt;/label&gt;
+&lt;div class=&quot;gdoc-markdown--nested gdoc-tabs__content&quot;&gt;
+  &lt;div class=&quot;flex align-center gdoc-page__anchorwrap&quot;&gt;
+&lt;h5 id=&quot;4-re-assigning-a-task&quot;
+&gt;
+    4. Re-assigning a Task
+&lt;/h5&gt;
+&lt;a data-clipboard-text=&quot;http://localhost:1313/backlog/cli/backlog_edit/#4-re-assigning-a-task&quot; class=&quot;gdoc-page__anchor clip flex align-center&quot; title=&quot;Anchor to: 4. Re-assigning a Task&quot; aria-label=&quot;Anchor to: 4. Re-assigning a Task&quot; href=&quot;#4-re-assigning-a-task&quot;&gt;
+    &lt;svg class=&quot;gdoc-icon gdoc_link&quot;&gt;&lt;use xlink:href=&quot;#gdoc_link&quot;&gt;&lt;/use&gt;&lt;/svg&gt;
+&lt;/a&gt;
+</code></pre>
+</div>
+<p>Use <code>-a</code> or <code>--assigned</code> to replace the current assignees.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Assign to a single person</span>
+</span></span><span class="line"><span class="cl">backlog edit T42 -a <span class="s2">&#34;jordan&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Assign to multiple people</span>
+</span></span><span class="line"><span class="cl">backlog edit T42 -a <span class="s2">&#34;jordan&#34;</span> -a <span class="s2">&#34;casey&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h5 id="5-updating-labels"
+    >
+        5. Updating Labels
+    </h5>
+    <a data-clipboard-text="http://localhost:1313/backlog/cli/backlog_edit/#5-updating-labels" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 5. Updating Labels" aria-label="Anchor to: 5. Updating Labels" href="#5-updating-labels">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Use <code>-l</code> or <code>--labels</code> to replace the existing labels.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog edit T42 -l <span class="s2">&#34;bug,frontend&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h5 id="6-changing-the-priority"
+    >
+        6. Changing the Priority
+    </h5>
+    <a data-clipboard-text="http://localhost:1313/backlog/cli/backlog_edit/#6-changing-the-priority" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 6. Changing the Priority" aria-label="Anchor to: 6. Changing the Priority" href="#6-changing-the-priority">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Adjust priority with the <code>--priority</code> flag.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog edit T42 --priority <span class="s2">&#34;high&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-edit-examples"
+      id="tabs-edit-examples-2"
+<pre><code>/&gt;
+&lt;label for=&quot;tabs-edit-examples-2&quot; class=&quot;gdoc-tabs__label&quot;&gt;
+  Advanced Edits
+&lt;/label&gt;
+&lt;div class=&quot;gdoc-markdown--nested gdoc-tabs__content&quot;&gt;
+  &lt;div class=&quot;flex align-center gdoc-page__anchorwrap&quot;&gt;
+&lt;h5 id=&quot;7-managing-acceptance-criteria&quot;
+&gt;
+    7. Managing Acceptance Criteria
+&lt;/h5&gt;
+&lt;a data-clipboard-text=&quot;http://localhost:1313/backlog/cli/backlog_edit/#7-managing-acceptance-criteria&quot; class=&quot;gdoc-page__anchor clip flex align-center&quot; title=&quot;Anchor to: 7. Managing Acceptance Criteria&quot; aria-label=&quot;Anchor to: 7. Managing Acceptance Criteria&quot; href=&quot;#7-managing-acceptance-criteria&quot;&gt;
+    &lt;svg class=&quot;gdoc-icon gdoc_link&quot;&gt;&lt;use xlink:href=&quot;#gdoc_link&quot;&gt;&lt;/use&gt;&lt;/svg&gt;
+&lt;/a&gt;
+</code></pre>
+</div>
+<p>Add, check, uncheck, or remove acceptance criteria.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Add a new AC</span>
+</span></span><span class="line"><span class="cl">backlog edit T42 --ac <span class="s2">&#34;Button is centered on screens &lt; 576px.&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Check the first AC (1-based index)</span>
+</span></span><span class="line"><span class="cl">backlog edit T42 --check-ac <span class="m">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Uncheck the first AC</span>
+</span></span><span class="line"><span class="cl">backlog edit T42 --uncheck-ac <span class="m">1</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Remove the second AC</span>
+</span></span><span class="line"><span class="cl">backlog edit T42 --remove-ac <span class="m">2</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h5 id="8-changing-the-parent-task"
+    >
+        8. Changing the Parent Task
+    </h5>
+    <a data-clipboard-text="http://localhost:1313/backlog/cli/backlog_edit/#8-changing-the-parent-task" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 8. Changing the Parent Task" aria-label="Anchor to: 8. Changing the Parent Task" href="#8-changing-the-parent-task">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Move a task under a different parent with <code>-p</code> or <code>--parent</code>.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog edit T42 -p <span class="s2">&#34;T18&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># To remove a parent, pass an empty string</span>
+</span></span><span class="line"><span class="cl">backlog edit T42 -p <span class="s2">&#34;&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h5 id="9-updating-dependencies"
+    >
+        9. Updating Dependencies
+    </h5>
+    <a data-clipboard-text="http://localhost:1313/backlog/cli/backlog_edit/#9-updating-dependencies" class="gdoc-page__anchor clip flex align-center" title="Anchor to: 9. Updating Dependencies" aria-label="Anchor to: 9. Updating Dependencies" href="#9-updating-dependencies">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Use <code>--dep</code> to replace existing dependencies.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog edit T42 --dep <span class="s2">&#34;T1&#34;</span> --dep <span class="s2">&#34;T2&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-edit-examples"
+      id="tabs-edit-examples-3"
+<pre><code>/&gt;
+&lt;label for=&quot;tabs-edit-examples-3&quot; class=&quot;gdoc-tabs__label&quot;&gt;
+  Complex Edit
+&lt;/label&gt;
+&lt;div class=&quot;gdoc-markdown--nested gdoc-tabs__content&quot;&gt;
+  &lt;div class=&quot;flex align-center gdoc-page__anchorwrap&quot;&gt;
+&lt;h5 id=&quot;10-combining-multiple-flags&quot;
+&gt;
+    10. Combining Multiple Flags
+&lt;/h5&gt;
+&lt;a data-clipboard-text=&quot;http://localhost:1313/backlog/cli/backlog_edit/#10-combining-multiple-flags&quot; class=&quot;gdoc-page__anchor clip flex align-center&quot; title=&quot;Anchor to: 10. Combining Multiple Flags&quot; aria-label=&quot;Anchor to: 10. Combining Multiple Flags&quot; href=&quot;#10-combining-multiple-flags&quot;&gt;
+    &lt;svg class=&quot;gdoc-icon gdoc_link&quot;&gt;&lt;use xlink:href=&quot;#gdoc_link&quot;&gt;&lt;/use&gt;&lt;/svg&gt;
+&lt;/a&gt;
+</code></pre>
+</div>
+<p>Make multiple changes at once.</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog edit T42 <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -s <span class="s2">&#34;in-review&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -a <span class="s2">&#34;alex&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --priority <span class="s2">&#34;critical&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --notes <span class="s2">&#34;The fix is ready for review. Please check on iOS and Android.&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --check-ac <span class="m">1</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --check-ac <span class="m">2</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+</div>
+
+  </div>
+</div>
+
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="options"
+    >
+        Options
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/cli/backlog_edit/#options" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Options" aria-label="Anchor to: Options" href="#options">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="table-wrap"> <table>
+  <thead>
+      <tr>
+          <th>Flag</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>--ac</code></td>
+          <td>Add a new acceptance criterion (can be used multiple times).</td>
+      </tr>
+      <tr>
+          <td><code>-a, --assigned</code></td>
+          <td>Add assigned names for the task (can be used multiple times).</td>
+      </tr>
+      <tr>
+          <td><code>--check-ac</code></td>
+          <td>Check an acceptance criterion by its 1-based index.</td>
+      </tr>
+      <tr>
+          <td><code>--dep</code></td>
+          <td>Set dependencies (replaces existing, can be used multiple times).</td>
+      </tr>
+      <tr>
+          <td><code>-d, --description</code></td>
+          <td>New description for the task.</td>
+      </tr>
+      <tr>
+          <td><code>-h, --help</code></td>
+          <td>Help for edit.</td>
+      </tr>
+      <tr>
+          <td><code>-l, --labels</code></td>
+          <td>Add labels for the task (can be used multiple times).</td>
+      </tr>
+      <tr>
+          <td><code>--notes</code></td>
+          <td>New implementation notes for the task.</td>
+      </tr>
+      <tr>
+          <td><code>-p, --parent</code></td>
+          <td>New parent for the task.</td>
+      </tr>
+      <tr>
+          <td><code>--plan</code></td>
+          <td>New implementation plan for the task.</td>
+      </tr>
+      <tr>
+          <td><code>--priority</code></td>
+          <td>New priority for the task.</td>
+      </tr>
+      <tr>
+          <td><code>--remove-ac</code></td>
+          <td>Remove an acceptance criterion by its 1-based index.</td>
+      </tr>
+      <tr>
+          <td><code>-A, --remove-assigned</code></td>
+          <td>Assigned names to remove from the task.</td>
+      </tr>
+      <tr>
+          <td><code>-L, --remove-labels</code></td>
+          <td>Labels to remove from the task.</td>
+      </tr>
+      <tr>
+          <td><code>-s, --status</code></td>
+          <td>New status for the task.</td>
+      </tr>
+      <tr>
+          <td><code>-t, --title</code></td>
+          <td>New title for the task.</td>
+      </tr>
+      <tr>
+          <td><code>--uncheck-ac</code></td>
+          <td>Uncheck an acceptance criterion by its 1-based index.</td>
+      </tr>
+  </tbody>
+</table> </div>
+
+<div class="gdoc-expand">
+  <label class="gdoc-expand__head flex justify-between" for="55274eba-1">
+    <span>Inherited Options</span>
+    <span>↕</span>
+  </label>
+  <input id="55274eba-1" type="checkbox" class="gdoc-expand__control hidden" />
+  <div class="gdoc-markdown--nested gdoc-expand__content">
+    <div class="table-wrap"> <table>
+  <thead>
+      <tr>
+          <th>Flag</th>
+          <th>Default</th>
+          <th>Description</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td><code>--auto-commit</code></td>
+          <td><code>true</code></td>
+          <td>Auto-committing changes to git repository.</td>
+      </tr>
+      <tr>
+          <td><code>--folder</code></td>
+          <td><code>.backlog</code></td>
+          <td>Directory for backlog tasks.</td>
+      </tr>
+  </tbody>
+</table> </div>
+
+  </div>
+</div>
+
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="see-also"
+    >
+        SEE ALSO
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/cli/backlog_edit/#see-also" class="gdoc-page__anchor clip flex align-center" title="Anchor to: SEE ALSO" aria-label="Anchor to: SEE ALSO" href="#see-also">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<ul>
+<li><a
+  class="gdoc-markdown__link"
+  href="/backlog/cli/backlog/"
+><strong><code>backlog</code></strong></a> - The main backlog command.</li>
+</ul>
+
+  </article>
+
+
+
+          
+          
+          <div class="gdoc-page__footer flex flex-wrap justify-between">
+            
+              
+
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+          
+          
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+          
+            
+            
+          
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+
+  
+
+
+
+
+<span class="gdoc-page__nav">
+  
+    <a
+      class="gdoc-page__nav--prev flex align-center"
+      href="/backlog/cli/backlog_list/"
+      title="backlog list"
+    >
+      <i class="gdoc-icon">gdoc_arrow_left_alt</i>
+      backlog list
+    </a>
+  
+</span>
+<span class="gdoc-page__nav">
+  
+    <a
+      class="gdoc-page__nav--next flex align-center"
+      href="/backlog/cli/backlog_view/"
+      title="backlog view"
+    >
+      backlog view
+      <i class="gdoc-icon">gdoc_arrow_right_alt</i>
+    </a>
+  
+</span>
+
+            
+          </div>
+          
+        </div>
+      </main>
+
+      <footer class="gdoc-footer">
+  <nav class="container flex">
+    <div>
+      <section class="flex flex-wrap align-center">
+        <span class="gdoc-footer__item gdoc-footer__item--row">
+          Built with <a href="https://gohugo.io/" class="gdoc-footer__link">Hugo</a> and <svg class="gdoc-icon gdoc_heart"><use xlink:href="#gdoc_heart"></use></svg>
+
+        </span>
+        
+          <span class="gdoc-footer__item gdoc-footer__item--row">
+            <a href="https://github.com/veggiemonk/backlog/blob/main/LICENSE" class="gdoc-footer__link">
+              Legal Notice
+            </a>
+          </span>
+        
+        
+      </section>
+      
+    </div>
+    
+      <div class="flex flex-25 justify-end">
+        <span class="gdoc-footer__item text-right">
+          <a class="gdoc-footer__link fake-link" href="#" aria-label="Back to top">
+            <svg class="gdoc-icon gdoc_keyboard_arrow_up">
+              <use xlink:href="#gdoc_keyboard_arrow_up"></use>
+            </svg>
+            <span class="hidden-mobile">Back to top</span>
+          </a>
+        </span>
+      </div>
+    
+  </nav>
+</footer>
+
+    </div>
+
+    
+  </body>
+</html>

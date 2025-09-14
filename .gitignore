@@ -2,3 +2,4 @@ bin/
 /backlog
 coverage.*
 dist/
+.hugo_build.lock

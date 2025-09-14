@@ -1,0 +1,2156 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  class="color-toggle-hidden"
+  
+>
+  <head><script src="/backlog/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=backlog/livereload" data-no-instant defer></script>
+    <meta charset="UTF-8" />
+<meta name="referrer" content="no-referrer" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light dark" />
+<meta name="generator" content="Hugo 0.150.0">
+
+
+  <meta name="description" content="Installation and basic usage guide for Backlog" />
+  <meta name="keywords" content="task management,cli,ai agents,mcp,golang,git" />
+
+    <title>Getting Started | Backlog Documentation</title>
+
+    <link rel="icon" type="image/svg+xml" href="/backlog/favicon/favicon.svg" />
+<link
+  rel="icon"
+  type="image/png"
+  sizes="32x32"
+  href="/backlog/favicon/favicon-32x32.png"
+/>
+<link
+  rel="icon"
+  type="image/png"
+  sizes="16x16"
+  href="/backlog/favicon/favicon-16x16.png"
+/>
+
+    
+
+    
+  <meta
+    property="og:title"
+    content="Getting Started"
+  />
+  <meta property="og:site_name" content="Backlog Documentation" />
+  <meta property="og:description" content="Installation and basic usage guide for Backlog" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/backlog/getting-started/" />
+
+<meta property="article:section" content="" />
+    <meta
+      property="article:modified_time"
+      content="2025-09-14T23:59:01+02:00"
+    />
+
+
+  <meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Getting Started" />
+  <meta name="twitter:description" content="Installation and basic usage guide for Backlog" />
+
+
+  <script type="application/ld+json">
+  {
+      "@context": "http://schema.org",
+      "@type": "TechArticle",
+      "articleSection": "",
+      "name": "Getting Started",
+      "url" : "http://localhost:1313/backlog/getting-started/",
+      "headline": "Getting Started",
+      "description": "Installation and basic usage guide for Backlog",
+      "wordCount" : "543",
+      "inLanguage": "en",
+      "isFamilyFriendly": "true",
+      "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": "http://localhost:1313/backlog/getting-started/"
+      },
+      "copyrightHolder" : "Backlog Documentation",
+      "copyrightYear" : "0001",
+      "dateCreated": "0001-01-01T00:00:00.00Z",
+      "datePublished": "0001-01-01T00:00:00.00Z",
+      "dateModified": "2025-09-14T23:59:01.00Z",
+      "publisher":{
+          "@type":"Organization",
+          "name": "Backlog Documentation",
+          "url": "http://localhost:1313/backlog/",
+          "logo": {
+              "@type": "ImageObject",
+              "url": "http://localhost:1313/backlog/brand.svg",
+              "width":"32",
+              "height":"32"
+          }
+      }
+  }
+  </script>
+
+
+    
+  <script src="/backlog/"></script>
+<script src="/backlog/"></script>
+
+<link
+  rel="preload"
+  as="font"
+  href="/backlog/fonts/Metropolis.woff2"
+  type="font/woff2"
+  crossorigin="anonymous"
+/>
+<link
+  rel="preload"
+  as="font"
+  href="/backlog/fonts/LiberationSans.woff2"
+  type="font/woff2"
+  crossorigin="anonymous"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="all"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="screen and (max-width: 45rem)"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="print"
+/>
+
+<link
+  rel="preload"
+  href="/backlog/"
+  as="style"
+/>
+<link
+  rel="stylesheet"
+  href="/backlog/"
+  media="all"
+/>
+  <link href="http://localhost:1313/backlog/getting-started/" rel="canonical" type="text/html" />
+
+<!-- Made with Geekdoc theme https://github.com/thegeeklab/hugo-geekdoc -->
+
+    
+
+  </head>
+
+  <body itemscope itemtype="https://schema.org/WebPage">
+    <div class="w-full flex justify-center">
+      <a href="#main-content" id="gdoc-to-main" class="gdoc-markdown__link">Skip to main content</a>
+    </div>
+
+    
+
+
+
+    <div
+      class="wrapper "
+    >
+      
+      <header class="gdoc-header">
+  <div class="container flex align-center justify-between">
+    
+      <label for="menu-control" class="gdoc-nav__control">
+        <div tabindex="0" role="button" aria-pressed="false">
+          <input type="checkbox" class="hidden" id="menu-control" />
+
+          <svg class="gdoc-icon gdoc_menu">
+            <title>Open Navigation</title>
+            <use xlink:href="#gdoc_menu"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_arrow_back">
+            <title>Close Navigation</title>
+            <use xlink:href="#gdoc_arrow_back"></use>
+          </svg>
+        </div>
+      </label>
+    
+    <div>
+      <a class="gdoc-brand gdoc-header__link flex gap-16 align-center" href="http://localhost:1313/backlog/">
+        <img
+          class="gdoc-brand__img"
+          src="/backlog/brand.svg"
+          alt=""
+        />
+        <div>
+          <div class="gdoc-brand__title">Backlog Documentation</div>
+          
+        </div>
+      </a>
+    </div>
+    <div class="gdoc-menu-header flex gap-16">
+      <span class="gdoc-menu-header__items">
+        
+
+
+        <span id="gdoc-color-theme" tabindex="0" role="button" aria-pressed="false">
+          <svg class="gdoc-icon gdoc_brightness_dark">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_dark"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_brightness_light">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_light"></use>
+          </svg>
+          <svg class="gdoc-icon gdoc_brightness_auto">
+            <title>Toggle Dark/Light/Auto mode</title>
+            <use xlink:href="#gdoc_brightness_auto"></use>
+          </svg>
+        </span>
+
+        <span class="gdoc-menu-header__home">
+          <a href="http://localhost:1313/backlog/" class="gdoc-header__link">
+            <svg class="gdoc-icon gdoc_home">
+              <title>Back to homepage</title>
+              <use xlink:href="#gdoc_home"></use>
+            </svg>
+          </a>
+        </span>
+
+        
+
+      </span>
+      <span class="gdoc-menu-header__control">
+        <label for="menu-header-control">
+          <div tabindex="0" role="button" aria-pressed="false">
+            <input type="checkbox" class="hidden" id="menu-header-control" />
+
+            <svg class="gdoc-icon gdoc_keyboard_arrow_right">
+              <use xlink:href="#gdoc_keyboard_arrow_right"></use>
+              <title>Close Menu Bar</title>
+            </svg>
+
+            <svg class="gdoc-icon gdoc_keyboard_arrow_left">
+              <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+              <title>Open Menu Bar</title>
+            </svg>
+          </div>
+        </label>
+      </span>
+    </div>
+  </div>
+</header>
+
+
+
+      <main class="container flex flex-even">
+        
+          <aside class="gdoc-nav">
+            <nav>
+  
+  <script defer src="/backlog/"></script><div class="gdoc-search flex align-center">
+    <svg class="gdoc-icon gdoc_search"><use xlink:href="#gdoc_search"></use></svg>
+    <input
+      type="text"
+      id="gdoc-search-input"
+      class="gdoc-search__input"
+      placeholder="Search..."
+      aria-label="Search"
+      maxlength="64"
+      data-site-base-url="http://localhost:1313/backlog/"
+      data-site-lang="en"
+    />
+    <ul id="gdoc-search-results" class="gdoc-search__list"></ul>
+  </div>
+
+
+
+
+  <section class="gdoc-nav--main">
+    <h2>Navigation</h2>
+    
+      
+
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="gdoc-nav__toggle" id="navtree-d5dae258"
+                
+              
+            />
+            <label
+              
+                for="navtree-d5dae258" class="flex justify-between align-center"
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/"
+                    class="gdoc-nav__entry"
+                  >
+                    CLI Reference
+                  </a>
+                </span>
+              
+              
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_left">
+                  <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+                </svg>
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_down">
+                  <use xlink:href="#gdoc_keyboard_arrow_down"></use>
+                </svg>
+              
+            </label>
+
+            
+              
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_create/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog create
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_list/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog list
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_edit/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog edit
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_view/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog view
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_search/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog search
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_archive/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog archive
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_mcp/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog mcp
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/cli/backlog_version/"
+                    class="gdoc-nav__entry"
+                  >
+                    backlog version
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="gdoc-nav__toggle" id="navtree-134cefbb"
+                
+              
+            />
+            <label
+              
+                for="navtree-134cefbb" class="flex justify-between align-center"
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/"
+                    class="gdoc-nav__entry"
+                  >
+                    Development
+                  </a>
+                </span>
+              
+              
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_left">
+                  <use xlink:href="#gdoc_keyboard_arrow_left"></use>
+                </svg>
+                <svg class="gdoc-icon toggle gdoc_keyboard_arrow_down">
+                  <use xlink:href="#gdoc_keyboard_arrow_down"></use>
+                </svg>
+              
+            </label>
+
+            
+              
+  
+
+
+  <ul class="gdoc-nav__list">
+    
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/analysis/"
+                    class="gdoc-nav__entry"
+                  >
+                    Technical Analysis
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+      
+
+      
+        
+      
+
+      
+        
+          
+          
+          
+          
+          
+          
+
+
+          <li>
+            <input
+              type="checkbox"
+              
+                class="hidden"
+              
+            />
+            <label
+              
+            >
+              
+                <span class="flex">
+                  <a
+                    href="/backlog/development/plan/"
+                    class="gdoc-nav__entry"
+                  >
+                    Project Plan
+                  </a>
+                </span>
+              
+              
+            </label>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+            
+          </li>
+        
+      
+    
+  </ul>
+
+
+
+
+
+
+    
+  </section>
+
+  
+
+
+  <section class="gdoc-nav--more">
+    
+  </section>
+</nav>
+
+          </aside>
+        
+
+
+        <div class="gdoc-page">
+          
+  
+
+
+  
+
+
+
+
+
+
+<div
+  class="gdoc-page__header flex flex-wrap
+  
+    justify-between
+  
+  hidden-mobile
+  "
+  itemprop="breadcrumb"
+>
+  
+    <div>
+      <svg class="gdoc-icon gdoc_path hidden-mobile"><use xlink:href="#gdoc_path"></use></svg>
+      <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+        
+        
+        
+        
+  
+  
+    
+    
+    
+    
+  
+  
+    <li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><a itemscope itemtype='https://schema.org/WebPage' itemprop='item' itemid='/backlog/' href='/backlog/'><span itemprop='name'>Backlog</span></a><meta itemprop='position' content='2' /></li><li> / </li><li itemprop='itemListElement' itemscope itemtype='https://schema.org/ListItem'><span itemprop='name'>Getting Started</span><meta itemprop='position' content='3' /></li>
+  
+
+  
+
+      </ol>
+    </div>
+  
+  
+</div>
+
+
+
+  <article
+    class="gdoc-markdown gdoc-markdown__align--left"
+    id="main-content" tabindex="-1"
+  >
+    <h1>Getting Started</h1>
+    
+    <div class="flex align-center gdoc-page__anchorwrap">
+    <h1 id="getting-started"
+    >
+        Getting Started
+    </h1>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#getting-started" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Getting Started" aria-label="Anchor to: Getting Started" href="#getting-started">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>This guide will help you get up and running with Backlog quickly.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="installation"
+    >
+        Installation
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#installation" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Installation" aria-label="Anchor to: Installation" href="#installation">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+
+
+
+<div class="gdoc-tabs">
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-installation"
+      id="tabs-installation-0"
+      checked="checked"
+    />
+    <label for="tabs-installation-0" class="gdoc-tabs__label">
+      From Source
+    </label>
+    <div class="gdoc-markdown--nested gdoc-tabs__content">
+      <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">git clone https://github.com/veggiemonk/backlog
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> backlog
+</span></span><span class="line"><span class="cl">go build .
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-installation"
+      id="tabs-installation-1"
+      
+    />
+    <label for="tabs-installation-1" class="gdoc-tabs__label">
+      Go Install
+    </label>
+    <div class="gdoc-markdown--nested gdoc-tabs__content">
+      <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">go install github.com/veggiemonk/backlog@latest
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-installation"
+      id="tabs-installation-2"
+      
+    />
+    <label for="tabs-installation-2" class="gdoc-tabs__label">
+      Download Binary
+    </label>
+    <div class="gdoc-markdown--nested gdoc-tabs__content">
+      Download the latest binary from the <a
+  class="gdoc-markdown__link"
+  href="https://github.com/veggiemonk/backlog/releases"
+>releases page</a>.
+    </div>
+</div>
+
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="first-steps"
+    >
+        First Steps
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#first-steps" class="gdoc-page__anchor clip flex align-center" title="Anchor to: First Steps" aria-label="Anchor to: First Steps" href="#first-steps">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+
+
+
+<blockquote class="gdoc-hint tip">
+  <div class="gdoc-hint__title flex gap-8 align-center"><i class="fa tip"></i>
+      <span>Tip</span></div>
+  <div class="gdoc-hint__text">No initialization is required! Backlog works immediately in any directory.</div>
+</blockquote>
+
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="create-your-first-task"
+    >
+        Create Your First Task
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#create-your-first-task" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Create Your First Task" aria-label="Anchor to: Create Your First Task" href="#create-your-first-task">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog create <span class="s2">&#34;Set up project documentation&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><p>This creates a task file at <code>.backlog/T01-set_up_project_documentation.md</code>.</p>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="view-your-tasks"
+    >
+        View Your Tasks
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#view-your-tasks" class="gdoc-page__anchor clip flex align-center" title="Anchor to: View Your Tasks" aria-label="Anchor to: View Your Tasks" href="#view-your-tasks">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog list
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="view-task-details"
+    >
+        View Task Details
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#view-task-details" class="gdoc-page__anchor clip flex align-center" title="Anchor to: View Task Details" aria-label="Anchor to: View Task Details" href="#view-task-details">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog view T01
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="working-with-tasks"
+    >
+        Working with Tasks
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#working-with-tasks" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Working with Tasks" aria-label="Anchor to: Working with Tasks" href="#working-with-tasks">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="creating-tasks-with-metadata"
+    >
+        Creating Tasks with Metadata
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#creating-tasks-with-metadata" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Creating Tasks with Metadata" aria-label="Anchor to: Creating Tasks with Metadata" href="#creating-tasks-with-metadata">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+
+<div class="gdoc-expand">
+  <label class="gdoc-expand__head flex justify-between" for="6026af48-2">
+    <span>Simple Task Creation</span>
+    <span>↕</span>
+  </label>
+  <input id="6026af48-2" type="checkbox" class="gdoc-expand__control hidden" />
+  <div class="gdoc-markdown--nested gdoc-expand__content">
+    <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Task with description and priority</span>
+</span></span><span class="line"><span class="cl">backlog create <span class="s2">&#34;Implement user authentication&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -d <span class="s2">&#34;Add login and registration functionality&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --priority <span class="s2">&#34;high&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+  </div>
+</div>
+
+
+<div class="gdoc-expand">
+  <label class="gdoc-expand__head flex justify-between" for="12f74a1c-3">
+    <span>Task with Assignees and Labels</span>
+    <span>↕</span>
+  </label>
+  <input id="12f74a1c-3" type="checkbox" class="gdoc-expand__control hidden" />
+  <div class="gdoc-markdown--nested gdoc-expand__content">
+    <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog create <span class="s2">&#34;Update dependencies&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -a <span class="s2">&#34;alex&#34;</span> -a <span class="s2">&#34;jordan&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -l <span class="s2">&#34;maintenance,backend,security&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+  </div>
+</div>
+
+
+<div class="gdoc-expand">
+  <label class="gdoc-expand__head flex justify-between" for="b775734b-4">
+    <span>Task with Acceptance Criteria</span>
+    <span>↕</span>
+  </label>
+  <input id="b775734b-4" type="checkbox" class="gdoc-expand__control hidden" />
+  <div class="gdoc-markdown--nested gdoc-expand__content">
+    <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog create <span class="s2">&#34;Build reporting feature&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  -d <span class="s2">&#34;Create monthly performance reports in PDF format&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --ac <span class="s2">&#34;Report generation logic is accurate&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --ac <span class="s2">&#34;Users can select date range&#34;</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --ac <span class="s2">&#34;PDF export works correctly&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+  </div>
+</div>
+
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="hierarchical-tasks"
+    >
+        Hierarchical Tasks
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#hierarchical-tasks" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Hierarchical Tasks" aria-label="Anchor to: Hierarchical Tasks" href="#hierarchical-tasks">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Create subtasks by specifying a parent:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Create parent task</span>
+</span></span><span class="line"><span class="cl">backlog create <span class="s2">&#34;Implement User Authentication&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># → Creates T01-implement_user_authentication.md</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create subtask</span>
+</span></span><span class="line"><span class="cl">backlog create <span class="s2">&#34;Add Google OAuth login&#34;</span> -p <span class="s2">&#34;T01&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># → Creates T01.01-add_google_oauth_login.md</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Create sub-subtask</span>
+</span></span><span class="line"><span class="cl">backlog create <span class="s2">&#34;OAuth token validation&#34;</span> -p <span class="s2">&#34;T01.01&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># → Creates T01.01.01-oauth_token_validation.md</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="managing-tasks"
+    >
+        Managing Tasks
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#managing-tasks" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Managing Tasks" aria-label="Anchor to: Managing Tasks" href="#managing-tasks">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+
+
+
+<div class="gdoc-columns gdoc-columns--regular flex gap-16 flex-mobile-column">
+    <div class="gdoc-columns__content gdoc-markdown--nested flex-even">
+      <div class="flex align-center gdoc-page__anchorwrap">
+    <h4 id="update-status"
+    >
+        Update Status
+    </h4>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#update-status" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Update Status" aria-label="Anchor to: Update Status" href="#update-status">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog edit T01 --status <span class="s2">&#34;in-progress&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h4 id="add-assignee"
+    >
+        Add Assignee
+    </h4>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#add-assignee" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Add Assignee" aria-label="Anchor to: Add Assignee" href="#add-assignee">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog edit T01 --add-assignee <span class="s2">&#34;alex&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div></div>
+    <div class="gdoc-columns__content gdoc-markdown--nested flex-even">
+      <div class="flex align-center gdoc-page__anchorwrap">
+    <h4 id="add-labels"
+    >
+        Add Labels
+    </h4>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#add-labels" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Add Labels" aria-label="Anchor to: Add Labels" href="#add-labels">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog edit T01 --add-label <span class="s2">&#34;urgent&#34;</span> --add-label <span class="s2">&#34;frontend&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h4 id="complete-acceptance-criteria"
+    >
+        Complete Acceptance Criteria
+    </h4>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#complete-acceptance-criteria" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Complete Acceptance Criteria" aria-label="Anchor to: Complete Acceptance Criteria" href="#complete-acceptance-criteria">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog edit T01 --check-ac 1,3
+</span></span></code></pre></td></tr></table>
+</div>
+</div></div>
+</div>
+
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h3 id="filtering-and-searching"
+    >
+        Filtering and Searching
+    </h3>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#filtering-and-searching" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Filtering and Searching" aria-label="Anchor to: Filtering and Searching" href="#filtering-and-searching">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+
+
+
+<div class="gdoc-tabs">
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-filtering"
+      id="tabs-filtering-0"
+      checked="checked"
+    />
+    <label for="tabs-filtering-0" class="gdoc-tabs__label">
+      By Status
+    </label>
+    <div class="gdoc-markdown--nested gdoc-tabs__content">
+      <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog list --status <span class="s2">&#34;todo&#34;</span>
+</span></span><span class="line"><span class="cl">backlog list --status <span class="s2">&#34;in-progress&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-filtering"
+      id="tabs-filtering-1"
+      
+    />
+    <label for="tabs-filtering-1" class="gdoc-tabs__label">
+      By Assignee
+    </label>
+    <div class="gdoc-markdown--nested gdoc-tabs__content">
+      <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog list --assignee <span class="s2">&#34;alex&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-filtering"
+      id="tabs-filtering-2"
+      
+    />
+    <label for="tabs-filtering-2" class="gdoc-tabs__label">
+      By Parent
+    </label>
+    <div class="gdoc-markdown--nested gdoc-tabs__content">
+      <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># Show subtasks</span>
+</span></span><span class="line"><span class="cl">backlog list --parent <span class="s2">&#34;T01&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+    <input
+      type="radio"
+      class="gdoc-tabs__control hidden"
+      name="tabs-filtering"
+      id="tabs-filtering-3"
+      
+    />
+    <label for="tabs-filtering-3" class="gdoc-tabs__label">
+      Search Content
+    </label>
+    <div class="gdoc-markdown--nested gdoc-tabs__content">
+      <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">backlog search <span class="s2">&#34;authentication&#34;</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+</div>
+
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="file-structure"
+    >
+        File Structure
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#file-structure" class="gdoc-page__anchor clip flex align-center" title="Anchor to: File Structure" aria-label="Anchor to: File Structure" href="#file-structure">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>Tasks are stored as Markdown files in the <code>.backlog/</code> directory:</p>
+<pre tabindex="0"><code>.backlog/
+├── T01-implement_user_auth.md         # Root task
+├── T01.01-setup_oauth.md              # Subtask
+├── T01.01.01-google_oauth.md          # Sub-subtask
+├── T02-frontend_redesign.md           # Another root task
+└── archived/                          # Archived tasks
+    └── T03-completed_feature.md
+</code></pre><p>Each task file contains YAML frontmatter with metadata and Markdown content:</p>
+
+<details>
+  <summary>Details</summary>
+  <div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-markdown" data-lang="markdown"><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">id: &#34;01.02&#34;
+</span></span><span class="line"><span class="cl">title: &#34;Setup OAuth integration&#34;
+</span></span><span class="line"><span class="cl">status: &#34;todo&#34;
+</span></span><span class="line"><span class="cl">parent: &#34;01&#34;
+</span></span><span class="line"><span class="cl">assigned: [&#34;alex&#34;]
+</span></span><span class="line"><span class="cl">labels: [&#34;feature&#34;, &#34;auth&#34;]
+</span></span><span class="line"><span class="cl">priority: &#34;high&#34;
+</span></span><span class="line"><span class="cl">created_at: 2024-01-01T00:00:00Z
+</span></span><span class="line"><span class="cl">updated_at: 2024-01-01T00:00:00Z
+</span></span><span class="line"><span class="cl">---
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gu">## Description
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>
+</span></span><span class="line"><span class="cl">Set up OAuth integration with Google and GitHub providers.
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gu">## Acceptance Criteria
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>
+</span></span><span class="line"><span class="cl">&lt;!-- AC:BEGIN --&gt;
+</span></span><span class="line"><span class="cl"><span class="k">- [ ]</span> <span class="ni">#1</span> Google OAuth integration works
+</span></span><span class="line"><span class="cl"><span class="k">- [ ]</span> <span class="ni">#2</span> GitHub OAuth integration works
+</span></span><span class="line"><span class="cl"><span class="k">- [x]</span> <span class="ni">#3</span> OAuth scope validation implemented
+</span></span><span class="line"><span class="cl">&lt;!-- AC:END --&gt;
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="gu">## Implementation Notes
+</span></span></span><span class="line"><span class="cl"><span class="gu"></span>
+</span></span><span class="line"><span class="cl"><span class="k">-</span> Use oauth2 package for Go
+</span></span><span class="line"><span class="cl"><span class="k">-</span> Store tokens securely
+</span></span></code></pre></td></tr></table>
+</div>
+</div></details>
+
+<div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="git-integration"
+    >
+        Git Integration
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#git-integration" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Git Integration" aria-label="Anchor to: Git Integration" href="#git-integration">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+
+
+
+<blockquote class="gdoc-hint note">
+  <div class="gdoc-hint__title flex gap-8 align-center"><i class="fa note"></i>
+      <span>Note</span></div>
+  <div class="gdoc-hint__text">Backlog automatically commits changes to your Git repository:</div>
+</blockquote>
+
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># After creating a task</span>
+</span></span><span class="line"><span class="cl">git log -1 --oneline
+</span></span><span class="line"><span class="cl"><span class="c1"># create: T01 Set up project documentation</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># After updating a task</span>
+</span></span><span class="line"><span class="cl">git log -1 --oneline
+</span></span><span class="line"><span class="cl"><span class="c1"># update: T01 moved to in-progress, assigned alex</span>
+</span></span></code></pre></td></tr></table>
+</div>
+</div><div class="flex align-center gdoc-page__anchorwrap">
+    <h2 id="next-steps"
+    >
+        Next Steps
+    </h2>
+    <a data-clipboard-text="http://localhost:1313/backlog/getting-started/#next-steps" class="gdoc-page__anchor clip flex align-center" title="Anchor to: Next Steps" aria-label="Anchor to: Next Steps" href="#next-steps">
+        <svg class="gdoc-icon gdoc_link"><use xlink:href="#gdoc_link"></use></svg>
+    </a>
+</div>
+<p>
+
+
+<span class="gdoc-button gdoc-button--regular">
+  <a
+    class="gdoc-button__link" href="/backlog/cli/"
+  >
+    CLI Reference
+  </a>
+</span>
+
+
+
+
+<span class="gdoc-button gdoc-button--regular">
+  <a
+    class="gdoc-button__link" href="/backlog/ai-integration/"
+  >
+    AI Integration
+  </a>
+</span>
+
+
+
+
+<span class="gdoc-button gdoc-button--regular">
+  <a
+    class="gdoc-button__link" href="/backlog/development/"
+  >
+    Development Guide
+  </a>
+</span>
+</p>
+
+  </article>
+
+
+
+          
+          
+          <div class="gdoc-page__footer flex flex-wrap justify-between">
+            
+              
+
+
+
+
+
+
+
+
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+          
+  
+  
+
+  
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+    
+
+    
+      
+    
+
+    
+      
+      
+
+      
+        
+        
+        
+        
+
+        
+        
+
+        
+
+        
+
+        
+          
+        
+
+        
+        
+      
+    
+
+  
+
+        
+      
+    
+
+  
+
+
+
+
+<span class="gdoc-page__nav">
+  
+</span>
+<span class="gdoc-page__nav">
+  
+</span>
+
+            
+          </div>
+          
+        </div>
+      </main>
+
+      <footer class="gdoc-footer">
+  <nav class="container flex">
+    <div>
+      <section class="flex flex-wrap align-center">
+        <span class="gdoc-footer__item gdoc-footer__item--row">
+          Built with <a href="https://gohugo.io/" class="gdoc-footer__link">Hugo</a> and <svg class="gdoc-icon gdoc_heart"><use xlink:href="#gdoc_heart"></use></svg>
+
+        </span>
+        
+          <span class="gdoc-footer__item gdoc-footer__item--row">
+            <a href="https://github.com/veggiemonk/backlog/blob/main/LICENSE" class="gdoc-footer__link">
+              Legal Notice
+            </a>
+          </span>
+        
+        
+      </section>
+      
+    </div>
+    
+      <div class="flex flex-25 justify-end">
+        <span class="gdoc-footer__item text-right">
+          <a class="gdoc-footer__link fake-link" href="#" aria-label="Back to top">
+            <svg class="gdoc-icon gdoc_keyboard_arrow_up">
+              <use xlink:href="#gdoc_keyboard_arrow_up"></use>
+            </svg>
+            <span class="hidden-mobile">Back to top</span>
+          </a>
+        </span>
+      </div>
+    
+  </nav>
+</footer>
+
+    </div>
+
+    
+  </body>
+</html>
