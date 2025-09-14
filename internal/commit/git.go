@@ -51,6 +51,14 @@ func Add(path, oldPath, message string) error {
 	if err != nil {
 		return fmt.Errorf("could not get worktree: %w", err)
 	}
+	status, err := worktree.Status()
+	if err != nil {
+		return fmt.Errorf("could not get status: %w", err)
+	}
+	if !status.IsClean() {
+		logging.Warn("the repository status is not clean, skip commit")
+		return nil
+	}
 	logging.Info("auto-committing changes", "path", path, "oldPath", oldPath, "message", message)
 	if path == "" {
 		logging.Info("no changes to commit")
