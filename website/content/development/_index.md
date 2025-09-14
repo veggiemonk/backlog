@@ -13,7 +13,7 @@ Resources for developers who want to understand, contribute to, or extend the Ba
 
 This section contains technical documentation about the Backlog project's architecture, implementation details, and development processes.
 
-{{< columns >}}
+{{< tabpane >}}
 
 ### Technical Documentation
 - [**Technical Analysis**](analysis) - Comprehensive analysis of the codebase, architecture, and implementation patterns
@@ -27,13 +27,13 @@ This section contains technical documentation about the Backlog project's archit
 - [**GitHub Repository**](https://github.com/veggiemonk/backlog) - Source code and issues
 - [**CLI Reference**]({{< relref "cli" >}}) - Complete command documentation
 
-{{< /columns >}}
+{{< /tabpane >}}
 
 ## Contributing
 
-{{< hint type=tip >}}
+{{< alert >}}
 Backlog is designed to be simple and focused. Before contributing:
-{{< /hint >}}
+{{< /alert >}}
 
 1. **Read the Technical Analysis** to understand the current architecture
 2. **Review the Project Plan** to see the intended direction
@@ -41,7 +41,7 @@ Backlog is designed to be simple and focused. Before contributing:
 
 ### Development Environment
 
-{{< tabs "dev-setup" >}}
+{{< tabpane >}}
 {{< tab "Quick Start" >}}
 ```bash
 # Clone the repository
@@ -79,11 +79,11 @@ make lint
 go fmt ./...
 ```
 {{< /tab >}}
-{{< /tabs >}}
+{{< /tabpane >}}
 
 ### Architecture Principles
 
-{{< columns >}}
+{{< tabpane >}}
 
 #### Design Philosophy
 - **File-based storage**: Tasks as Markdown files with YAML frontmatter
@@ -99,32 +99,32 @@ go fmt ./...
 - **Dependency injection**: Testable design with afero filesystem mocking
 - **Modern Go**: Go 1.21+ with contemporary idioms and patterns
 
-{{< /columns >}}
+{{< /tabpane >}}
 
 ### Code Quality Standards
 
-{{< expand "Testing Requirements" >}}
+{{< details "Testing Requirements" >}}
 - Comprehensive test coverage using afero filesystem mocking
 - Unit tests for all core business logic
 - Integration tests for CLI commands
 - MCP server functionality tests
 - Tests run against in-memory filesystems for isolation
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "Code Style" >}}
+{{< details "Code Style" >}}
 - Go 1.21+ with modern idioms
 - Clean separation of concerns (core, CLI, MCP server)
 - Interface-driven design for testability
 - Consistent error handling patterns
 - Meaningful variable and function names
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "Documentation" >}}
+{{< details "Documentation" >}}
 - All public APIs documented with Go doc comments
 - CLI commands auto-generated with Cobra
 - Architecture decisions recorded in technical analysis
 - Examples provided for common use cases
-{{< /expand >}}
+{{< /details >}}
 
 ## Project Structure
 
@@ -144,7 +144,7 @@ backlog/
 
 ## Design Philosophy
 
-{{< hint type=important title="Core Principles" >}}
+{{< alert >}}
 **Simplicity**: Handle fewer use cases well rather than many use cases poorly.
 
 **AI-Friendly**: Designed from the ground up to work seamlessly with AI agents through MCP integration.
@@ -152,11 +152,11 @@ backlog/
 **Developer-Centric**: Built by developers, for developers, with a focus on transparency and control.
 
 **Offline-First**: Everything works locally without external dependencies or cloud services.
-{{< /hint >}}
+{{< /alert >}}
 
 ## Getting Help
 
-{{< columns >}}
+{{< tabpane >}}
 
 ### Community Resources
 - **Issues**: [GitHub Issues](https://github.com/veggiemonk/backlog/issues)
@@ -170,4 +170,4 @@ backlog/
 - **AI Integration**: [MCP Setup]({{< relref "ai-integration" >}})
 - **API Reference**: [CLI Commands]({{< relref "cli" >}})
 
-{{< /columns >}}
+{{< /tabpane >}}

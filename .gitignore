@@ -3,3 +3,5 @@ bin/
 coverage.*
 dist/
 .hugo_build.lock
+
+website/node_modules

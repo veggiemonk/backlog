@@ -37,12 +37,12 @@ Dirty: false
 | --- | --- |
 | `-h, --help` | Help for version. |
 
-{{< expand "Inherited Options" >}}
+{{< details "Inherited Options" >}}
 | Flag | Default | Description |
 | --- | --- | --- |
 | `--auto-commit` | `true` | Auto-committing changes to git repository. |
 | `--folder` | `.backlog` | Directory for backlog tasks. |
-{{< /expand >}}
+{{< /details >}}
 
 ### SEE ALSO
 

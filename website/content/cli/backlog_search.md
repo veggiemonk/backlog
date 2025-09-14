@@ -16,7 +16,7 @@ Performs a full-text search for tasks containing the specified query string. The
 backlog search <query> [flags]
 ```
 
-{{< expand "Show Examples" "true" >}}
+{{< details "Show Examples" >}}
 ```bash
 # Search for tasks containing "login" in any field
 backlog search "login"
@@ -33,7 +33,7 @@ backlog search "api" --markdown
 # Search with JSON output
 backlog search "api" --json
 ```
-{{< /expand >}}
+{{< /details >}}
 
 ### Options
 
@@ -55,12 +55,12 @@ In addition to the query, you can use the same filtering and sorting flags avail
 | `-s, --status` | Filter tasks by status. |
 | `-u, --unassigned` | List tasks that have no one assigned. |
 
-{{< expand "Inherited Options" >}}
+{{< details "Inherited Options" >}}
 | Flag | Default | Description |
 | --- | --- | --- |
 | `--auto-commit` | `true` | Auto-committing changes to git repository. |
 | `--folder` | `.backlog` | Directory for backlog tasks. |
-{{< /expand >}}
+{{< /details >}}
 
 ### SEE ALSO
 

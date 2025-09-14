@@ -16,8 +16,8 @@ Edit an existing task by providing its ID and flags for the fields to update. Th
 backlog edit <id> [flags]
 ```
 
-{{< expand "Show Examples" "true" >}}
-{{< tabs "edit-examples" >}}
+{{< details "Show Examples" >}}
+{{< tabpane >}}
 {{< tab "Basic Edits" >}}
 ##### 1. Changing the Title
 Use `-t` or `--title` to rename the task.
@@ -105,8 +105,8 @@ backlog edit T42 \
   --check-ac 2
 ```
 {{< /tab >}}
-{{< /tabs >}}
-{{< /expand >}}
+{{< /tabpane >}}
+{{< /details >}}
 
 ### Options
 
@@ -130,12 +130,12 @@ backlog edit T42 \
 | `-t, --title` | New title for the task. |
 | `--uncheck-ac` | Uncheck an acceptance criterion by its 1-based index. |
 
-{{< expand "Inherited Options" >}}
+{{< details "Inherited Options" >}}
 | Flag | Default | Description |
 | --- | --- | --- |
 | `--auto-commit` | `true` | Auto-committing changes to git repository. |
 | `--folder` | `.backlog` | Directory for backlog tasks. |
-{{< /expand >}}
+{{< /details >}}
 
 ### SEE ALSO
 

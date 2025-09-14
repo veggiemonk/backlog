@@ -36,12 +36,12 @@ backlog view T01 -j
 | `-h, --help` | Help for view. |
 | `-j, --json` | Print JSON output. |
 
-{{< expand "Inherited Options" >}}
+{{< details "Inherited Options" >}}
 | Flag | Default | Description |
 | --- | --- | --- |
 | `--auto-commit` | `true` | Auto-committing changes to git repository. |
 | `--folder` | `.backlog` | Directory for backlog tasks. |
-{{< /expand >}}
+{{< /details >}}
 
 ### SEE ALSO
 

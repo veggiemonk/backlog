@@ -16,8 +16,8 @@ Lists all tasks in the backlog except for archived tasks. Provides powerful filt
 backlog list [flags]
 ```
 
-{{< expand "Show Examples" "true" >}}
-{{< tabs "list-examples" >}}
+{{< details "Show Examples" >}}
+{{< tabpane >}}
 {{< tab "Filtering" >}}
 ##### Filtering by Metadata
 ```bash
@@ -81,8 +81,8 @@ backlog list -m
 backlog list -j
 ```
 {{< /tab >}}
-{{< /tabs >}}
-{{< /expand >}}
+{{< /tabpane >}}
+{{< /details >}}
 
 ### Options
 
@@ -103,12 +103,12 @@ backlog list -j
 | `-s, --status` | Filter tasks by status. |
 | `-u, --unassigned` | Filter tasks that have no one assigned. |
 
-{{< expand "Inherited Options" >}}
+{{< details "Inherited Options" >}}
 | Flag | Default | Description |
 | --- | --- | --- |
 | `--auto-commit` | `true` | Auto-committing changes to git repository. |
 | `--folder` | `.backlog` | Directory for backlog tasks. |
-{{< /expand >}}
+{{< /details >}}
 
 ### SEE ALSO
 

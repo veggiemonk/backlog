@@ -23,7 +23,11 @@
       "mcp__gopls__go_search",
       "mcp__gopls__go_diagnostics",
       "mcp__gopls__go_file_context",
-      "Bash(go run:*)"
+      "Bash(go run:*)",
+      "Bash(gemini:*)",
+      "Bash(hugo mod get:*)",
+      "Bash(hugo)",
+      "WebFetch(domain:www.docsy.dev)"
     ],
     "deny": [],
     "ask": [

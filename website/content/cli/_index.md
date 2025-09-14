@@ -13,30 +13,33 @@ Complete command-line interface documentation for the backlog tool.
 
 Backlog provides a comprehensive CLI for managing tasks with the following commands:
 
-{{< columns >}}
-
-### Core Commands
-- [`backlog`](backlog) - Main command with global options
-- [`backlog create`](backlog_create) - Create new tasks
-- [`backlog list`](backlog_list) - List and filter tasks
-- [`backlog view`](backlog_view) - View task details
-- [`backlog edit`](backlog_edit) - Edit existing tasks
-
-<--->
-
-### Additional Commands
-- [`backlog search`](backlog_search) - Search tasks by content
-- [`backlog archive`](backlog_archive) - Archive completed tasks
-- [`backlog mcp`](backlog_mcp) - Start MCP server for AI agents
-- [`backlog version`](backlog_version) - Show version information
-
-{{< /columns >}}
+<div class="row">
+  <div class="col-md-6">
+    <h3>Core Commands</h3>
+    <ul>
+      <li><a href="backlog"><code>backlog</code></a> - Main command with global options</li>
+      <li><a href="backlog_create"><code>backlog create</code></a> - Create new tasks</li>
+      <li><a href="backlog_list"><code>backlog list</code></a> - List and filter tasks</li>
+      <li><a href="backlog_view"><code>backlog view</code></a> - View task details</li>
+      <li><a href="backlog_edit"><code>backlog edit</code></a> - Edit existing tasks</li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <h3>Additional Commands</h3>
+    <ul>
+      <li><a href="backlog_search"><code>backlog search</code></a> - Search tasks by content</li>
+      <li><a href="backlog_archive"><code>backlog archive</code></a> - Archive completed tasks</li>
+      <li><a href="backlog_mcp"><code>backlog mcp</code></a> - Start MCP server for AI agents</li>
+      <li><a href="backlog_version"><code>backlog version</code></a> - Show version information</li>
+    </ul>
+  </div>
+</div>
 
 ## Quick Examples
 
 ### Create Tasks
 
-{{< tabs "create-examples" >}}
+{{< tabpane >}}
 {{< tab "Simple Task" >}}
 ```bash
 backlog create "Fix login bug"
@@ -58,11 +61,11 @@ backlog create "Implement OAuth" \
 backlog create "OAuth token validation" -p "T01"
 ```
 {{< /tab >}}
-{{< /tabs >}}
+{{< /tabpane >}}
 
 ### List and Filter
 
-{{< tabs "list-examples" >}}
+{{< tabpane >}}
 {{< tab "All Tasks" >}}
 ```bash
 backlog list
@@ -83,57 +86,41 @@ backlog list --assignee "alice"
 backlog list --parent "T01"
 ```
 {{< /tab >}}
-{{< /tabs >}}
+{{< /tabpane >}}
 
 ### View and Edit
 
-{{< columns >}}
-
-#### View Details
-```bash
-backlog view T01
-```
-
-#### Update Status
-```bash
-backlog edit T01 --status "done"
-```
-
-<--->
-
-#### Add Assignee
-```bash
-backlog edit T01 --add-assignee "bob"
-```
-
-#### Add Labels
-```bash
-backlog edit T01 --add-label "urgent"
-```
-
-{{< /columns >}}
+<div class="row">
+  <div class="col-md-6">
+    <h4>View Details</h4>
+    <pre><code class="language-bash">backlog view T01</code></pre>
+    <h4>Update Status</h4>
+    <pre><code class="language-bash">backlog edit T01 --status "done"</code></pre>
+  </div>
+  <div class="col-md-6">
+    <h4>Add Assignee</h4>
+    <pre><code class="language-bash">backlog edit T01 --add-assignee "bob"</code></pre>
+    <h4>Add Labels</h4>
+    <pre><code class="language-bash">backlog edit T01 --add-label "urgent"</code></pre>
+  </div>
+</div>
 
 ### Search and Archive
 
-{{< columns >}}
-
-#### Search Content
-```bash
-backlog search "authentication"
-```
-
-<--->
-
-#### Archive Task
-```bash
-backlog archive T01
-```
-
-{{< /columns >}}
+<div class="row">
+  <div class="col-md-6">
+    <h4>Search Content</h4>
+    <pre><code class="language-bash">backlog search "authentication"</code></pre>
+  </div>
+  <div class="col-md-6">
+    <h4>Archive Task</h4>
+    <pre><code class="language-bash">backlog archive T01</code></pre>
+  </div>
+</div>
 
 ### AI Integration
 
-{{< tabs "mcp-examples" >}}
+{{< tabpane >}}
 {{< tab "STDIO Transport" >}}
 ```bash
 backlog mcp
@@ -144,13 +131,13 @@ backlog mcp
 backlog mcp --http --port 8106
 ```
 {{< /tab >}}
-{{< /tabs >}}
+{{< /tabpane >}}
 
 ## Global Options
 
-{{< hint type=tip >}}
+{{< alert title="Tip" color="info" >}}
 All commands support these global options:
-{{< /hint >}}
+{{< /alert >}}
 
 - `--help, -h`: Show help information
 - `--version`: Show version information
@@ -159,26 +146,25 @@ All commands support these global options:
 
 Many commands support multiple output formats:
 
-{{< columns >}}
-
-- **Table** (default): Human-readable table format
-- **JSON**: Machine-readable JSON format
-- **Markdown**: Markdown format for documentation
-
-<--->
-
-```bash
-backlog list --format json
-backlog view T01 --format markdown
-```
-
-{{< /columns >}}
+<div class="row">
+  <div class="col-md-6">
+    <ul>
+      <li><strong>Table</strong> (default): Human-readable table format</li>
+      <li><strong>JSON</strong>: Machine-readable JSON format</li>
+      <li><strong>Markdown</strong>: Markdown format for documentation</li>
+    </ul>
+  </div>
+  <div class="col-md-6">
+    <pre><code class="language-bash">backlog list --format json
+backlog view T01 --format markdown</code></pre>
+  </div>
+</div>
 
 ## Task ID Format
 
-{{< hint type=note >}}
+{{< alert title="Note" >}}
 Tasks use hierarchical IDs with dot notation:
-{{< /hint >}}
+{{< /alert >}}
 
 - `T01` - Root task
 - `T01.01` - Subtask of T01
@@ -199,6 +185,6 @@ Tasks are stored as Markdown files in the `.backlog/` directory:
     └── T03-completed_task.md
 ```
 
-{{< hint type=tip >}}
+{{< alert title="Tip" color="info" >}}
 Each command in this reference includes detailed usage information, examples, and available options.
-{{< /hint >}}
+{{< /alert >}}

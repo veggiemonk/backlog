@@ -16,8 +16,8 @@ Creates a new task in the backlog. You can specify everything from a simple titl
 backlog create <title> [flags]
 ```
 
-{{< expand "Show Examples" "true" >}}
-{{< tabs "create-examples" >}}
+{{< details "Show Examples" >}}
+{{< tabpane >}}
 {{< tab "Basic" >}}
 ##### 1. Basic Task Creation
 The simplest way to create a task is with just a title.
@@ -108,8 +108,8 @@ backlog create "Build new reporting feature" \
   -p "T23"
 ```
 {{< /tab >}}
-{{< /tabs >}}
-{{< /expand >}}
+{{< /tabpane >}}
+{{< /details >}}
 
 ### Options
 
@@ -126,12 +126,12 @@ backlog create "Build new reporting feature" \
 | `--plan` | Implementation plan for the task. |
 | `--priority` | Priority of the task (low, medium, high, critical). Default is `medium`. |
 
-{{< expand "Inherited Options" >}}
+{{< details "Inherited Options" >}}
 | Flag | Default | Description |
 | --- | --- | --- |
 | `--auto-commit` | `true` | Auto-committing changes to git repository. |
 | `--folder` | `.backlog` | Directory for backlog tasks. |
-{{< /expand >}}
+{{< /details >}}
 
 ### SEE ALSO
 

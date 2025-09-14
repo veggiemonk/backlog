@@ -41,12 +41,12 @@ backlog mcp --http --port 4321
 | `--http` | | Use HTTP transport instead of stdio. |
 | `--port` | `8106` | Port for the MCP server (HTTP transport). |
 
-{{< expand "Inherited Options" >}}
+{{< details "Inherited Options" >}}
 | Flag | Default | Description |
 | --- | --- | --- |
 | `--auto-commit` | `true` | Auto-committing changes to git repository. |
 | `--folder` | `.backlog` | Directory for backlog tasks. |
-{{< /expand >}}
+{{< /details >}}
 
 ### SEE ALSO
 

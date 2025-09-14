@@ -10,9 +10,9 @@ Backlog includes a Model Context Protocol (MCP) server that exposes task managem
 
 ## Why AI Integration?
 
-{{< hint type=important >}}
+{{< alert >}}
 The context window deteriorates rapidly on large-scale projects. A proven workaround is to ask AI agents to "make a plan for X, write it to a markdown file and keep it updated with the ongoing tasks".
-{{< /hint >}}
+{{< /alert >}}
 
 This technique has worked incredibly well, making refactoring and other significant code changes more resilient to failures, retries, or rate-limiting from the model.
 
@@ -20,7 +20,7 @@ Backlog provides a structured MCP server that AI tools can understand and trust 
 
 ## Starting the MCP Server
 
-{{< tabs "mcp-server" >}}
+{{< tabpane >}}
 {{< tab "STDIO Transport (Default)" >}}
 ```bash
 # Start MCP server using STDIO transport
@@ -35,13 +35,13 @@ backlog mcp --http --port 8106
 ```
 Use HTTP transport for web-based AI agents or custom integrations.
 {{< /tab >}}
-{{< /tabs >}}
+{{< /tabpane >}}
 
 ## Available MCP Tools
 
 The MCP server exposes the following tools to AI agents:
 
-{{< expand "task_create" >}}
+{{< details "task_create" >}}
 **Create new tasks with full metadata support.**
 
 **Parameters:**
@@ -67,9 +67,9 @@ The MCP server exposes the following tools to AI agents:
   }
 }
 ```
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "task_list" >}}
+{{< details "task_list" >}}
 **List and filter tasks with various criteria.**
 
 **Parameters:**
@@ -78,16 +78,16 @@ The MCP server exposes the following tools to AI agents:
 - `parent`: Filter by parent task ID
 - `labels`: Filter by labels
 - `unassigned`: Show only unassigned tasks
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "task_view" >}}
+{{< details "task_view" >}}
 **Get detailed information about a specific task.**
 
 **Parameters:**
 - `id` (required): Task ID to view
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "task_edit" >}}
+{{< details "task_edit" >}}
 **Update existing tasks with field-specific modifications.**
 
 **Parameters:**
@@ -102,25 +102,25 @@ The MCP server exposes the following tools to AI agents:
 - `remove_labels`: Remove labels
 - `check_ac`: Mark acceptance criteria as complete (by index)
 - `uncheck_ac`: Mark acceptance criteria as incomplete
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "task_search" >}}
+{{< details "task_search" >}}
 **Search tasks by content across titles and descriptions.**
 
 **Parameters:**
 - `query` (required): Search query string
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "task_archive" >}}
+{{< details "task_archive" >}}
 **Archive completed tasks (moves them to archived directory).**
 
 **Parameters:**
 - `id` (required): Task ID to archive
-{{< /expand >}}
+{{< /details >}}
 
 ## AI Agent Configuration Examples
 
-{{< tabs "ai-config" >}}
+{{< tabpane >}}
 {{< tab "Claude Code (.claude)" >}}
 ```json
 {
@@ -158,19 +158,19 @@ The MCP server exposes the following tools to AI agents:
 }
 ```
 {{< /tab >}}
-{{< /tabs >}}
+{{< /tabpane >}}
 
 ## Common AI Workflows
 
 ### Project Planning
 
-{{< hint type=tip title="Prompt Example" >}}
+{{< alert >}}
 ```
 Analyze this codebase and create a comprehensive refactoring plan.
 Break it down into tasks using the backlog tools, with proper
 hierarchical structure and acceptance criteria.
 ```
-{{< /hint >}}
+{{< /alert >}}
 
 The AI will:
 1. Use `task_create` to create a main refactoring task
@@ -180,12 +180,12 @@ The AI will:
 
 ### Task Management
 
-{{< hint type=tip title="Prompt Example" >}}
+{{< alert >}}
 ```
 Review my current backlog and update the status of completed tasks.
 Move finished items to the archive.
 ```
-{{< /hint >}}
+{{< /alert >}}
 
 The AI will:
 1. Use `task_list` to get current tasks
@@ -194,12 +194,12 @@ The AI will:
 
 ### Progress Tracking
 
-{{< hint type=tip title="Prompt Example" >}}
+{{< alert >}}
 ```
 Show me the current status of the authentication feature
 and create subtasks for any missing work.
 ```
-{{< /hint >}}
+{{< /alert >}}
 
 The AI will:
 1. Use `task_search` to find authentication-related tasks
@@ -208,7 +208,7 @@ The AI will:
 
 ## Best Practices
 
-{{< columns >}}
+{{< tabpane >}}
 
 ### For Humans Working with AI Agents
 
@@ -226,11 +226,11 @@ The AI will:
 3. **Add Context**: Include detailed descriptions and acceptance criteria
 4. **Update Regularly**: Keep task statuses current as work progresses
 
-{{< /columns >}}
+{{< /tabpane >}}
 
 ## Example AI Prompts
 
-{{< expand "Initial Project Setup" >}}
+{{< details "Initial Project Setup" >}}
 ```
 I'm starting a new web application project. Create a comprehensive
 development backlog with tasks for:
@@ -242,9 +242,9 @@ development backlog with tasks for:
 
 Use hierarchical task structure with acceptance criteria for each task.
 ```
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "Feature Implementation" >}}
+{{< details "Feature Implementation" >}}
 ```
 I need to implement a payment processing feature. Create tasks for:
 - Payment gateway integration
@@ -255,9 +255,9 @@ I need to implement a payment processing feature. Create tasks for:
 
 Make sure each task has specific acceptance criteria and proper priorities.
 ```
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "Code Review and Refactoring" >}}
+{{< details "Code Review and Refactoring" >}}
 ```
 Review the current codebase and create a refactoring plan. Focus on:
 - Code organization and structure
@@ -267,28 +267,28 @@ Review the current codebase and create a refactoring plan. Focus on:
 
 Create tasks with realistic time estimates and dependencies.
 ```
-{{< /expand >}}
+{{< /details >}}
 
 ## Troubleshooting
 
-{{< expand "MCP Server Not Starting" >}}
+{{< details "MCP Server Not Starting" >}}
 1. **Check Binary**: Ensure `backlog` is in your PATH
 2. **Verify Installation**: Run `backlog version` to confirm installation
 3. **Check Permissions**: Ensure the binary has execute permissions
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "AI Agent Can't Connect" >}}
+{{< details "AI Agent Can't Connect" >}}
 1. **Transport Type**: Verify you're using the correct transport (STDIO vs HTTP)
 2. **Configuration**: Check your AI agent's MCP configuration
 3. **Logs**: Check agent logs for connection errors
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "Tasks Not Creating" >}}
+{{< details "Tasks Not Creating" >}}
 1. **Git Repository**: Ensure you're in a Git repository
 2. **Permissions**: Check write permissions for `.backlog/` directory
 3. **Disk Space**: Ensure sufficient disk space for task files
-{{< /expand >}}
+{{< /details >}}
 
-{{< hint type=note >}}
+{{< alert >}}
 For more troubleshooting help, see the [Development Guide]({{< relref "development" >}}) or file an issue on [GitHub](https://github.com/veggiemonk/backlog/issues).
-{{< /hint >}}
+{{< /alert >}}

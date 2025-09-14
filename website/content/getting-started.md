@@ -10,7 +10,7 @@ This guide will help you get up and running with Backlog quickly.
 
 ## Installation
 
-{{< tabs "installation" >}}
+{{< tabpane >}}
 {{< tab "From Source" >}}
 ```bash
 git clone https://github.com/veggiemonk/backlog
@@ -26,13 +26,13 @@ go install github.com/veggiemonk/backlog@latest
 {{< tab "Download Binary" >}}
 Download the latest binary from the [releases page](https://github.com/veggiemonk/backlog/releases).
 {{< /tab >}}
-{{< /tabs >}}
+{{< /tabpane >}}
 
 ## First Steps
 
-{{< hint type=tip >}}
+{{< alert >}}
 No initialization is required! Backlog works immediately in any directory.
-{{< /hint >}}
+{{< /alert >}}
 
 ### Create Your First Task
 
@@ -58,24 +58,24 @@ backlog view T01
 
 ### Creating Tasks with Metadata
 
-{{< expand "Simple Task Creation" >}}
+{{< details "Simple Task Creation" >}}
 ```bash
 # Task with description and priority
 backlog create "Implement user authentication" \
   -d "Add login and registration functionality" \
   --priority "high"
 ```
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "Task with Assignees and Labels" >}}
+{{< details "Task with Assignees and Labels" >}}
 ```bash
 backlog create "Update dependencies" \
   -a "alex" -a "jordan" \
   -l "maintenance,backend,security"
 ```
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "Task with Acceptance Criteria" >}}
+{{< details "Task with Acceptance Criteria" >}}
 ```bash
 backlog create "Build reporting feature" \
   -d "Create monthly performance reports in PDF format" \
@@ -83,7 +83,7 @@ backlog create "Build reporting feature" \
   --ac "Users can select date range" \
   --ac "PDF export works correctly"
 ```
-{{< /expand >}}
+{{< /details >}}
 
 ### Hierarchical Tasks
 
@@ -105,7 +105,7 @@ backlog create "OAuth token validation" -p "T01.01"
 
 ### Managing Tasks
 
-{{< columns >}}
+{{< tabpane >}}
 
 #### Update Status
 ```bash
@@ -129,11 +129,11 @@ backlog edit T01 --add-label "urgent" --add-label "frontend"
 backlog edit T01 --check-ac 1,3
 ```
 
-{{< /columns >}}
+{{< /tabpane >}}
 
 ### Filtering and Searching
 
-{{< tabs "filtering" >}}
+{{< tabpane >}}
 {{< tab "By Status" >}}
 ```bash
 backlog list --status "todo"
@@ -156,7 +156,7 @@ backlog list --parent "T01"
 backlog search "authentication"
 ```
 {{< /tab >}}
-{{< /tabs >}}
+{{< /tabpane >}}
 
 ## File Structure
 
@@ -209,9 +209,9 @@ Set up OAuth integration with Google and GitHub providers.
 
 ## Git Integration
 
-{{< hint type=note >}}
+{{< alert >}}
 Backlog automatically commits changes to your Git repository:
-{{< /hint >}}
+{{< /alert >}}
 
 ```bash
 # After creating a task
@@ -225,6 +225,6 @@ git log -1 --oneline
 
 ## Next Steps
 
-{{< button relref="cli" >}}CLI Reference{{< /button >}}
-{{< button relref="ai-integration" >}}AI Integration{{< /button >}}
-{{< button relref="development" >}}Development Guide{{< /button >}}
+[**CLI Reference**]({{< relref "cli" >}}){: .btn .btn-primary}
+[**AI Integration**]({{< relref "ai-integration" >}}){: .btn .btn-primary}
+[**Development Guide**]({{< relref "development" >}}){: .btn .btn-primary}

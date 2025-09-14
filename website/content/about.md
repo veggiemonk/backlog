@@ -8,9 +8,9 @@ weight: 60
 
 ## Project Background
 
-{{< hint type=note >}}
+{{< alert >}}
 The context window deteriorates rapidly on large-scale projects. A workaround many developers have found is to ask AI agents to "make a plan for X, write it to a markdown file and keep it updated with the ongoing tasks".
-{{< /hint >}}
+{{< /alert >}}
 
 This technique has worked incredibly well, making refactoring and other significant code changes more resilient to failures, retries, or rate-limiting from AI models.
 
@@ -18,7 +18,7 @@ However, this approach often cluttered repository root directories with files li
 
 ## Philosophy
 
-{{< columns >}}
+{{< tabpane >}}
 
 ### Simplicity Over Features
 Backlog aims to handle fewer use cases well rather than many use cases poorly. It focuses on the core workflow of task management for developer-AI collaboration.
@@ -34,13 +34,13 @@ Everything is stored as human-readable Markdown files in Git. No databases, no p
 ### Developer Control
 You own your data completely. Everything lives in your Git repository and can be edited manually if needed.
 
-{{< /columns >}}
+{{< /tabpane >}}
 
 ## Development Story
 
-{{< hint type=tip title="AI-Assisted Development" >}}
+{{< alert >}}
 While this codebase is mostly hand-written, the documentation, comments, examples, and some tests were generated with AI assistance.
-{{< /hint >}}
+{{< /alert >}}
 
 The author found that AI agents yield better results when:
 
@@ -54,7 +54,7 @@ After establishing these foundations, AI assistance becomes much more effective 
 
 The project was developed using several AI tools (all paid tier):
 
-{{< columns >}}
+{{< tabpane >}}
 
 ### Primary Tools
 - **gemini-2.5-pro** - Primary development assistance
@@ -66,19 +66,19 @@ The project was developed using several AI tools (all paid tier):
 - **github-copilot** - Code completion and suggestions
 - **amp** - Additional AI assistance
 
-{{< /columns >}}
+{{< /tabpane >}}
 
 ## Inspiration
 
 This project is inspired by:
 
-{{< expand "Backlog.md" >}}
+{{< details "Backlog.md" >}}
 [Backlog.md](https://github.com/MrLesk/Backlog.md) - Simple markdown-based task tracking that demonstrated the power of storing tasks as plain markdown files.
-{{< /expand >}}
+{{< /details >}}
 
-{{< expand "TaskWing" >}}
+{{< details "TaskWing" >}}
 [TaskWing](https://github.com/josephgoksu/TaskWing) - CLI task management that showed how effective command-line interfaces can be for developer workflows.
-{{< /expand >}}
+{{< /details >}}
 
 But Backlog aims to be simpler while being specifically optimized for AI-friendly workflows.
 
@@ -91,9 +91,9 @@ For MCP server implementation, excellent examples can be found in:
 
 ## Example Usage
 
-{{< hint type=tip >}}
+{{< alert >}}
 You can see Backlog in action by examining the [.backlog](https://github.com/veggiemonk/backlog/tree/main/.backlog) folder in this repository, which contains the actual tasks used to develop this project.
-{{< /hint >}}
+{{< /alert >}}
 
 The backlog was generated using this prompt:
 
@@ -111,7 +111,7 @@ Read the full instructions for backlog: ./internal/mcp/prompt.md
 
 ## Contributing
 
-{{< columns >}}
+{{< tabpane >}}
 
 ### Getting Started
 Backlog is open source and welcomes contributions. See the [Development Guide]({{< relref "development" >}}) for technical details.
@@ -128,7 +128,7 @@ Backlog is open source and welcomes contributions. See the [Development Guide]({
 - [**CLI Reference**]({{< relref "cli" >}}) - Complete command documentation
 - [**AI Integration**]({{< relref "ai-integration" >}}) - MCP setup guide
 
-{{< /columns >}}
+{{< /tabpane >}}
 
 ## License
 
@@ -136,7 +136,7 @@ This project is released under the **MIT License**. See the [LICENSE](https://gi
 
 ## Contact
 
-{{< columns >}}
+{{< tabpane >}}
 
 ### Project Details
 - **Repository**: [github.com/veggiemonk/backlog](https://github.com/veggiemonk/backlog)
@@ -150,10 +150,10 @@ This project is released under the **MIT License**. See the [LICENSE](https://gi
 - **Technical Docs**: [Development]({{< relref "development" >}})
 - **API Reference**: [CLI Commands]({{< relref "cli" >}})
 
-{{< /columns >}}
+{{< /tabpane >}}
 
 ---
 
-{{< hint type=important title="Project Mission" >}}
+{{< alert >}}
 *"The goal is to provide a frictionless collaboration between AI agents and developers"*
-{{< /hint >}}
+{{< /alert >}}
