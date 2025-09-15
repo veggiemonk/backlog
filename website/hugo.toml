@@ -7,10 +7,58 @@ enableRobotsTXT = true
 enableGitInfo = true
 enableEmoji = true
 
+contentDir = "content/en"
+defaultContentLanguage = "en"
+defaultContentLanguageInSubdir = false
+# Useful when translating.
+enableMissingTranslationPlaceholders = true
+
+# Language configuration
+[languages]
+
+[languages.en]
+languageName = "English"
+title = "backlog MCP server"
+[languages.en.params]
+description = "Backlog is a zero-configuration task manager written in Go where tasks live inside a Git repository. It leverages plain Markdown files for task storage and a comprehensive command-line interface (CLI) for interaction. This design makes it exceptionally well-suited for AI agents thanks to its MCP (Model Context Protocol) integration."
+
 [module]
+[module.hugoVersion]
+extended = true
+min = "0.146.0"
 [[module.imports]]
-    path = "github.com/google/docsy"
-    disable = false
+path = "github.com/google/docsy"
+disable = false
+
+[[links.user]]
+name = "User mailing list"
+url = "https://example.org/mail"
+icon = "fa fa-envelope"
+desc = "Discussion and help from your fellow users"
+
+[[links.user]]
+name = "Twitter"
+url = "https://example.org/twitter"
+icon = "fab fa-twitter"
+desc = "Follow us on Twitter to get the latest news!"
+
+[[links.developer]]
+name = "GitHub"
+url = "https://github.com/google/docsy"
+icon = "fab fa-github"
+desc = "Development takes place here!"
+
+[[links.developer]]
+name = "Slack"
+url = "https://example.org/slack"
+icon = "fab fa-slack"
+desc = "Chat with other project developers"
+
+[[links.developer]]
+name = "Developer mailing list"
+url = "https://example.org/mail"
+icon = "fa fa-envelope"
+desc = "Discuss development issues around the project"
 
 [params]
 # General settings
