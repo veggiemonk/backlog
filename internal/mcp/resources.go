@@ -32,7 +32,7 @@ func (s *Server) addResources() {
 
 	claudeResource := &mcp.Resource{
 		URI:         claudeInstructionsURI,
-		Name:        "GEMINI.md",
+		Name:        "CLAUDE.md",
 		Description: "Instructions for how Claude should use the backlog tool",
 		MIMEType:    "text/markdown",
 	}
