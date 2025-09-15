@@ -40,13 +40,14 @@ snapshot:
   version_template: "{{ .Tag }}-next"
 
 kos:
-  - repositories:
-      - ghcr.io/veggiemonk/backlog
+  - repository: ghcr.io/veggiemonk/backlog
     creation_time: "{{.CommitTimestamp}}"
     base_image: "cgr.dev/chainguard/static:latest"
     tags:
       - "{{.Version}}"
       - latest
+    flags:
+      - -trimpath
     ldflags:
       - "-s -w"
     sbom: spdx
