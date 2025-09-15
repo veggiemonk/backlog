@@ -8,7 +8,7 @@ import (
 )
 
 //go:embed prompt.md
-var promptInstructions string
+var PromptInstructions string
 
 // addResources adds all MCP resources to the server
 func (s *Server) addResources() {
@@ -24,7 +24,7 @@ func (s *Server) addResources() {
 				{
 					URI:      geminiInstructionsURI,
 					MIMEType: "text/markdown",
-					Text:     promptInstructions,
+					Text:     PromptInstructions,
 				},
 			},
 		}, nil
@@ -42,7 +42,7 @@ func (s *Server) addResources() {
 				{
 					URI:      claudeInstructionsURI,
 					MIMEType: "text/markdown",
-					Text:     promptInstructions,
+					Text:     PromptInstructions,
 				},
 			},
 		}, nil
@@ -60,7 +60,7 @@ func (s *Server) addResources() {
 				{
 					URI:      agentInstructionsURI,
 					MIMEType: "text/markdown",
-					Text:     promptInstructions,
+					Text:     PromptInstructions,
 				},
 			},
 		}, nil
