@@ -64,7 +64,7 @@ kos:
 release:
   footer: >-
 
-    **Container Image** in [gcr.io/veggiemonk/backlog](https://gcr.io/veggiemonk/backlog): `gcr.io/veggiemonk/backlog:{{ .Tag }}`
+    **Container Image** in [ghcr.io/veggiemonk/backlog](https://ghcr.io/veggiemonk/backlog): `ghcr.io/veggiemonk/backlog:{{ .Tag }}`
 
     **Full Changelog**: https://github.com/veggiemonk/backlog/compare/{{ .PreviousTag }}...{{ .Tag }}
 
