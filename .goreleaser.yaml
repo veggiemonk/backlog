@@ -20,7 +20,6 @@ builds:
       - arm64
     mod_timestamp: "{{ .CommitTimestamp }}"
     flags:
-      # trims path
       - -trimpath
     ldflags:
       - -s -w
@@ -36,16 +35,37 @@ sboms:
   - id: source # Two different sbom configurations need two different IDs
     artifacts: source
 
-# changelog:
-#   sort: asc
-#   filters:
-#     exclude:
-#       - "^docs:"
-#       - "^test:"
+kos:
+  - repositories:
+      - ghcr.io/veggiemonk/backlog
+    creation_time: "{{.CommitTimestamp}}"
+    base_image: "cgr.dev/chainguard/static:latest"
+    tags:
+      - "{{.Version}}"
+      - latest
+    labels:
+      org.opencontainers.image.created: "{{.Date}}"
+      org.opencontainers.image.name: "{{.ProjectName}}"
+      org.opencontainers.image.revision: "{{.FullCommit}}"
+      org.opencontainers.image.version: "{{.Version}}"
+      org.opencontainers.image.source: "{{.GitURL}}"
+      org.opencontainers.image.description: |
+        Backlog is a zero-configuration task manager written in Go where tasks live inside a Git repository. It leverages plain Markdown files for task storage and a comprehensive command-line interface (CLI) for interaction. This design makes it exceptionally well-suited for AI agents thanks to its MCP (Model Context Protocol) integration.
+    annotations:
+      "index:org.opencontainers.image.description": |
+        Backlog is a zero-configuration task manager written in Go where tasks live inside a Git repository. It leverages plain Markdown files for task storage and a comprehensive command-line interface (CLI) for interaction. This design makes it exceptionally well-suited for AI agents thanks to its MCP (Model Context Protocol) integration.
+    preserve_import_paths: false
+    platforms:
+      - linux/amd64
+      - linux/arm64
 
 release:
   footer: >-
 
-    ---
+    **Container Image** in [{{ .Env.KO_DOCKER_REPO }}](https://{{ .Env.KO_DOCKER_REPO }}): `{{ .Env.KO_DOCKER_REPO }}:{{ .Tag }}`
+
+    **Full Changelog**: https://github.com/veggiemonk/backlog/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+    **Open Source Insights**: [{{ .Tag }}](https://deps.dev/go/github.com%2Fveggiemonk%2Fbacklog/{{ .Tag }}) (compare to [{{ .PreviousTag }}](https://deps.dev/go/github.com%2Fveggiemonk%2Fbacklog/{{ .PreviousTag }}/compare?v2={{ .Tag }}))
 
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
