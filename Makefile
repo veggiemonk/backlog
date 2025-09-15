@@ -40,6 +40,11 @@ clean: ## Clean up build artifacts
 	rm -rf coverage.out coverage.html
 	rm -f ./backlog
 
+release: ## push a new release
+	git push origin main
+	git push origin main --tags
+	goreleaser release --clean
+
 debug-mcp: ## Debug MCP issues
 	npx @modelcontextprotocol/inspector go run . mcp
 
