@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Categories on Backlog MCP Documentation</title>
-    <link>http://localhost:1313/backlog/categories/</link>
-    <description>Recent content in Categories on Backlog MCP Documentation</description>
+    <title>Categories on backlog MCP server</title>
+    <link>https://veggiemonk.github.io/backlog/categories/</link>
+    <description>Recent content in Categories on backlog MCP server</description>
     <generator>Hugo</generator>
-    <language>en-us</language>
-    <atom:link href="http://localhost:1313/backlog/categories/index.xml" rel="self" type="application/rss+xml" />
+    <language>en</language>
+    <atom:link href="https://veggiemonk.github.io/backlog/categories/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

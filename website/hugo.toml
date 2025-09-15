@@ -31,39 +31,31 @@ path = "github.com/google/docsy"
 disable = false
 
 [[links.user]]
-name = "User mailing list"
-url = "https://example.org/mail"
-icon = "fa fa-envelope"
+name = "GitHub Discussions"
+url = "https://github.com/veggiemonk/backlog/discussions"
+icon = "fab fa-github"
 desc = "Discussion and help from your fellow users"
-
-[[links.user]]
-name = "Twitter"
-url = "https://example.org/twitter"
-icon = "fab fa-twitter"
-desc = "Follow us on Twitter to get the latest news!"
 
 [[links.developer]]
 name = "GitHub"
-url = "https://github.com/google/docsy"
+url = "https://github.com/veggiemonk/backlog"
 icon = "fab fa-github"
 desc = "Development takes place here!"
 
 [[links.developer]]
-name = "Slack"
-url = "https://example.org/slack"
-icon = "fab fa-slack"
-desc = "Chat with other project developers"
-
-[[links.developer]]
-name = "Developer mailing list"
-url = "https://example.org/mail"
-icon = "fa fa-envelope"
-desc = "Discuss development issues around the project"
+name = "Issues"
+url = "https://github.com/veggiemonk/backlog/issues"
+icon = "fa fa-bug"
+desc = "Report bugs and request features"
 
 [params]
 # General settings
 description = "Zero-configuration task manager for developers and AI agents"
 keywords = ["task management", "cli", "ai agents", "mcp", "golang", "git"]
+
+# Logo configuration - simple clipboard emoji logo
+[params.logos]
+navbar = "/images/logo.svg"
 
 # GitHub integration
 github_repo = 'https://github.com/veggiemonk/backlog'

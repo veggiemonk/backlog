@@ -1,0 +1,30 @@
+DirectoryPath: "public"
+CheckExternal: false
+CheckGeneric: true
+CheckInternal: true
+CheckDoctype: false
+CheckAnchors: true
+CheckLinks: true
+CheckImages: true
+CheckScripts: true
+CheckFavicon: true
+CheckMetaRefresh: true
+CheckMetaCanonical: true
+EnforceHTTPS: false
+IgnoreAltMissing: true
+IgnoreDirectoryMissingTrailingSlash: true
+IgnoreEmptyHref: true
+IgnoreInternalEmptyHash: true
+IgnoreTagAttribute:
+  - "img:alt" # Allow missing alt attributes for now
+LogLevel: 1 # 0=silent, 1=errors, 2=warnings, 3=info
+OutputDir: "tmp"
+OutputLog: "htmltest.log"
+VerboseOutput: false
+TestFilesConcurrently: true
+
+# Ignore external links since they can be flaky in CI
+IgnoreURLs:
+  - "https://example.org/*"
+  - "mailto:*"
+  - "tel:*"

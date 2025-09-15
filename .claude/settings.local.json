@@ -27,7 +27,9 @@
       "Bash(gemini:*)",
       "Bash(hugo mod get:*)",
       "Bash(hugo)",
-      "WebFetch(domain:www.docsy.dev)"
+      "WebFetch(domain:www.docsy.dev)",
+      "Bash(npm run build:*)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": [

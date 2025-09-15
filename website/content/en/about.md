@@ -18,23 +18,17 @@ However, this approach often cluttered repository root directories with files li
 
 ## Philosophy
 
-{{< tabpane >}}
+**Simplicity Over Features**
+: Backlog aims to handle fewer use cases well rather than many use cases poorly. It focuses on the core workflow of task management for developer-AI collaboration.
 
-### Simplicity Over Features
-Backlog aims to handle fewer use cases well rather than many use cases poorly. It focuses on the core workflow of task management for developer-AI collaboration.
+**AI-First Design**
+: Unlike traditional task managers designed for humans first, Backlog was designed from the ground up to work seamlessly with AI agents while still being useful for human developers.
 
-### AI-First Design
-Unlike traditional task managers designed for humans first, Backlog was designed from the ground up to work seamlessly with AI agents while still being useful for human developers.
+**Transparency**
+: Everything is stored as human-readable Markdown files in Git. No databases, no proprietary formats, no lock-in.
 
-<--->
-
-### Transparency
-Everything is stored as human-readable Markdown files in Git. No databases, no proprietary formats, no lock-in.
-
-### Developer Control
-You own your data completely. Everything lives in your Git repository and can be edited manually if needed.
-
-{{< /tabpane >}}
+**Developer Control**
+: You own your data completely. Everything lives in your Git repository and can be edited manually if needed.
 
 ## Development Story
 
@@ -54,19 +48,13 @@ After establishing these foundations, AI assistance becomes much more effective 
 
 The project was developed using several AI tools (all paid tier):
 
-{{< tabpane >}}
-
-### Primary Tools
+**Primary Tools:**
 - **gemini-2.5-pro** - Primary development assistance
 - **claude-sonnet4** - Code review and documentation
 
-<--->
-
-### Supporting Tools
+**Supporting Tools:**
 - **github-copilot** - Code completion and suggestions
 - **amp** - Additional AI assistance
-
-{{< /tabpane >}}
 
 ## Inspiration
 
@@ -111,24 +99,17 @@ Read the full instructions for backlog: ./internal/mcp/prompt.md
 
 ## Contributing
 
-{{< tabpane >}}
-
-### Getting Started
 Backlog is open source and welcomes contributions. See the [Development Guide]({{< relref "development" >}}) for technical details.
 
-### Resources
+**Resources:**
 - **Repository**: [github.com/veggiemonk/backlog](https://github.com/veggiemonk/backlog)
 - **Issues**: [GitHub Issues](https://github.com/veggiemonk/backlog/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/veggiemonk/backlog/discussions)
 
-<--->
-
-### Quick Links
+**Quick Links:**
 - [**Getting Started**]({{< relref "getting-started" >}}) - Installation and basic usage
 - [**CLI Reference**]({{< relref "cli" >}}) - Complete command documentation
 - [**AI Integration**]({{< relref "ai-integration" >}}) - MCP setup guide
-
-{{< /tabpane >}}
 
 ## License
 
@@ -136,21 +117,15 @@ This project is released under the **MIT License**. See the [LICENSE](https://gi
 
 ## Contact
 
-{{< tabpane >}}
-
-### Project Details
+**Project Details:**
 - **Repository**: [github.com/veggiemonk/backlog](https://github.com/veggiemonk/backlog)
 - **Issues**: [GitHub Issues](https://github.com/veggiemonk/backlog/issues)
 - **Author**: [veggiemonk](https://github.com/veggiemonk)
 
-<--->
-
-### Documentation
+**Documentation:**
 - **User Guide**: [Getting Started]({{< relref "getting-started" >}})
 - **Technical Docs**: [Development]({{< relref "development" >}})
 - **API Reference**: [CLI Commands]({{< relref "cli" >}})
-
-{{< /tabpane >}}
 
 ---
 
