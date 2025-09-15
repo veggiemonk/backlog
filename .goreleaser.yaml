@@ -10,7 +10,8 @@ before:
     - go generate ./...
 
 builds:
-  - env:
+  - id: backlog
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -35,6 +36,9 @@ sboms:
   - id: source # Two different sbom configurations need two different IDs
     artifacts: source
 
+snapshot:
+  version_template: "{{ .Tag }}-next"
+
 kos:
   - repositories:
       - ghcr.io/veggiemonk/backlog
@@ -43,6 +47,15 @@ kos:
     tags:
       - "{{.Version}}"
       - latest
+    ldflags:
+      - "-s -w"
+    sbom: spdx
+    bare: true
+    base_import_paths: false
+    preserve_import_paths: false
+    platforms:
+      - linux/amd64
+      - linux/arm64
     labels:
       org.opencontainers.image.created: "{{.Date}}"
       org.opencontainers.image.name: "{{.ProjectName}}"
@@ -54,12 +67,6 @@ kos:
     annotations:
       "index:org.opencontainers.image.description": |
         Backlog is a zero-configuration task manager written in Go where tasks live inside a Git repository. It leverages plain Markdown files for task storage and a comprehensive command-line interface (CLI) for interaction. This design makes it exceptionally well-suited for AI agents thanks to its MCP (Model Context Protocol) integration.
-    bare: true
-    base_import_paths: false
-    preserve_import_paths: false
-    platforms:
-      - linux/amd64
-      - linux/arm64
 
 release:
   footer: >-

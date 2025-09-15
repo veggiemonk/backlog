@@ -45,6 +45,9 @@ release: ## push a new release
 	git push origin main --tags
 	goreleaser release --clean
 
+release-test: ## test a release locally
+	goreleaser release --snapshot --clean
+
 debug-mcp: ## Debug MCP issues
 	npx @modelcontextprotocol/inspector go run . mcp
 
@@ -55,3 +58,4 @@ install-tools: ## Install development tools
 
 pin-actions: ## pin github actions
 	go tool github.com/stacklok/frizbee actions .github/workflows
+
