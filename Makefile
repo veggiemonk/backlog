@@ -42,3 +42,11 @@ clean: ## Clean up build artifacts
 
 debug-mcp: ## Debug MCP issues
 	npx @modelcontextprotocol/inspector go run . mcp
+
+install-tools: ## Install development tools
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	go install github.com/stacklok/frizbee@latest
+	go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest
+
+pin-actions: ## pin github actions
+	go tool github.com/stacklok/frizbee actions .github/workflows
