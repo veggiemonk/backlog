@@ -1,3 +1,4 @@
+// Package mcp creates an MCP server for managing the tasks.
 package mcp
 
 import (

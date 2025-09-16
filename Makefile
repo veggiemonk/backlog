@@ -45,8 +45,14 @@ release: ## push a new release
 	git push origin main --tags
 	goreleaser release --clean
 
+release-test: ## test a release locally
+	goreleaser release --snapshot --clean
+
 debug-mcp: ## Debug MCP issues
 	npx @modelcontextprotocol/inspector go run . mcp
+
+login-ghcr:
+	@echo $GITHUB_TOKEN | docker login ghcr.io -u veggiemonk --password-stdin
 
 install-tools: ## Install development tools
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
@@ -55,3 +61,4 @@ install-tools: ## Install development tools
 
 pin-actions: ## pin github actions
 	go tool github.com/stacklok/frizbee actions .github/workflows
+

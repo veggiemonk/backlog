@@ -24,6 +24,7 @@ backlog [flags]
 * [backlog archive](backlog_archive.md)	 - Archive a task
 * [backlog create](backlog_create.md)	 - Create a new task
 * [backlog edit](backlog_edit.md)	 - Edit an existing task
+* [backlog instructions](backlog_instructions.md)	 - instructions for agents to learn to use backlog
 * [backlog list](backlog_list.md)	 - List all tasks
 * [backlog mcp](backlog_mcp.md)	 - Start the MCP server
 * [backlog search](backlog_search.md)	 - Search tasks by content

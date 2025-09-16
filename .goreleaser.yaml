@@ -10,7 +10,8 @@ before:
     - go generate ./...
 
 builds:
-  - env:
+  - id: backlog
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -35,14 +36,27 @@ sboms:
   - id: source # Two different sbom configurations need two different IDs
     artifacts: source
 
+snapshot:
+  version_template: "{{ .Tag }}-next"
+
 kos:
-  - repositories:
-      - ghcr.io/veggiemonk/backlog
+  - repository: ghcr.io/veggiemonk/backlog
     creation_time: "{{.CommitTimestamp}}"
     base_image: "cgr.dev/chainguard/static:latest"
     tags:
       - "{{.Version}}"
       - latest
+    flags:
+      - -trimpath
+    ldflags:
+      - "-s -w"
+    sbom: spdx
+    bare: true
+    base_import_paths: false
+    preserve_import_paths: false
+    platforms:
+      - linux/amd64
+      - linux/arm64
     labels:
       org.opencontainers.image.created: "{{.Date}}"
       org.opencontainers.image.name: "{{.ProjectName}}"
@@ -54,17 +68,11 @@ kos:
     annotations:
       "index:org.opencontainers.image.description": |
         Backlog is a zero-configuration task manager written in Go where tasks live inside a Git repository. It leverages plain Markdown files for task storage and a comprehensive command-line interface (CLI) for interaction. This design makes it exceptionally well-suited for AI agents thanks to its MCP (Model Context Protocol) integration.
-    bare: true
-    preserve_import_paths: false
-    base_import_paths: true
-    platforms:
-      - linux/amd64
-      - linux/arm64
 
 release:
   footer: >-
 
-    **Container Image** in [gcr.io/veggiemonk/backlog](https://gcr.io/veggiemonk/backlog): `gcr.io/veggiemonk/backlog:{{ .Tag }}`
+    **Container Image** in [ghcr.io/veggiemonk/backlog](https://ghcr.io/veggiemonk/backlog): `ghcr.io/veggiemonk/backlog:{{ .Tag }}`
 
     **Full Changelog**: https://github.com/veggiemonk/backlog/compare/{{ .PreviousTag }}...{{ .Tag }}
 

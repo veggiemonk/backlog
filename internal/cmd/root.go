@@ -1,3 +1,4 @@
+// Package cmd contains the cobra commands
 package cmd
 
 import (
