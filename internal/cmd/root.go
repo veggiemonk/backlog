@@ -2,15 +2,13 @@ package cmd
 
 import (
 	"context"
-	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
-	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
+	"github.com/veggiemonk/backlog/internal/paths"
 )
 
 var (
@@ -64,7 +62,7 @@ func init() {
 
 		fs := afero.NewOsFs()
 		var err error
-		tasksDir, err = checkDir(fs, tasksDir)
+		tasksDir, err = paths.ResolveTasksDir(fs, tasksDir)
 		if err != nil {
 			logging.Error("tasks directory", "error", err)
 		}
@@ -83,22 +81,4 @@ func Execute() {
 		logging.Error("command execution failed", "error", err)
 		os.Exit(1)
 	}
-}
-
-func checkDir(fs afero.Fs, dir string) (string, error) {
-	// check if the `dir` folder exists
-	// if not, find the root of git repo, if err => give up
-	// set directory to root/dir
-	exists, err := afero.DirExists(fs, dir)
-	if err != nil {
-		return dir, fmt.Errorf("check existence of directory %q: %v", dir, err)
-	}
-	if !exists {
-		rootDir, err := commit.FindTopLevelGitDir()
-		if err != nil {
-			return dir, fmt.Errorf("find top-level git directory %q: %v", dir, err)
-		}
-		return filepath.Join(rootDir, dir), nil
-	}
-	return dir, nil
 }
