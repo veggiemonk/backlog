@@ -1,6 +1,7 @@
 package core
 
 import (
+	"slices"
 	"strings"
 	"testing"
 
@@ -94,24 +95,14 @@ func TestParseTaskWithDependencies(t *testing.T) {
 
 		// Verify that task C now depends on both task A and task B
 		is.Equal(len(updatedTaskC.Dependencies), 2)
-		is.True(contains(updatedTaskC.Dependencies, taskA.ID.Name()))
-		is.True(contains(updatedTaskC.Dependencies, taskB.ID.Name()))
+		is.True(slices.Contains(updatedTaskC.Dependencies.ToSlice(), taskA.ID.Name()))
+		is.True(slices.Contains(updatedTaskC.Dependencies.ToSlice(), taskB.ID.Name()))
 
 		// Verify the dependencies are persisted to file
 		taskCFromFile, err := store.Get(taskC.ID.String())
 		is.NoErr(err)
 		is.Equal(len(taskCFromFile.Dependencies), 2)
-		is.True(contains(taskCFromFile.Dependencies, taskA.ID.Name()))
-		is.True(contains(taskCFromFile.Dependencies, taskB.ID.Name()))
+		is.True(slices.Contains(taskCFromFile.Dependencies.ToSlice(), taskA.ID.Name()))
+		is.True(slices.Contains(taskCFromFile.Dependencies.ToSlice(), taskB.ID.Name()))
 	})
-}
-
-// Helper function to check if a slice contains a string
-func contains(slice []string, item string) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
-		}
-	}
-	return false
 }
