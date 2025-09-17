@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
@@ -219,7 +220,7 @@ func runEdit(cmd *cobra.Command, args []string) {
 		// fmt.Printf("Task %s updated successfully.\n", updatedTask.ID)
 	}()
 
-	if !autoCommit {
+	if !viper.GetBool(configAutoCommit) {
 		return // autocommit is disabled
 	}
 

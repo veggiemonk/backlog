@@ -12,6 +12,7 @@ The system is designed to be offline-first and completely portable, as the entir
 - [Quick Start](#quick-start)
   - [Installation](#installation)
   - [Initialize Your Project](#initialize-your-project)
+  - [Task Directory Resolution](#task-directory-resolution)
 - [AI Agent Integration](#ai-agent-integration)
   - [Available Tools](#available-tools)
   - [Usage with AI Agents](#usage-with-ai-agents)
@@ -91,6 +92,29 @@ You can also download the binary from the [release page](https://github.com/vegg
 ### Initialize Your Project
 
 No initialization is needed.
+
+
+### Task Directory Resolution
+
+Backlog stores tasks in a directory referred to as the "tasks folder". By default this is `.backlog`, but you can override it.
+
+- How to set the folder
+  - CLI flag: `--folder <path>` (relative or absolute)
+  - Environment variable: `BACKLOG_FOLDER` (used when set)
+  - Default: `.backlog`
+
+- Resolution rules (applied to the chosen value)
+  - Absolute path: used as-is.
+  - Relative path: resolved with this precedence:
+    - If `<CWD>/<path>` exists, use it.
+    - Search parent directories; if `<ancestor>/<path>` exists, use it.
+    - If a git repository is detected, use `<gitRoot>/<path>`.
+    - Otherwise, fall back to `<CWD>/<path>` (created on demand).
+
+- Container tips
+  - If your container does not include the `.git` directory, the resolver still works using the upward search and CWD fallback.
+  - For predictable behavior, mount your tasks directory and set `BACKLOG_FOLDER` to its absolute mount point, or pass `--folder` with an absolute path.
+
 
 ## AI Agent Integration
 

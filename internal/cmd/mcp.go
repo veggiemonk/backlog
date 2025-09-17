@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/veggiemonk/backlog/internal/logging"
 	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
@@ -37,10 +38,7 @@ func setMCPFlags(cmd *cobra.Command) {
 
 func runMcpServer(cmd *cobra.Command, args []string) {
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
-
-	// Create the MCP server
-	server := mcpserver.NewServer(store, autoCommit)
-
+	server := mcpserver.NewServer(store, viper.GetBool(configAutoCommit))
 	if httpTransport {
 		logging.Info("starting MCP server", "transport", "http", "port", mcpHTTPPort)
 		if err := server.RunHTTP(mcpHTTPPort); err != nil {
@@ -48,7 +46,6 @@ func runMcpServer(cmd *cobra.Command, args []string) {
 		}
 		return
 	}
-
 	if err := server.RunStdio(context.Background()); err != nil {
 		logging.Error("stdio server failed", "error", err)
 	}
