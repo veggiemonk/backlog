@@ -11,13 +11,6 @@ import (
 	"strings"
 )
 
-const (
-	// Environment variable names for logging configuration
-	EnvLogFile   = "BACKLOG_LOG_FILE"
-	EnvLogLevel  = "BACKLOG_LOG_LEVEL"
-	EnvLogFormat = "BACKLOG_LOG_FORMAT"
-)
-
 var (
 	logger *slog.Logger
 	file   *os.File

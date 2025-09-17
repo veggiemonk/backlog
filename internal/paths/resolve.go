@@ -9,11 +9,6 @@ import (
 	"github.com/veggiemonk/backlog/internal/commit"
 )
 
-const (
-	DefaultDir       = ".backlog"
-	DefaultDirEnvVar = "BACKLOG_FOLDER"
-)
-
 // ResolveTasksDir determines the directory to use for tasks based on the
 // provided input path and the current execution context (local or container).
 //

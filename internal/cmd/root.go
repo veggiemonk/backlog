@@ -13,10 +13,7 @@ import (
 	"github.com/veggiemonk/backlog/internal/paths"
 )
 
-var (
-	tasksDir   string
-	autoCommit bool
-)
+var autoCommit bool
 
 type contextKey string
 
@@ -54,63 +51,89 @@ Backlog helps you manage tasks within your git repository.`,
 	},
 }
 
-func initConfig() {
-	// Set environment variable prefix
-	viper.SetEnvPrefix("BACKLOG")
-	viper.AutomaticEnv()
-
-	// Set default values
-	viper.SetDefault("folder", paths.DefaultDir)
-	viper.SetDefault("auto-commit", true)
-	viper.SetDefault("log-level", "info")
-	viper.SetDefault("log-format", "text")
-	viper.SetDefault("log-file", "")
-
-	// Bind environment variables with their keys
-	viper.BindEnv("folder", "BACKLOG_FOLDER")
-	viper.BindEnv("auto-commit", "BACKLOG_AUTO_COMMIT")
-	viper.BindEnv("log-level", "BACKLOG_LOG_LEVEL")
-	viper.BindEnv("log-format", "BACKLOG_LOG_FORMAT")
-	viper.BindEnv("log-file", "BACKLOG_LOG_FILE")
-}
-
-func setRootPersistentFlags(cmd *cobra.Command) {
-	cmd.PersistentFlags().StringVar(&tasksDir, "folder", paths.DefaultDir, "Directory for backlog tasks")
-	cmd.PersistentFlags().BoolVar(&autoCommit, "auto-commit", true, "Auto-committing changes to git repository")
-	cmd.PersistentFlags().String("log-level", "info", "Log level (debug, info, warn, error)")
-	cmd.PersistentFlags().String("log-format", "text", "Log format (json, text)")
-	cmd.PersistentFlags().String("log-file", "", "Log file path (defaults to stderr)")
-
-	// Bind flags to viper
-	viper.BindPFlag("folder", cmd.PersistentFlags().Lookup("folder"))
-	viper.BindPFlag("auto-commit", cmd.PersistentFlags().Lookup("auto-commit"))
-	viper.BindPFlag("log-level", cmd.PersistentFlags().Lookup("log-level"))
-	viper.BindPFlag("log-format", cmd.PersistentFlags().Lookup("log-format"))
-	viper.BindPFlag("log-file", cmd.PersistentFlags().Lookup("log-file"))
-}
-
 func preRun(cmd *cobra.Command, args []string) {
 	// Initialize logging using Viper values
 	logging.Init(
-		viper.GetString("log-level"),
-		viper.GetString("log-format"),
-		viper.GetString("log-file"),
+		viper.GetString(configLogLevel),
+		viper.GetString(configLogFormat),
+		viper.GetString(configLogFile),
 	)
 
 	// Use Viper to get the tasks directory
-	tasksDir = viper.GetString("folder")
-	autoCommit = viper.GetBool("auto-commit")
+	tasksDir := viper.GetString(configFolder)
+	autoCommit = viper.GetBool(configAutoCommit)
 
-	logging.Debug("resolve env var", "tasksDir", tasksDir, "autoCommit", autoCommit)
+	logging.Debug("resolve env var", configFolder, tasksDir, configAutoCommit, autoCommit)
 	fs := afero.NewOsFs()
 	var err error
 	tasksDir, err = paths.ResolveTasksDir(fs, tasksDir)
 	if err != nil {
 		logging.Error("tasks directory", "error", err)
 	}
-	logging.Debug("resolve tasks directory", "tasksDir", tasksDir)
+	logging.Debug("resolve tasks directory", configFolder, tasksDir)
 	var store TaskStore = core.NewFileTaskStore(fs, tasksDir)
 	cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
+}
+
+const (
+	// Environment variable names for configuration
+	envPrefix        = "BACKLOG"
+	envVarLogFile    = "BACKLOG_LOG_FILE"
+	envVarLogLevel   = "BACKLOG_LOG_LEVEL"
+	envVarLogFormat  = "BACKLOG_LOG_FORMAT"
+	envVarAutoCommit = "BACKLOG_AUTO_COMMIT"
+
+	// folder
+	configFolder  = "folder"
+	envVarDir     = "BACKLOG_FOLDER"
+	defaultFolder = ".backlog"
+
+	// git
+	configAutoCommit  = "auto-commit"
+	defaultAutoCommit = true
+
+	// logging
+	configLogLevel   = "log-level"
+	defaultLogLevel  = "info"
+	configLogFormat  = "log-format"
+	defaultLogFormat = "text"
+	configLogFile    = "log-file"
+	defaultLogFile   = ""
+)
+
+func initConfig() {
+	// Set environment variable prefix
+	viper.SetEnvPrefix(envPrefix)
+	viper.AutomaticEnv()
+
+	// Set default values
+	viper.SetDefault(configFolder, defaultFolder)
+	viper.SetDefault(configAutoCommit, defaultAutoCommit)
+	viper.SetDefault(configLogLevel, defaultLogLevel)
+	viper.SetDefault(configLogFormat, defaultLogFormat)
+	viper.SetDefault(configLogFile, defaultLogFile)
+
+	// Bind environment variables with their keys
+	viper.BindEnv(configFolder, envVarDir)
+	viper.BindEnv(configAutoCommit, envVarAutoCommit)
+	viper.BindEnv(configLogLevel, envVarLogLevel)
+	viper.BindEnv(configLogFormat, envVarLogFormat)
+	viper.BindEnv(configLogFile, envVarLogFile)
+}
+
+func setRootPersistentFlags(cmd *cobra.Command) {
+	cmd.PersistentFlags().String(configFolder, defaultFolder, "Directory for backlog tasks")
+	cmd.PersistentFlags().Bool(configAutoCommit, defaultAutoCommit, "Auto-committing changes to git repository")
+	cmd.PersistentFlags().String(configLogLevel, defaultLogLevel, "Log level (debug, info, warn, error)")
+	cmd.PersistentFlags().String(configLogFormat, defaultLogFormat, "Log format (json, text)")
+	cmd.PersistentFlags().String(configLogFile, defaultLogFile, "Log file path (defaults to stderr)")
+
+	// Bind flags to viper
+	viper.BindPFlag(configFolder, cmd.PersistentFlags().Lookup(configFolder))
+	viper.BindPFlag(configAutoCommit, cmd.PersistentFlags().Lookup(configAutoCommit))
+	viper.BindPFlag(configLogLevel, cmd.PersistentFlags().Lookup(configLogLevel))
+	viper.BindPFlag(configLogFormat, cmd.PersistentFlags().Lookup(configLogFormat))
+	viper.BindPFlag(configLogFile, cmd.PersistentFlags().Lookup(configLogFile))
 }
 
 func Root() *cobra.Command {
