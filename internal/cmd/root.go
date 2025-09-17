@@ -13,8 +13,6 @@ import (
 	"github.com/veggiemonk/backlog/internal/paths"
 )
 
-var autoCommit bool
-
 type contextKey string
 
 const ctxKeyStore = contextKey("store")
@@ -51,30 +49,6 @@ Backlog helps you manage tasks within your git repository.`,
 	},
 }
 
-func preRun(cmd *cobra.Command, args []string) {
-	// Initialize logging using Viper values
-	logging.Init(
-		viper.GetString(configLogLevel),
-		viper.GetString(configLogFormat),
-		viper.GetString(configLogFile),
-	)
-
-	// Use Viper to get the tasks directory
-	tasksDir := viper.GetString(configFolder)
-	autoCommit = viper.GetBool(configAutoCommit)
-
-	logging.Debug("resolve env var", configFolder, tasksDir, configAutoCommit, autoCommit)
-	fs := afero.NewOsFs()
-	var err error
-	tasksDir, err = paths.ResolveTasksDir(fs, tasksDir)
-	if err != nil {
-		logging.Error("tasks directory", "error", err)
-	}
-	logging.Debug("resolve tasks directory", configFolder, tasksDir)
-	var store TaskStore = core.NewFileTaskStore(fs, tasksDir)
-	cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
-}
-
 const (
 	// Environment variable names for configuration
 	envPrefix        = "BACKLOG"
@@ -100,6 +74,30 @@ const (
 	configLogFile    = "log-file"
 	defaultLogFile   = ""
 )
+
+func preRun(cmd *cobra.Command, args []string) {
+	// Initialize logging using Viper values
+	logging.Init(
+		viper.GetString(configLogLevel),
+		viper.GetString(configLogFormat),
+		viper.GetString(configLogFile),
+	)
+
+	// Use Viper to get the tasks directory
+	tasksDir := viper.GetString(configFolder)
+	autoCommit := viper.GetBool(configAutoCommit)
+
+	logging.Debug("resolve env var", configFolder, tasksDir, configAutoCommit, autoCommit)
+	fs := afero.NewOsFs()
+	var err error
+	tasksDir, err = paths.ResolveTasksDir(fs, tasksDir)
+	if err != nil {
+		logging.Error("tasks directory", "error", err)
+	}
+	logging.Debug("resolve tasks directory", configFolder, tasksDir)
+	var store TaskStore = core.NewFileTaskStore(fs, tasksDir)
+	cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
+}
 
 func initConfig() {
 	// Set environment variable prefix

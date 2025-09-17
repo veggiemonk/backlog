@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
@@ -123,7 +124,7 @@ func runCreate(cmd *cobra.Command, args []string) {
 
 	logging.Info("task created successfully", "task_id", newTask.ID)
 
-	if !autoCommit {
+	if !viper.GetBool(configAutoCommit) {
 		return // Auto-commit is disabled
 	}
 	// Auto-commit the change if enabled

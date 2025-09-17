@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/logging"
 )
@@ -41,7 +42,7 @@ func runArchive(cmd *cobra.Command, args []string) {
 	logging.Info("task archived successfully", "task_id", task.ID)
 	// fmt.Printf("Task %s archived successfully.\n", archivedTask.ID)
 
-	if !autoCommit {
+	if !viper.GetBool(configAutoCommit) {
 		return // Auto-commit is disabled
 	}
 	// Auto-commit the change if enabled
