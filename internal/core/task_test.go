@@ -106,3 +106,17 @@ func TestParseTaskWithDependencies(t *testing.T) {
 		is.True(slices.Contains(taskCFromFile.Dependencies.ToSlice(), taskB.ID.Name()))
 	})
 }
+
+// func TestTaskSchema(t *testing.T) {
+// 	is := is.New(t)
+// 	schema, err := jsonschema.For[Task](&jsonschema.ForOptions{
+// 		TypeSchemas: map[any]*jsonschema.Schema{
+// 			TaskID{seg: []int{}}: {
+// 				ID:      "id",
+// 				Comment: "The id of the task",
+// 			}, // TODO: fill the schema to threat this field as a string
+// 		},
+// 	})
+// 	is.NoErr(err)
+// 	t.Log(schema)
+// }
