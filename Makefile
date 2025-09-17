@@ -38,7 +38,6 @@ docs: ## Generate documentation
 clean: ## Clean up build artifacts
 	rm -rf bin/
 	rm -rf coverage.out coverage.html
-	rm -f ./backlog
 
 release: ## push a new release
 	git push origin main
