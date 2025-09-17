@@ -64,14 +64,14 @@ func init() {
 		)
 
 		tasksDir = cmp.Or(os.Getenv(paths.DefaultDirEnvVar), tasksDir)
-		logging.Debug("env resolve", "tasksDir", tasksDir)
+		logging.Debug("resolve env var", "tasksDir", tasksDir)
 		fs := afero.NewOsFs()
 		var err error
 		tasksDir, err = paths.ResolveTasksDir(fs, tasksDir)
 		if err != nil {
 			logging.Error("tasks directory", "error", err)
 		}
-		logging.Debug("paths.ResolveTasksDir", "tasksDir", tasksDir)
+		logging.Debug("resolve tasks directory", "tasksDir", tasksDir)
 		var store TaskStore = core.NewFileTaskStore(fs, tasksDir)
 		cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
 	}

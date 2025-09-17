@@ -60,12 +60,23 @@ func Init(level, format, logFile string) {
 		lvl = slog.LevelError
 	}
 
+	opts := &slog.HandlerOptions{
+		Level:     lvl,
+		AddSource: false,
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.TimeKey {
+				t := a.Value.Time()
+				a = slog.Attr{Key: "time", Value: slog.StringValue(t.Format("15:04:05"))}
+			}
+			return a
+		},
+	}
 	// Configure format
 	var handler slog.Handler
-	if format := os.Getenv(format); strings.ToLower(format) == "json" || strings.ToLower(format) == "j" {
-		handler = slog.NewJSONHandler(output, &slog.HandlerOptions{Level: lvl})
+	if strings.ToLower(format) == "json" || strings.ToLower(format) == "j" {
+		handler = slog.NewJSONHandler(output, opts)
 	} else {
-		handler = slog.NewTextHandler(output, &slog.HandlerOptions{Level: lvl})
+		handler = slog.NewTextHandler(output, opts)
 	}
 
 	logger = slog.New(handler)

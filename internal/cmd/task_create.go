@@ -105,13 +105,13 @@ func runCreate(cmd *cobra.Command, args []string) {
 		Title:        args[0],
 		Description:  description,
 		Parent:       &parent,
+		Priority:     priority,
 		Assigned:     assigned,
 		Labels:       labels,
-		Priority:     priority,
+		Dependencies: dependencies,
 		AC:           ac,
 		Plan:         &plan,
 		Notes:        &notes,
-		Dependencies: dependencies,
 	}
 
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
