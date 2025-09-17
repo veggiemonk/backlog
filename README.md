@@ -14,6 +14,7 @@ The system is designed to be offline-first and completely portable, as the entir
   - [Installation](#installation)
   - [Initialize Your Project](#initialize-your-project)
   - [Task Directory Resolution](#task-directory-resolution)
+- [Configuration](#configuration)
 - [AI Agent Integration](#ai-agent-integration)
   - [Available Tools](#available-tools)
   - [Usage with AI Agents](#usage-with-ai-agents)
@@ -121,6 +122,47 @@ Backlog stores tasks in a directory referred to as the "tasks folder". By defaul
   - If your container does not include the `.git` directory, the resolver still works using the upward search and CWD fallback.
   - For predictable behavior, mount your tasks directory and set `BACKLOG_FOLDER` to its absolute mount point, or pass `--folder` with an absolute path.
 
+## Configuration
+
+Backlog supports configuration through command-line flags and environment variables. Command-line flags take precedence over environment variables.
+
+### Available Configuration Options
+
+| Configuration | Flag | Environment Variable | Default | Description |
+|--------------|------|---------------------|---------|-------------|
+| **Tasks Directory** | `--folder` | `BACKLOG_FOLDER` | `.backlog` | Directory for backlog tasks |
+| **Auto Commit** | `--auto-commit` | `BACKLOG_AUTO_COMMIT` | `true` | Auto-committing changes to git repository |
+| **Log Level** | `--log-level` | `BACKLOG_LOG_LEVEL` | `info` | Log level (debug, info, warn, error) |
+| **Log Format** | `--log-format` | `BACKLOG_LOG_FORMAT` | `text` | Log format (json, text) |
+| **Log File** | `--log-file` | `BACKLOG_LOG_FILE` | `""` | Log file path (defaults to stderr) |
+
+### Configuration Examples
+
+```bash
+# Using command-line flags
+backlog --folder /custom/path --log-level debug --auto-commit false list
+
+# Using environment variables
+export BACKLOG_FOLDER="/custom/path"
+export BACKLOG_LOG_LEVEL="debug"
+export BACKLOG_AUTO_COMMIT="false"
+backlog list
+
+# Flags override environment variables
+export BACKLOG_FOLDER="/env/path"
+backlog --folder "/flag/path" list  # Uses /flag/path
+
+# Logging examples
+backlog --log-format json --log-level debug list
+BACKLOG_LOG_FILE="/tmp/backlog.log" backlog list
+```
+
+### Configuration Notes
+
+- **Environment Variables**: All environment variables use the `BACKLOG_` prefix
+- **Precedence**: Command-line flags > Environment variables > Default values
+- **Log Output**: When `--log-file` is not specified, logs are written to stderr
+- **Boolean Values**: For environment variables, use `true`/`false` strings (e.g., `BACKLOG_AUTO_COMMIT=false`)
 
 ## AI Agent Integration
 
