@@ -14,9 +14,12 @@ backlog [flags]
 ### Options
 
 ```
-      --auto-commit     Auto-committing changes to git repository (default true)
-      --folder string   Directory for backlog tasks (default ".backlog")
-  -h, --help            help for backlog
+      --auto-commit         Auto-committing changes to git repository (default true)
+      --folder string       Directory for backlog tasks (default ".backlog")
+  -h, --help                help for backlog
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
 ```
 
 ### SEE ALSO

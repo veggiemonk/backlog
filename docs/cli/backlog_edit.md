@@ -123,8 +123,11 @@ backlog edit 42 --dep "T15" --dep "T18" --dep "T20"
 ### Options inherited from parent commands
 
 ```
-      --auto-commit     Auto-committing changes to git repository (default true)
-      --folder string   Directory for backlog tasks (default ".backlog")
+      --auto-commit         Auto-committing changes to git repository (default true)
+      --folder string       Directory for backlog tasks (default ".backlog")
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
 ```
 
 ### SEE ALSO

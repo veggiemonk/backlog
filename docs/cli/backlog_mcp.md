@@ -31,8 +31,11 @@ backlog mcp                    # Start the MCP server using stdio transport
 ### Options inherited from parent commands
 
 ```
-      --auto-commit     Auto-committing changes to git repository (default true)
-      --folder string   Directory for backlog tasks (default ".backlog")
+      --auto-commit         Auto-committing changes to git repository (default true)
+      --folder string       Directory for backlog tasks (default ".backlog")
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
 ```
 
 ### SEE ALSO

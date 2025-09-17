@@ -2,12 +2,12 @@
 package cmd
 
 import (
-	"cmp"
 	"context"
 	"os"
 
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
 	"github.com/veggiemonk/backlog/internal/paths"
@@ -34,6 +34,12 @@ type TaskStore interface {
 
 var _ TaskStore = (*core.FileTaskStore)(nil)
 
+func init() {
+	cobra.OnInitialize(initConfig)
+	setRootPersistentFlags(rootCmd)
+	rootCmd.PersistentPreRun = preRun
+}
+
 var rootCmd = &cobra.Command{
 	Use:   "backlog",
 	Short: "Backlog is a git-native, markdown-based task manager",
@@ -48,33 +54,63 @@ Backlog helps you manage tasks within your git repository.`,
 	},
 }
 
+func initConfig() {
+	// Set environment variable prefix
+	viper.SetEnvPrefix("BACKLOG")
+	viper.AutomaticEnv()
+
+	// Set default values
+	viper.SetDefault("folder", paths.DefaultDir)
+	viper.SetDefault("auto-commit", true)
+	viper.SetDefault("log-level", "info")
+	viper.SetDefault("log-format", "text")
+	viper.SetDefault("log-file", "")
+
+	// Bind environment variables with their keys
+	viper.BindEnv("folder", "BACKLOG_FOLDER")
+	viper.BindEnv("auto-commit", "BACKLOG_AUTO_COMMIT")
+	viper.BindEnv("log-level", "BACKLOG_LOG_LEVEL")
+	viper.BindEnv("log-format", "BACKLOG_LOG_FORMAT")
+	viper.BindEnv("log-file", "BACKLOG_LOG_FILE")
+}
+
 func setRootPersistentFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringVar(&tasksDir, "folder", paths.DefaultDir, "Directory for backlog tasks")
 	cmd.PersistentFlags().BoolVar(&autoCommit, "auto-commit", true, "Auto-committing changes to git repository")
+	cmd.PersistentFlags().String("log-level", "info", "Log level (debug, info, warn, error)")
+	cmd.PersistentFlags().String("log-format", "text", "Log format (json, text)")
+	cmd.PersistentFlags().String("log-file", "", "Log file path (defaults to stderr)")
+
+	// Bind flags to viper
+	viper.BindPFlag("folder", cmd.PersistentFlags().Lookup("folder"))
+	viper.BindPFlag("auto-commit", cmd.PersistentFlags().Lookup("auto-commit"))
+	viper.BindPFlag("log-level", cmd.PersistentFlags().Lookup("log-level"))
+	viper.BindPFlag("log-format", cmd.PersistentFlags().Lookup("log-format"))
+	viper.BindPFlag("log-file", cmd.PersistentFlags().Lookup("log-file"))
 }
 
-func init() {
-	setRootPersistentFlags(rootCmd)
-	rootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-		// Initialize logging before anything else
-		logging.Init(
-			os.Getenv(logging.EnvLogLevel),
-			os.Getenv(logging.EnvLogFormat),
-			os.Getenv(logging.EnvLogFile),
-		)
+func preRun(cmd *cobra.Command, args []string) {
+	// Initialize logging using Viper values
+	logging.Init(
+		viper.GetString("log-level"),
+		viper.GetString("log-format"),
+		viper.GetString("log-file"),
+	)
 
-		tasksDir = cmp.Or(os.Getenv(paths.DefaultDirEnvVar), tasksDir)
-		logging.Debug("resolve env var", "tasksDir", tasksDir)
-		fs := afero.NewOsFs()
-		var err error
-		tasksDir, err = paths.ResolveTasksDir(fs, tasksDir)
-		if err != nil {
-			logging.Error("tasks directory", "error", err)
-		}
-		logging.Debug("resolve tasks directory", "tasksDir", tasksDir)
-		var store TaskStore = core.NewFileTaskStore(fs, tasksDir)
-		cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
+	// Use Viper to get the tasks directory
+	tasksDir = viper.GetString("folder")
+	autoCommit = viper.GetBool("auto-commit")
+
+	logging.Debug("resolve env var", "tasksDir", tasksDir, "autoCommit", autoCommit)
+	fs := afero.NewOsFs()
+	var err error
+	tasksDir, err = paths.ResolveTasksDir(fs, tasksDir)
+	if err != nil {
+		logging.Error("tasks directory", "error", err)
 	}
+	logging.Debug("resolve tasks directory", "tasksDir", tasksDir)
+	var store TaskStore = core.NewFileTaskStore(fs, tasksDir)
+	cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
 }
 
 func Root() *cobra.Command {
