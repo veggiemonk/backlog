@@ -44,9 +44,9 @@ type handler struct {
 	autoCommit bool
 }
 
-// taskListResponse is used to wrap the list of tasks in a JSON object
+// TaskListResponse is used to wrap the list of tasks in a JSON object
 // to conform to the MCP specification for structuredContent.
-type taskListResponse struct {
+type TaskListResponse struct {
 	Tasks []*core.Task `json:"tasks"`
 }
 

@@ -19,6 +19,14 @@ func (s *Server) addTools() {
 	}, s.handler.create)
 
 	mcp.AddTool(s.mcpServer, &mcp.Tool{
+		Name: "task_batch_create",
+		Description: `Create a list of new tasks.
+The schema is a list of "task_create" input parameters.
+The task ID of each task is automatically generated. Returns the list of created task.
+`,
+	}, s.handler.batchCreate)
+
+	mcp.AddTool(s.mcpServer, &mcp.Tool{
 		Name:        "task_list",
 		Description: "List tasks, with optional filtering and sorting. Returns a list of tasks.",
 	}, s.handler.list)
@@ -56,7 +64,7 @@ func (h *handler) commit(id, title, path, oldPath, msg string) error {
 
 // Tool handler implementations
 
-func (h *handler) create(ctx context.Context, req *mcp.CallToolRequest, params core.CreateTaskParams) (*mcp.CallToolResult, any, error) {
+func (h *handler) create(ctx context.Context, req *mcp.CallToolRequest, params core.CreateTaskParams) (*mcp.CallToolResult, *core.Task, error) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	task, err := h.store.Create(params)
@@ -83,7 +91,47 @@ func (h *handler) create(ctx context.Context, req *mcp.CallToolRequest, params c
 	return &mcp.CallToolResult{Content: []mcp.Content{content}}, task, nil
 }
 
-func (h *handler) edit(ctx context.Context, req *mcp.CallToolRequest, params core.EditTaskParams) (*mcp.CallToolResult, any, error) {
+type (
+	ListCreateParams struct {
+		List []core.CreateTaskParams `json:"list"`
+	}
+)
+
+func (h *handler) batchCreate(ctx context.Context, req *mcp.CallToolRequest, listParams ListCreateParams) (*mcp.CallToolResult, TaskListResponse, error) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	tasks := make([]*core.Task, 0, len(listParams.List))
+	summaries := make([]string, 0, len(listParams.List))
+	for _, params := range listParams.List {
+		task, err := h.store.Create(params)
+		if err != nil {
+			return nil, TaskListResponse{}, err
+		}
+		tasks = append(tasks, task)
+		path := h.store.Path(task)
+		if err := h.commit(task.ID.Name(), task.Title, path, "", "create"); err != nil {
+			// Log the error but do not fail the creation
+			logging.Warn("auto-commit failed for task creation", "task_id", task.ID, "error", err)
+		}
+
+		summary := fmt.Sprintf("Task %s created successfully:\n\n", task.ID.Name())
+		summary += fmt.Sprintf("- Title: %s\n", task.Title)
+		summary += fmt.Sprintf("- Status: %s\n", task.Status)
+		if len(task.Assigned) > 0 {
+			summary += fmt.Sprintf("- Assigned: %s\n", strings.Join(task.Assigned, ", "))
+		}
+		if len(task.Labels) > 0 {
+			summary += fmt.Sprintf("- Labels: %s\n", strings.Join(task.Labels, ", "))
+		}
+		summaries = append(summaries, summary)
+	}
+
+	content := &mcp.TextContent{Text: strings.Join(summaries, "|")}
+	results := TaskListResponse{Tasks: tasks}
+	return &mcp.CallToolResult{Content: []mcp.Content{content}}, results, nil
+}
+
+func (h *handler) edit(ctx context.Context, req *mcp.CallToolRequest, params core.EditTaskParams) (*mcp.CallToolResult, *core.Task, error) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	task, err := h.store.Get(params.ID)
@@ -143,7 +191,7 @@ func (h *handler) list(ctx context.Context, req *mcp.CallToolRequest, params cor
 	}
 
 	content := &mcp.TextContent{Text: table}
-	return &mcp.CallToolResult{Content: []mcp.Content{content}}, taskListResponse{Tasks: tasks}, nil
+	return &mcp.CallToolResult{Content: []mcp.Content{content}}, TaskListResponse{Tasks: tasks}, nil
 }
 
 type viewParams struct {
@@ -185,7 +233,7 @@ func (h *handler) search(ctx context.Context, req *mcp.CallToolRequest, params S
 	}
 
 	content := []mcp.Content{&mcp.TextContent{Text: table}}
-	return &mcp.CallToolResult{Content: content}, taskListResponse{Tasks: tasks}, nil
+	return &mcp.CallToolResult{Content: content}, TaskListResponse{Tasks: tasks}, nil
 }
 
 type archiveParams struct {

@@ -141,7 +141,6 @@ func TestMCPHandlers(t *testing.T) {
 	t.Run("handleTaskCreate", func(t *testing.T) {
 		t.Run("successful_creation", func(t *testing.T) {
 			is := is.New(t)
-
 			params := core.CreateTaskParams{
 				Title:       "Test Task",
 				Description: "A test task description",
@@ -149,14 +148,10 @@ func TestMCPHandlers(t *testing.T) {
 				Assigned:    []string{"testuser"},
 				Labels:      []string{"test", "urgent"},
 			}
-
-			result, data, err := handler.create(ctx, req, params)
+			result, task, err := handler.create(ctx, req, params)
 			is.NoErr(err)
 			is.True(result != nil)
-			is.True(data != nil)
-
-			task, ok := data.(*core.Task)
-			is.True(ok)
+			is.True(task != nil)
 			is.Equal(task.Title, "Test Task")
 			is.Equal(task.Priority.String(), "high")
 		})
@@ -165,14 +160,13 @@ func TestMCPHandlers(t *testing.T) {
 	t.Run("handleTaskList", func(t *testing.T) {
 		t.Run("list_all_tasks", func(t *testing.T) {
 			is := is.New(t)
-
 			params := core.ListTasksParams{}
 			result, data, err := handler.list(ctx, req, params)
 			is.NoErr(err)
 			is.True(result != nil)
 			is.True(data != nil)
 
-			taskList, ok := data.(taskListResponse)
+			taskList, ok := data.(TaskListResponse)
 			is.True(ok)
 			is.True(len(taskList.Tasks) > 0)
 		})
@@ -188,7 +182,7 @@ func TestMCPHandlers(t *testing.T) {
 			is.True(result != nil)
 			is.True(data != nil)
 
-			taskList, ok := data.(taskListResponse)
+			taskList, ok := data.(TaskListResponse)
 			is.True(ok)
 			for _, task := range taskList.Tasks {
 				is.Equal(string(task.Status), "done")
@@ -204,11 +198,8 @@ func TestMCPHandlers(t *testing.T) {
 			createParams := core.CreateTaskParams{
 				Title: "View Test Task",
 			}
-			_, taskData, err := handler.create(ctx, req, createParams)
+			_, task, err := handler.create(ctx, req, createParams)
 			is.NoErr(err)
-
-			task, ok := taskData.(*core.Task)
-			is.True(ok)
 
 			// Now view the task
 			viewParams := viewParams{
@@ -238,7 +229,7 @@ func TestMCPHandlers(t *testing.T) {
 			is.True(result != nil)
 			is.True(data != nil)
 
-			taskList, ok := data.(taskListResponse)
+			taskList, ok := data.(TaskListResponse)
 			is.True(ok)
 			is.True(len(taskList.Tasks) > 0)
 		})
@@ -264,11 +255,8 @@ func TestMCPHandlers(t *testing.T) {
 			createParams := core.CreateTaskParams{
 				Title: "Original Title",
 			}
-			_, taskData, err := handler.create(ctx, req, createParams)
+			_, task, err := handler.create(ctx, req, createParams)
 			is.NoErr(err)
-
-			task, ok := taskData.(*core.Task)
-			is.True(ok)
 
 			// Now edit the task
 			newTitle := "Updated Title"
