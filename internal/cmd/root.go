@@ -77,9 +77,6 @@ func init() {
 	}
 }
 
-func InitLogger() {
-}
-
 func Root() *cobra.Command {
 	return rootCmd
 }
