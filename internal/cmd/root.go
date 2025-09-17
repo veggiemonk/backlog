@@ -2,6 +2,7 @@
 package cmd
 
 import (
+	"cmp"
 	"context"
 	"os"
 
@@ -19,10 +20,7 @@ var (
 
 type contextKey string
 
-const (
-	ctxKeyStore = contextKey("store")
-	defaultDir  = ".backlog"
-)
+const ctxKeyStore = contextKey("store")
 
 type TaskStore interface {
 	Get(id string) (*core.Task, error)
@@ -51,7 +49,7 @@ Backlog helps you manage tasks within your git repository.`,
 }
 
 func setRootPersistentFlags(cmd *cobra.Command) {
-	cmd.PersistentFlags().StringVar(&tasksDir, "folder", defaultDir, "Directory for backlog tasks")
+	cmd.PersistentFlags().StringVar(&tasksDir, "folder", paths.DefaultDir, "Directory for backlog tasks")
 	cmd.PersistentFlags().BoolVar(&autoCommit, "auto-commit", true, "Auto-committing changes to git repository")
 }
 
@@ -59,17 +57,27 @@ func init() {
 	setRootPersistentFlags(rootCmd)
 	rootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
 		// Initialize logging before anything else
-		logging.Init()
+		logging.Init(
+			os.Getenv(logging.EnvLogLevel),
+			os.Getenv(logging.EnvLogFormat),
+			os.Getenv(logging.EnvLogFile),
+		)
 
+		tasksDir = cmp.Or(os.Getenv(paths.DefaultDirEnvVar), tasksDir)
+		logging.Debug("env resolve", "tasksDir", tasksDir)
 		fs := afero.NewOsFs()
 		var err error
 		tasksDir, err = paths.ResolveTasksDir(fs, tasksDir)
 		if err != nil {
 			logging.Error("tasks directory", "error", err)
 		}
+		logging.Debug("paths.ResolveTasksDir", "tasksDir", tasksDir)
 		var store TaskStore = core.NewFileTaskStore(fs, tasksDir)
 		cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
 	}
+}
+
+func InitLogger() {
 }
 
 func Root() *cobra.Command {

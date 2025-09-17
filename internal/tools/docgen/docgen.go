@@ -1,3 +1,6 @@
+// Package main provides documentation generation utilities for the backlog CLI.
+// It generates markdown, man pages, or restructured text documentation from
+// cobra commands.
 package main
 
 import (

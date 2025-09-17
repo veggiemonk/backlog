@@ -7,4 +7,3 @@
 // root, and a sensible fallback to the current working directory when no git
 // repository is present.
 package paths
-

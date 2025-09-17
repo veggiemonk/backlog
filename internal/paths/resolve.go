@@ -1,7 +1,6 @@
 package paths
 
 import (
-	"cmp"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -11,8 +10,8 @@ import (
 )
 
 const (
-	defaultDir       = ".backlog"
-	defaultDirEnvVar = "BACKLOG_FOLDER"
+	DefaultDir       = ".backlog"
+	DefaultDirEnvVar = "BACKLOG_FOLDER"
 )
 
 // ResolveTasksDir determines the directory to use for tasks based on the
@@ -26,11 +25,6 @@ const (
 //     c) If in a git repo => use <gitRoot>/<dir>.
 //     d) Fallback to <CWD>/<dir> (will be created on demand by the store).
 func ResolveTasksDir(fs afero.Fs, dir string) (string, error) {
-	dir = cmp.Or(os.Getenv("BACKLOG_FOLDER"), dir)
-	if dir == "" {
-		dir = defaultDir
-	}
-
 	// If absolute, just return it (creation happens later in store).
 	if filepath.IsAbs(dir) {
 		return dir, nil
