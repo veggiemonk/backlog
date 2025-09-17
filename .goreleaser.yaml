@@ -40,7 +40,8 @@ snapshot:
   version_template: "{{ .Tag }}-next"
 
 kos:
-  - repository: ghcr.io/veggiemonk/backlog
+  - repositories:
+      - ghcr.io/veggiemonk/backlog
     creation_time: "{{.CommitTimestamp}}"
     base_image: "cgr.dev/chainguard/static:latest"
     tags:
