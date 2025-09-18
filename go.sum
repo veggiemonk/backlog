@@ -44,6 +44,8 @@ github.com/go-git/go-git-fixtures/v5 v5.1.0 h1:b8cWxDLTk0s09Ihm9x1HvNGUzxUVlRwIH
 github.com/go-git/go-git-fixtures/v5 v5.1.0/go.mod h1:CdmU0oQeDuy4Xh8V0i9Ym+vsTkgDDPKEiofBFEVT+aE=
 github.com/go-git/go-git/v6 v6.0.0-20250910120214-3a68d0404116 h1:YtWRF4qTPh9YEh2m6lhaKDQDyErFLp/UfWJC9MjLEvk=
 github.com/go-git/go-git/v6 v6.0.0-20250910120214-3a68d0404116/go.mod h1:qikYwcUCOy1+Pq2SPaUmoubCmJ2PT+Lg9ti8sgwtmJg=
+github.com/go-git/go-git/v6 v6.0.0-20250917085037-6e57f9e4da1e h1:Cp8YJWVGOaBuwO3AHVGudxrC8PBJYFSu65NEjeq8h4Y=
+github.com/go-git/go-git/v6 v6.0.0-20250917085037-6e57f9e4da1e/go.mod h1:qikYwcUCOy1+Pq2SPaUmoubCmJ2PT+Lg9ti8sgwtmJg=
 github.com/go-viper/mapstructure/v2 v2.4.0 h1:EBsztssimR/CONLSZZ04E8qAkxNYq4Qp9LvH92wZUgs=
 github.com/go-viper/mapstructure/v2 v2.4.0/go.mod h1:oJDH3BJKyqBA2TXFhDsKDGDTlndYOZ6rGS0BRZIxGhM=
 github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 h1:f+oWsMOmNPc8JmEHVZIycC7hBoQxHH9pNKQORJNozsQ=

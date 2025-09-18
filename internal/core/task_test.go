@@ -107,16 +107,15 @@ func TestParseTaskWithDependencies(t *testing.T) {
 	})
 }
 
+//
 // func TestTaskSchema(t *testing.T) {
 // 	is := is.New(t)
-// 	schema, err := jsonschema.For[Task](&jsonschema.ForOptions{
-// 		TypeSchemas: map[any]*jsonschema.Schema{
-// 			TaskID{seg: []int{}}: {
-// 				ID:      "id",
-// 				Comment: "The id of the task",
-// 			}, // TODO: fill the schema to threat this field as a string
-// 		},
-// 	})
+// 	customSchema, err := jsonschema.For[Task](nil)
 // 	is.NoErr(err)
-// 	t.Log(schema)
+// 	// t.Log(customSchema)
+// 	customSchema.Properties["id"].Type = "string"
+// 	mcp.AddTool(server, &mcp.Tool{
+// 		Name:        "customized greeting 2",
+// 		InputSchema: customSchema,
+// 	}, simpleGreeting)
 // }

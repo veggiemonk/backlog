@@ -112,11 +112,15 @@ func initConfig() {
 	viper.SetDefault(configLogFile, defaultLogFile)
 
 	// Bind environment variables with their keys
-	viper.BindEnv(configFolder, envVarDir)
-	viper.BindEnv(configAutoCommit, envVarAutoCommit)
-	viper.BindEnv(configLogLevel, envVarLogLevel)
-	viper.BindEnv(configLogFormat, envVarLogFormat)
-	viper.BindEnv(configLogFile, envVarLogFile)
+	checkErr(viper.BindEnv(configFolder, envVarDir))
+	checkErr(viper.BindEnv(configAutoCommit, envVarAutoCommit))
+	checkErr(viper.BindEnv(configLogLevel, envVarLogLevel))
+	checkErr(viper.BindEnv(configLogFormat, envVarLogFormat))
+	checkErr(viper.BindEnv(configLogFile, envVarLogFile))
+}
+
+func checkErr(err error) {
+	logging.Error("binding environment variables", "err", err)
 }
 
 func setRootPersistentFlags(cmd *cobra.Command) {
@@ -127,11 +131,11 @@ func setRootPersistentFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().String(configLogFile, defaultLogFile, "Log file path (defaults to stderr)")
 
 	// Bind flags to viper
-	viper.BindPFlag(configFolder, cmd.PersistentFlags().Lookup(configFolder))
-	viper.BindPFlag(configAutoCommit, cmd.PersistentFlags().Lookup(configAutoCommit))
-	viper.BindPFlag(configLogLevel, cmd.PersistentFlags().Lookup(configLogLevel))
-	viper.BindPFlag(configLogFormat, cmd.PersistentFlags().Lookup(configLogFormat))
-	viper.BindPFlag(configLogFile, cmd.PersistentFlags().Lookup(configLogFile))
+	checkErr(viper.BindPFlag(configFolder, cmd.PersistentFlags().Lookup(configFolder)))
+	checkErr(viper.BindPFlag(configAutoCommit, cmd.PersistentFlags().Lookup(configAutoCommit)))
+	checkErr(viper.BindPFlag(configLogLevel, cmd.PersistentFlags().Lookup(configLogLevel)))
+	checkErr(viper.BindPFlag(configLogFormat, cmd.PersistentFlags().Lookup(configLogFormat)))
+	checkErr(viper.BindPFlag(configLogFile, cmd.PersistentFlags().Lookup(configLogFile)))
 }
 
 func Root() *cobra.Command {

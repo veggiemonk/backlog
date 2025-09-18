@@ -4,7 +4,8 @@ go 1.25.1
 
 require (
 	github.com/agnivade/levenshtein v1.2.1
-	github.com/go-git/go-git/v6 v6.0.0-20250910120214-3a68d0404116
+	github.com/go-git/go-git/v6 v6.0.0-20250917085037-6e57f9e4da1e
+	github.com/google/jsonschema-go v0.2.3
 	github.com/imjasonh/version v0.0.1
 	github.com/matryer/is v1.4.1
 	github.com/modelcontextprotocol/go-sdk v0.5.0
@@ -29,7 +30,6 @@ require (
 	github.com/go-git/go-billy/v6 v6.0.0-20250906064328-0118fd22f1d9 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
-	github.com/google/jsonschema-go v0.2.3 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kevinburke/ssh_config v1.4.0 // indirect
 	github.com/klauspost/cpuid/v2 v2.3.0 // indirect

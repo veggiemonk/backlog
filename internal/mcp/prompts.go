@@ -14,23 +14,6 @@ type MCPToolCall struct {
 	Arguments any    `json:"arguments"`
 }
 
-// TaskCreateArgs represents arguments for task_create tool
-type TaskCreateArgs struct {
-	Title       string   `json:"title"`
-	Description string   `json:"description,omitempty"`
-	Labels      []string `json:"labels,omitempty"`
-}
-
-// TaskListArgs represents arguments for task_list tool
-type TaskListArgs struct {
-	Status     string   `json:"status,omitempty"`
-	Sort       []string `json:"sort,omitempty"`
-	Reverse    bool     `json:"reverse,omitempty"`
-	Unassigned bool     `json:"unassigned,omitempty"`
-	Parent     string   `json:"parent,omitempty"`
-	Labels     string   `json:"labels,omitempty"`
-}
-
 // formatToolCall converts an MCPToolCall to a formatted JSON string
 func formatToolCall(call MCPToolCall) string {
 	bytes, _ := json.MarshalIndent(call, "", "  ")

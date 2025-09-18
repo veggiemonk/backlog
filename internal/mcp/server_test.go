@@ -5,6 +5,7 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/matryer/is"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
@@ -19,11 +20,13 @@ func TestServer(t *testing.T) {
 	// Seed the store with test data
 	setupTestData(t, store)
 
+	is := is.New(t)
+
 	// Create server
-	server := NewServer(store, false)
+	server, err := NewServer(store, false)
+	is.NoErr(err)
 
 	// Test that server is created
-	is := is.New(t)
 	is.True(server != nil)
 	is.True(server.mcpServer != nil)
 	is.True(server.handler != nil)
@@ -150,8 +153,7 @@ func TestMCPHandlers(t *testing.T) {
 			}
 			result, task, err := handler.create(ctx, req, params)
 			is.NoErr(err)
-			is.True(result != nil)
-			is.True(task != nil)
+			is.True(result == nil)
 			is.Equal(task.Title, "Test Task")
 			is.Equal(task.Priority.String(), "high")
 		})
@@ -161,14 +163,10 @@ func TestMCPHandlers(t *testing.T) {
 		t.Run("list_all_tasks", func(t *testing.T) {
 			is := is.New(t)
 			params := core.ListTasksParams{}
-			result, data, err := handler.list(ctx, req, params)
+			result, tasks, err := handler.list(ctx, req, params)
 			is.NoErr(err)
-			is.True(result != nil)
-			is.True(data != nil)
-
-			taskList, ok := data.(TaskListResponse)
-			is.True(ok)
-			is.True(len(taskList.Tasks) > 0)
+			is.True(result == nil)
+			is.True(len(tasks.Tasks) > 0)
 		})
 
 		t.Run("filter_by_status", func(t *testing.T) {
@@ -177,14 +175,10 @@ func TestMCPHandlers(t *testing.T) {
 			params := core.ListTasksParams{
 				Status: []string{"done"},
 			}
-			result, data, err := handler.list(ctx, req, params)
+			result, tasks, err := handler.list(ctx, req, params)
 			is.NoErr(err)
-			is.True(result != nil)
-			is.True(data != nil)
-
-			taskList, ok := data.(TaskListResponse)
-			is.True(ok)
-			for _, task := range taskList.Tasks {
+			is.True(result == nil)
+			for _, task := range tasks.Tasks {
 				is.Equal(string(task.Status), "done")
 			}
 		})
@@ -202,18 +196,14 @@ func TestMCPHandlers(t *testing.T) {
 			is.NoErr(err)
 
 			// Now view the task
-			viewParams := viewParams{
+			viewParams := ViewParams{
 				ID: task.ID.String(),
 			}
-			result, data, err := handler.view(ctx, req, viewParams)
+			result, task, err := handler.view(ctx, req, viewParams)
 			is.NoErr(err)
-			is.True(result != nil)
-			is.True(data != nil)
-
-			viewedTask, ok := data.(*core.Task)
-			is.True(ok)
-			is.Equal(viewedTask.ID, task.ID)
-			is.Equal(viewedTask.Title, "View Test Task")
+			is.True(result == nil)
+			is.Equal(task.ID, task.ID)
+			is.Equal(task.Title, "View Test Task")
 		})
 	})
 
@@ -224,14 +214,10 @@ func TestMCPHandlers(t *testing.T) {
 			params := SearchParams{
 				Query: "feature",
 			}
-			result, data, err := handler.search(ctx, req, params)
+			result, tasks, err := handler.search(ctx, req, params)
 			is.NoErr(err)
-			is.True(result != nil)
-			is.True(data != nil)
-
-			taskList, ok := data.(TaskListResponse)
-			is.True(ok)
-			is.True(len(taskList.Tasks) > 0)
+			is.True(result == nil)
+			is.True(len(tasks.Tasks) > 0)
 		})
 
 		t.Run("search_with_no_results", func(t *testing.T) {
@@ -240,10 +226,10 @@ func TestMCPHandlers(t *testing.T) {
 			params := SearchParams{
 				Query: "nonexistent",
 			}
-			result, data, err := handler.search(ctx, req, params)
+			result, tasks, err := handler.search(ctx, req, params)
 			is.NoErr(err)
 			is.True(result != nil)
-			is.True(data == nil) // No results
+			is.True(len(tasks.Tasks) == 0) // No results
 		})
 	})
 
@@ -264,18 +250,43 @@ func TestMCPHandlers(t *testing.T) {
 				ID:       task.ID.String(),
 				NewTitle: &newTitle,
 			}
-			result, _, err := handler.edit(ctx, req, editParams)
+			_, task, err = handler.edit(ctx, req, editParams)
 			is.NoErr(err)
-			is.True(result != nil)
+			is.Equal(task.Title, "Updated Title")
 
 			// Verify the task was updated
-			viewParams := viewParams{ID: task.ID.String()}
-			_, viewData, err := handler.view(ctx, req, viewParams)
+			viewParams := ViewParams{ID: task.ID.String()}
+			_, task, err = handler.view(ctx, req, viewParams)
 			is.NoErr(err)
-
-			updatedTask, ok := viewData.(*core.Task)
-			is.True(ok)
-			is.Equal(updatedTask.Title, "Updated Title")
+			is.Equal(task.Title, "Updated Title")
 		})
 	})
+}
+
+func TestSchema(t *testing.T) {
+	is := is.New(t)
+	taskListResponse, err := jsonschema.For[TaskListResponse](nil)
+	is.NoErr(err)
+	b, err := taskListResponse.MarshalJSON()
+	is.NoErr(err)
+	t.Logf("\n%s\n", string(b))
+
+	task, err := jsonschema.For[core.Task](&jsonschema.ForOptions{
+		TypeSchemas: map[any]*jsonschema.Schema{
+			core.ZeroTaskID: {
+				Type: "string",
+			},
+		},
+	})
+	is.NoErr(err)
+	b, err = task.MarshalJSON()
+	is.NoErr(err)
+	t.Logf("\n%s\n", string(b))
+
+	taskid, err := jsonschema.For[core.TaskID](nil)
+	is.NoErr(err)
+	taskid.Type = "string"
+	b, err = taskid.MarshalJSON()
+	is.NoErr(err)
+	t.Logf("\n%s\n", string(b))
 }
