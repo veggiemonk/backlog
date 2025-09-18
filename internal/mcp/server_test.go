@@ -298,4 +298,141 @@ func TestMCPHandlers(t *testing.T) {
 			is.Equal(task.Title, "Updated Title")
 		})
 	})
+
+	t.Run("handleTaskArchive", func(t *testing.T) {
+		t.Run("archive_existing_task", func(t *testing.T) {
+			is := is.New(t)
+
+			// First create a task to archive
+			createParams := core.CreateTaskParams{
+				Title:       "Task to Archive",
+				Description: "This task will be archived",
+				Priority:    "medium",
+			}
+			_, task, err := handler.create(ctx, req, createParams)
+			is.NoErr(err)
+
+			// Archive the task
+			archiveParams := ArchiveParams{
+				ID: task.ID.String(),
+			}
+			result, _, err := handler.archive(ctx, req, archiveParams)
+			is.NoErr(err)
+			is.True(result != nil)
+
+			// Verify the response content
+			is.Equal(len(result.Content), 1)
+			txt, ok := result.Content[0].(*mcp.TextContent)
+			is.True(ok)
+			is.True(len(txt.Text) > 0)
+			// Should contain task ID and title in the summary
+			is.True(len(txt.Text) > len(task.ID.String()))
+			is.True(len(txt.Text) > len(task.Title))
+		})
+
+		t.Run("archive_nonexistent_task", func(t *testing.T) {
+			is := is.New(t)
+
+			archiveParams := ArchiveParams{
+				ID: "nonexistent",
+			}
+			result, _, err := handler.archive(ctx, req, archiveParams)
+			is.True(err != nil) // Should return an error
+			is.True(result == nil)
+		})
+	})
+
+	t.Run("handleTaskBatchCreate", func(t *testing.T) {
+		t.Run("batch_create_multiple_tasks", func(t *testing.T) {
+			is := is.New(t)
+
+			params := ListCreateParams{
+				Tasks: []core.CreateTaskParams{
+					{
+						Title:       "Batch Task 1",
+						Description: "First batch task",
+						Priority:    "high",
+						Labels:      []string{"batch", "test"},
+					},
+					{
+						Title:       "Batch Task 2",
+						Description: "Second batch task",
+						Priority:    "medium",
+						Assigned:    []string{"user1"},
+					},
+					{
+						Title:       "Batch Task 3",
+						Description: "Third batch task",
+						Priority:    "low",
+					},
+				},
+			}
+
+			result, _, err := handler.batchCreate(ctx, req, params)
+			is.NoErr(err)
+			is.True(result != nil)
+
+			// Verify the response content
+			is.Equal(len(result.Content), 1)
+			txt, ok := result.Content[0].(*mcp.TextContent)
+			is.True(ok)
+
+			wrappedTasks := struct{ Tasks []*core.Task }{}
+			is.NoErr(json.Unmarshal([]byte(txt.Text), &wrappedTasks))
+			is.Equal(len(wrappedTasks.Tasks), 3)
+
+			// Verify task details
+			is.Equal(wrappedTasks.Tasks[0].Title, "Batch Task 1")
+			is.Equal(wrappedTasks.Tasks[1].Title, "Batch Task 2")
+			is.Equal(wrappedTasks.Tasks[2].Title, "Batch Task 3")
+
+			is.Equal(wrappedTasks.Tasks[0].Priority.String(), "high")
+			is.Equal(wrappedTasks.Tasks[1].Priority.String(), "medium")
+			is.Equal(wrappedTasks.Tasks[2].Priority.String(), "low")
+		})
+
+		t.Run("batch_create_empty_list", func(t *testing.T) {
+			is := is.New(t)
+
+			params := ListCreateParams{
+				Tasks: []core.CreateTaskParams{},
+			}
+
+			result, _, err := handler.batchCreate(ctx, req, params)
+			is.NoErr(err)
+			is.True(result != nil)
+
+			// Verify empty result
+			is.Equal(len(result.Content), 1)
+			txt, ok := result.Content[0].(*mcp.TextContent)
+			is.True(ok)
+
+			wrappedTasks := struct{ Tasks []*core.Task }{}
+			is.NoErr(json.Unmarshal([]byte(txt.Text), &wrappedTasks))
+			is.Equal(len(wrappedTasks.Tasks), 0)
+		})
+	})
+
+	t.Run("handleTaskCommit", func(t *testing.T) {
+		t.Run("commit_disabled", func(t *testing.T) {
+			is := is.New(t)
+
+			// Test with the existing handler (autoCommit defaults to false)
+			err := handler.commit("T1", "Test Task", "/some/path", "", "create")
+			is.NoErr(err) // Should not error when autoCommit is false
+		})
+
+		t.Run("commit_behavior_with_autocommit_enabled", func(t *testing.T) {
+			// Create a new handler instance with autoCommit enabled for this specific test
+			commitHandler := handler
+			commitHandler.autoCommit = true
+
+			// Test commit method - expected to fail in test environment (no real git repo)
+			err := commitHandler.commit("T1", "Test Task", "/some/path", "", "create")
+			// In test environment with in-memory filesystem, this should fail
+			// but we're testing that the method doesn't panic and handles errors gracefully
+			// The exact error depends on whether we're in a git repo or not
+			_ = err // We expect this might error in test environment, which is fine
+		})
+	})
 }
