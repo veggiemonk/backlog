@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"context"
+	"encoding/json"
 	"sync"
 	"testing"
 
@@ -162,10 +163,16 @@ func TestMCPHandlers(t *testing.T) {
 		t.Run("list_all_tasks", func(t *testing.T) {
 			is := is.New(t)
 			params := core.ListTasksParams{}
-			result, tasks, err := handler.list(ctx, req, params)
+			result, _, err := handler.list(ctx, req, params)
 			is.NoErr(err)
-			is.True(result == nil)
-			is.True(len(tasks.Tasks) > 0)
+
+			is.True(result != nil)
+			is.Equal(len(result.Content), 1)
+			txt, ok := result.Content[0].(*mcp.TextContent)
+			is.True(ok)
+			wrappedTasks := struct{ Tasks []*core.Task }{}
+			is.NoErr(json.Unmarshal([]byte(txt.Text), &wrappedTasks))
+			is.True(len(wrappedTasks.Tasks) > 0)
 		})
 
 		t.Run("filter_by_status", func(t *testing.T) {
@@ -174,10 +181,17 @@ func TestMCPHandlers(t *testing.T) {
 			params := core.ListTasksParams{
 				Status: []string{"done"},
 			}
-			result, tasks, err := handler.list(ctx, req, params)
+			result, _, err := handler.list(ctx, req, params)
 			is.NoErr(err)
-			is.True(result == nil)
-			for _, task := range tasks.Tasks {
+			is.True(result != nil)
+
+			is.Equal(len(result.Content), 1)
+			txt, ok := result.Content[0].(*mcp.TextContent)
+			is.True(ok)
+
+			wrappedTasks := struct{ Tasks []*core.Task }{}
+			is.NoErr(json.Unmarshal([]byte(txt.Text), &wrappedTasks))
+			for _, task := range wrappedTasks.Tasks {
 				is.Equal(string(task.Status), "done")
 			}
 		})
@@ -198,11 +212,19 @@ func TestMCPHandlers(t *testing.T) {
 			viewParams := ViewParams{
 				ID: task.ID.String(),
 			}
-			result, task, err := handler.view(ctx, req, viewParams)
+			result, _, err := handler.view(ctx, req, viewParams)
 			is.NoErr(err)
-			is.True(result == nil)
-			is.Equal(task.ID, task.ID)
-			is.Equal(task.Title, "View Test Task")
+
+			is.Equal(len(result.Content), 1)
+			txt, ok := result.Content[0].(*mcp.TextContent)
+			is.True(ok)
+			ttask := &core.Task{}
+			is.NoErr(json.Unmarshal([]byte(txt.Text), ttask))
+
+			// is.True(result == nil)
+			is.True(ttask != nil)
+			is.Equal(ttask.ID, task.ID)
+			is.Equal(ttask.Title, "View Test Task")
 		})
 	})
 
@@ -213,10 +235,16 @@ func TestMCPHandlers(t *testing.T) {
 			params := SearchParams{
 				Query: "feature",
 			}
-			result, tasks, err := handler.search(ctx, req, params)
+			result, _, err := handler.search(ctx, req, params)
 			is.NoErr(err)
-			is.True(result == nil)
-			is.True(len(tasks.Tasks) > 0)
+			is.True(result != nil)
+
+			is.Equal(len(result.Content), 1)
+			txt, ok := result.Content[0].(*mcp.TextContent)
+			is.True(ok)
+			wrappedTasks := struct{ Tasks []*core.Task }{}
+			is.NoErr(json.Unmarshal([]byte(txt.Text), &wrappedTasks))
+			is.True(len(wrappedTasks.Tasks) > 0)
 		})
 
 		t.Run("search_with_no_results", func(t *testing.T) {
@@ -225,10 +253,14 @@ func TestMCPHandlers(t *testing.T) {
 			params := SearchParams{
 				Query: "nonexistent",
 			}
-			result, tasks, err := handler.search(ctx, req, params)
+			result, _, err := handler.search(ctx, req, params)
 			is.NoErr(err)
 			is.True(result != nil)
-			is.True(len(tasks.Tasks) == 0) // No results
+			// result.Content
+			is.Equal(len(result.Content), 1)
+			b, err := result.Content[0].MarshalJSON()
+			is.NoErr(err)
+			is.Equal(string(b), `{"type":"text","text":"No matching tasks found."}`)
 		})
 	})
 
@@ -255,8 +287,14 @@ func TestMCPHandlers(t *testing.T) {
 
 			// Verify the task was updated
 			viewParams := ViewParams{ID: task.ID.String()}
-			_, task, err = handler.view(ctx, req, viewParams)
+			result, _, err := handler.view(ctx, req, viewParams)
 			is.NoErr(err)
+
+			is.Equal(len(result.Content), 1)
+			txt, ok := result.Content[0].(*mcp.TextContent)
+			is.True(ok)
+			ttask := &core.Task{}
+			is.NoErr(json.Unmarshal([]byte(txt.Text), ttask))
 			is.Equal(task.Title, "Updated Title")
 		})
 	})

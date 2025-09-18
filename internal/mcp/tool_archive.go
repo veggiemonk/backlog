@@ -4,23 +4,22 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/veggiemonk/backlog/internal/logging"
 )
 
 func (s *Server) registerTaskArchive() error {
-	inputSchema, err := jsonschema.For[ArchiveParams](nil)
-	if err != nil {
-		return err
-	}
+	// inputSchema, err := jsonschema.For[ArchiveParams](nil)
+	// if err != nil {
+	// 	return err
+	// }
 	tool := &mcp.Tool{
 		Name:  "task_archive",
 		Title: "Archive a task",
 		Description: `Archive a task.
 The task will be moving to the archived directory and setting status to archived. 
 Returns the archived task.`,
-		InputSchema: inputSchema,
+		// InputSchema: inputSchema,
 	}
 	mcp.AddTool(s.mcpServer, tool, s.handler.archive)
 	return nil
