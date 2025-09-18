@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -18,7 +19,7 @@ backlog mcp --http             # Start the MCP server using HTTP transport on de
 backlog mcp --http --port 4321 # Start the MCP server using HTTP transport on port 4321
 backlog mcp                    # Start the MCP server using stdio transport
 `,
-	Run: runMcpServer,
+	RunE: runMcpServer,
 }
 
 var (
@@ -36,17 +37,21 @@ func setMCPFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolVar(&httpTransport, "http", false, "Use HTTP transport instead of stdio")
 }
 
-func runMcpServer(cmd *cobra.Command, args []string) {
+func runMcpServer(cmd *cobra.Command, args []string) error {
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
-	server := mcpserver.NewServer(store, viper.GetBool(configAutoCommit))
+	server, err := mcpserver.NewServer(store, viper.GetBool(configAutoCommit))
+	if err != nil {
+		return fmt.Errorf("create MCP server: %v", err)
+	}
 	if httpTransport {
 		logging.Info("starting MCP server", "transport", "http", "port", mcpHTTPPort)
 		if err := server.RunHTTP(mcpHTTPPort); err != nil {
-			logging.Error("HTTP server failed", "error", err)
+			return fmt.Errorf("HTTP server failed: %v", err)
 		}
-		return
+		return nil
 	}
 	if err := server.RunStdio(context.Background()); err != nil {
-		logging.Error("stdio server failed", "error", err)
+		return fmt.Errorf("stdio server failed: %v", err)
 	}
+	return nil
 }

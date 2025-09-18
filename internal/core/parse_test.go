@@ -120,7 +120,7 @@ func TestParseJSONArray(t *testing.T) {
     "parent": "",
     "assigned": "initial-user",
     "labels": "bug",
-    "priority": 2,
+    "priority": "medium",
     "created_at": "2025-09-13T09:00:59.522213Z",
     "description": "Initial description.",
     "acceptance_criteria": [

@@ -106,3 +106,16 @@ func TestParseTaskWithDependencies(t *testing.T) {
 		is.True(slices.Contains(taskCFromFile.Dependencies.ToSlice(), taskB.ID.Name()))
 	})
 }
+
+//
+// func TestTaskSchema(t *testing.T) {
+// 	is := is.New(t)
+// 	customSchema, err := jsonschema.For[Task](nil)
+// 	is.NoErr(err)
+// 	// t.Log(customSchema)
+// 	customSchema.Properties["id"].Type = "string"
+// 	mcp.AddTool(server, &mcp.Tool{
+// 		Name:        "customized greeting 2",
+// 		InputSchema: customSchema,
+// 	}, simpleGreeting)
+// }

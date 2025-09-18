@@ -3,14 +3,12 @@ package core
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"regexp"
 	"strings"
 	"time"
 
-	"github.com/agnivade/levenshtein"
 	"github.com/veggiemonk/backlog/internal/logging"
 	"go.yaml.in/yaml/v4"
 )
@@ -20,7 +18,9 @@ var ErrInvalid = errors.New("invalid value")
 // NewTask creates a new Task with default values.
 func NewTask() *Task {
 	return &Task{
-		Status: StatusTodo, // Default status
+		Status:             StatusTodo, // Default status
+		AcceptanceCriteria: make([]AcceptanceCriterion, 0),
+		History:            make([]HistoryEntry, 0),
 	}
 }
 
@@ -137,175 +137,4 @@ func RecordChange(task *Task, change string) {
 		Change:    change,
 	}
 	task.History = append(task.History, entry)
-}
-
-// Status represents the state of a task.
-type Status string
-
-const (
-	StatusTodo       Status = "todo"
-	StatusInProgress Status = "in-progress"
-	StatusDone       Status = "done"
-	StatusCancelled  Status = "cancelled"
-	StatusArchived   Status = "archived"
-	StatusRejected   Status = "rejected"
-)
-
-var statuses = []string{
-	string(StatusTodo),
-	string(StatusInProgress),
-	string(StatusDone),
-	string(StatusCancelled),
-	string(StatusArchived),
-	string(StatusRejected),
-}
-
-func printValidStatuses() string {
-	return strings.Join(statuses, ",")
-}
-
-func ParseStatus(s string) (Status, error) {
-	if s == "" {
-		return StatusTodo, nil
-	}
-	sc := strings.ReplaceAll(strings.ToLower(s), " ", "")
-	for _, validStatus := range statuses {
-		distance := levenshtein.ComputeDistance(sc, validStatus)
-		if distance < 3 {
-			return Status(validStatus), nil
-		}
-	}
-	return "", fmt.Errorf("only valid statuses are %q: %q %w", printValidStatuses(), s, ErrInvalid)
-}
-
-type Priority int
-
-const (
-	PriorityUnknown Priority = iota
-	PriorityLow
-	PriorityMedium
-	PriorityHigh
-	PriorityCritical
-)
-
-var priorities = []string{
-	"unknown",
-	"low",
-	"medium",
-	"high",
-	"critical",
-}
-
-func (p Priority) String() string {
-	switch p {
-	case PriorityUnknown:
-		return "unknown"
-	case PriorityLow:
-		return "low"
-	case PriorityMedium:
-		return "medium"
-	case PriorityHigh:
-		return "high"
-	case PriorityCritical:
-		return "critical"
-	default:
-		return ""
-	}
-}
-
-func ParsePriority(s string) (Priority, error) {
-	if s == "" {
-		return PriorityUnknown, nil
-	}
-
-	sp := strings.ReplaceAll(strings.ToLower(s), " ", "")
-	for _, validPriority := range priorities {
-		distance := levenshtein.ComputeDistance(sp, validPriority)
-		if distance < 3 {
-			switch validPriority {
-			case "unknown":
-				return PriorityUnknown, nil
-			case "low":
-				return PriorityLow, nil
-			case "medium":
-				return PriorityMedium, nil
-			case "high":
-				return PriorityHigh, nil
-			case "critical":
-				return PriorityCritical, nil
-			}
-		}
-	}
-	return PriorityUnknown, fmt.Errorf("only valid priorities are %q: %q %w", strings.Join(priorities, ","), s, ErrInvalid)
-}
-
-// MaybeStringArray is a custom type that can unmarshal from either a single string or an array of strings.
-// It also marshals back to the same format, preserving the original structure.
-// origin: https://carlosbecker.com/posts/go-custom-marshaling/
-type MaybeStringArray []string
-
-var (
-	_ yaml.Unmarshaler = &MaybeStringArray{}
-	_ yaml.Marshaler   = MaybeStringArray{}
-	_ json.Unmarshaler = &MaybeStringArray{}
-	_ json.Marshaler   = MaybeStringArray{}
-)
-
-func (a *MaybeStringArray) ToSlice() []string {
-	if a == nil {
-		return nil
-	}
-	return []string(*a)
-}
-
-func (a *MaybeStringArray) UnmarshalYAML(value *yaml.Node) error {
-	var slice []string
-	if err := value.Decode(&slice); err == nil {
-		*a = slice
-		return nil
-	}
-
-	var single string
-	if err := value.Decode(&single); err != nil {
-		return err
-	}
-	*a = []string{single}
-	return nil
-}
-
-func (a MaybeStringArray) MarshalYAML() (any, error) {
-	switch len(a) {
-	case 0:
-		return nil, nil
-	case 1:
-		return a[0], nil
-	default:
-		return []string(a), nil
-	}
-}
-
-func (a *MaybeStringArray) UnmarshalJSON(data []byte) error {
-	var slice []string
-	if err := json.Unmarshal(data, &slice); err == nil {
-		*a = slice
-		return nil
-	}
-
-	var single string
-	if err := json.Unmarshal(data, &single); err != nil {
-		return err
-	}
-	*a = []string{single}
-	return nil
-}
-
-func (a MaybeStringArray) MarshalJSON() ([]byte, error) {
-	switch len(a) {
-	case 0:
-		return json.Marshal(nil)
-	case 1:
-		return json.Marshal(a[0])
-	default:
-		return json.Marshal([]string(a))
-	}
 }

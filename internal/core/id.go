@@ -17,13 +17,17 @@ const (
 	fieldTaskSeperator = "."
 )
 
-var _ yaml.Unmarshaler = &TaskID{}
-var _ yaml.Marshaler = TaskID{}
-var _ json.Marshaler = TaskID{}
-var _ json.Unmarshaler = &TaskID{}
+var (
+	_ yaml.Unmarshaler = &TaskID{}
+	_ yaml.Marshaler   = TaskID{}
+	_ json.Marshaler   = TaskID{}
+	_ json.Unmarshaler = &TaskID{}
+)
+
+var ZeroTaskID = TaskID{seg: []int{}}
 
 type TaskID struct {
-	seg []int
+	seg []int `json:"-"`
 }
 
 // parseTaskID parses a task ID string (e.g., "T1.2.3" or "1.2.3") into a TaskID struct.
@@ -115,11 +119,8 @@ func (t TaskID) HasSubTasks() bool {
 
 func (t TaskID) Less(other TaskID) bool {
 	// Compare segment by segment
-	minLen := len(t.seg)
-	if len(other.seg) < minLen {
-		minLen = len(other.seg)
-	}
-	for i := 0; i < minLen; i++ {
+	minLen := min(len(other.seg), len(t.seg))
+	for i := range minLen {
 		if t.seg[i] < other.seg[i] {
 			return true
 		} else if t.seg[i] > other.seg[i] {
@@ -148,6 +149,7 @@ func (t TaskID) Parent() *TaskID {
 	}
 	return nil
 }
+
 func (t TaskID) NextSubTaskID() TaskID {
 	newSeg := make([]int, len(t.seg))
 	copy(newSeg, t.seg)

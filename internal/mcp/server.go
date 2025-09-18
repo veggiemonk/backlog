@@ -10,6 +10,7 @@ import (
 
 	"github.com/imjasonh/version"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
 )
@@ -44,14 +45,18 @@ type handler struct {
 	autoCommit bool
 }
 
-// taskListResponse is used to wrap the list of tasks in a JSON object
-// to conform to the MCP specification for structuredContent.
-type taskListResponse struct {
-	Tasks []*core.Task `json:"tasks"`
+func (h *handler) commit(id, title, path, oldPath, msg string) error {
+	if h.autoCommit {
+		commitMsg := fmt.Sprintf("feat(task): %s %s - \"%s\"", msg, id, title)
+		if err := commit.Add(path, oldPath, commitMsg); err != nil {
+			return fmt.Errorf("auto-commit failed: %w", err)
+		}
+	}
+	return nil
 }
 
 // NewServer creates a new MCP server configured for backlog
-func NewServer(store TaskStore, autoCommit bool) *Server {
+func NewServer(store TaskStore, autoCommit bool) (*Server, error) {
 	ver := version.Get()
 	mcpServer := mcp.NewServer(
 		&mcp.Implementation{
@@ -78,11 +83,13 @@ func NewServer(store TaskStore, autoCommit bool) *Server {
 	}
 
 	// Install all functionality
+	if err := server.addTools(); err != nil {
+		return nil, err
+	}
 	server.addResources()
-	server.addTools()
 	server.addPrompts()
 
-	return server
+	return server, nil
 }
 
 // RunHTTP starts the server with streamable HTTP transport
@@ -104,4 +111,30 @@ func (s *Server) RunHTTP(port int) error {
 // RunStdio starts the server with stdio transport
 func (s *Server) RunStdio(ctx context.Context) error {
 	return s.mcpServer.Run(ctx, &mcp.StdioTransport{})
+}
+
+// addTools adds all MCP tools to the server
+func (s *Server) addTools() error {
+	if err := s.registerTaskCreate(); err != nil {
+		return err
+	}
+	if err := s.registerTaskBatchCreate(); err != nil {
+		return err
+	}
+	if err := s.registerTaskList(); err != nil {
+		return err
+	}
+	if err := s.registerTaskView(); err != nil {
+		return err
+	}
+	if err := s.registerTaskEdit(); err != nil {
+		return err
+	}
+	if err := s.registerTaskSearch(); err != nil {
+		return err
+	}
+	if err := s.registerTaskArchive(); err != nil {
+		return err
+	}
+	return nil
 }

@@ -14,23 +14,6 @@ type MCPToolCall struct {
 	Arguments any    `json:"arguments"`
 }
 
-// TaskCreateArgs represents arguments for task_create tool
-type TaskCreateArgs struct {
-	Title       string   `json:"title"`
-	Description string   `json:"description,omitempty"`
-	Labels      []string `json:"labels,omitempty"`
-}
-
-// TaskListArgs represents arguments for task_list tool
-type TaskListArgs struct {
-	Status     string   `json:"status,omitempty"`
-	Sort       []string `json:"sort,omitempty"`
-	Reverse    bool     `json:"reverse,omitempty"`
-	Unassigned bool     `json:"unassigned,omitempty"`
-	Parent     string   `json:"parent,omitempty"`
-	Labels     string   `json:"labels,omitempty"`
-}
-
 // formatToolCall converts an MCPToolCall to a formatted JSON string
 func formatToolCall(call MCPToolCall) string {
 	bytes, _ := json.MarshalIndent(call, "", "  ")
@@ -65,7 +48,10 @@ func (s *Server) addPrompts() {
 		}
 		text := "Create a new bug report task using:\n" + formatToolCall(call)
 		return &mcp.GetPromptResult{
-			Messages: []*mcp.PromptMessage{{Content: &mcp.TextContent{Text: text}}},
+			Messages: []*mcp.PromptMessage{{
+				Content: &mcp.TextContent{Text: text},
+				Role:    "assistant",
+			}},
 		}, nil
 	})
 
@@ -83,7 +69,10 @@ func (s *Server) addPrompts() {
 		}
 		text := "Generate summary of completed tasks using:\n" + formatToolCall(call)
 		return &mcp.GetPromptResult{
-			Messages: []*mcp.PromptMessage{{Content: &mcp.TextContent{Text: text}}},
+			Messages: []*mcp.PromptMessage{{
+				Content: &mcp.TextContent{Text: text},
+				Role:    "assistant",
+			}},
 		}, nil
 	})
 
@@ -101,7 +90,10 @@ func (s *Server) addPrompts() {
 		}
 		text := "Show high priority tasks using:\n" + formatToolCall(call)
 		return &mcp.GetPromptResult{
-			Messages: []*mcp.PromptMessage{{Content: &mcp.TextContent{Text: text}}},
+			Messages: []*mcp.PromptMessage{{
+				Content: &mcp.TextContent{Text: text},
+				Role:    "assistant",
+			}},
 		}, nil
 	})
 
@@ -119,7 +111,10 @@ func (s *Server) addPrompts() {
 		}
 		text := "Create a feature request using:\n" + formatToolCall(call)
 		return &mcp.GetPromptResult{
-			Messages: []*mcp.PromptMessage{{Content: &mcp.TextContent{Text: text}}},
+			Messages: []*mcp.PromptMessage{{
+				Content: &mcp.TextContent{Text: text},
+				Role:    "assistant",
+			}},
 		}, nil
 	})
 
@@ -143,7 +138,10 @@ func (s *Server) addPrompts() {
 		}
 		text := formatMultipleToolCalls("Find blocked tasks and check their dependencies:", tasksDependees, tasksDependents)
 		return &mcp.GetPromptResult{
-			Messages: []*mcp.PromptMessage{{Content: &mcp.TextContent{Text: text}}},
+			Messages: []*mcp.PromptMessage{{
+				Content: &mcp.TextContent{Text: text},
+				Role:    "assistant",
+			}},
 		}, nil
 	})
 
@@ -160,7 +158,12 @@ func (s *Server) addPrompts() {
 		}
 		text := "Get project overview using:\n" + formatToolCall(call)
 		return &mcp.GetPromptResult{
-			Messages: []*mcp.PromptMessage{{Content: &mcp.TextContent{Text: text}}},
+			Messages: []*mcp.PromptMessage{
+				{
+					Content: &mcp.TextContent{Text: text},
+					Role:    "assistant",
+				},
+			},
 		}, nil
 	})
 
@@ -200,6 +203,7 @@ func (s *Server) addPrompts() {
 			Messages: []*mcp.PromptMessage{
 				{
 					Content: &mcp.TextContent{Text: text},
+					Role:    "assistant",
 				},
 			},
 		}, nil
@@ -221,6 +225,7 @@ func (s *Server) addPrompts() {
 			Messages: []*mcp.PromptMessage{
 				{
 					Content: &mcp.TextContent{Text: "Review completed tasks using:\n" + formatToolCall(call)},
+					Role:    "assistant",
 				},
 			},
 		}, nil
@@ -240,6 +245,7 @@ func (s *Server) addPrompts() {
 			Messages: []*mcp.PromptMessage{
 				{
 					Content: &mcp.TextContent{Text: "Search tasks by label using:\n" + formatToolCall(call)},
+					Role:    "assistant",
 				},
 			},
 		}, nil
@@ -260,6 +266,7 @@ func (s *Server) addPrompts() {
 			Messages: []*mcp.PromptMessage{
 				{
 					Content: &mcp.TextContent{Text: "Find unassigned tasks using:\n" + formatToolCall(call)},
+					Role:    "assistant",
 				},
 			},
 		}, nil
@@ -280,7 +287,8 @@ func (s *Server) addPrompts() {
 		return &mcp.GetPromptResult{
 			Messages: []*mcp.PromptMessage{
 				{
-					Content: &mcp.TextContent{Text: "Create a new epic or large project task that can contain subtasks.:\n" + formatToolCall(call)},
+					Content: &mcp.TextContent{Text: "Create a new epic or large project task that can contain subtasks:\n" + formatToolCall(call)},
+					Role:    "assistant",
 				},
 			},
 		}, nil

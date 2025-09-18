@@ -153,11 +153,17 @@ func renderTaskResults(w io.Writer, tasks []*core.Task, jsonOutput, markdownOutp
 	if len(tasks) == 0 {
 		switch {
 		case jsonOutput:
-			fmt.Fprintln(w, "[]")
+			if _, err := fmt.Fprintln(w, "[]"); err != nil {
+				return fmt.Errorf("writer: %v", err)
+			}
 		case markdownOutput:
-			fmt.Fprintln(w, "| No tasks found. |")
+			if _, err := fmt.Fprintln(w, "| No tasks found. |"); err != nil {
+				return fmt.Errorf("writer: %v", err)
+			}
 		default:
-			fmt.Fprintln(w, "No tasks found.")
+			if _, err := fmt.Fprintln(w, "No tasks found."); err != nil {
+				return fmt.Errorf("writer: %v", err)
+			}
 		}
 		return nil
 	}
@@ -172,7 +178,9 @@ func renderTaskResults(w io.Writer, tasks []*core.Task, jsonOutput, markdownOutp
 
 	// Print message prefix if provided
 	if messagePrefix != "" {
-		fmt.Fprintf(w, "%s\n", messagePrefix)
+		if _, err := fmt.Fprintf(w, "%s\n", messagePrefix); err != nil {
+			return fmt.Errorf("writer: %v", err)
+		}
 	}
 
 	// Set table header based on hidden columns
