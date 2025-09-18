@@ -10,17 +10,20 @@ import (
 )
 
 func (s *Server) registerTaskView() error {
-	taskSchema, err := jsonschema.For[core.Task](nil)
+	inputSchema, err := jsonschema.For[ViewParams](nil)
 	if err != nil {
 		return fmt.Errorf("jsonschema.For[core.Task]: %v", err)
 	}
-	taskSchema.Properties["id"].Type = "string"
-	taskSchema.Properties["parent"].Type = "string"
-
+	outputSchema, err := jsonschema.For[core.Task](nil)
+	if err != nil {
+		return fmt.Errorf("jsonschema.For[core.Task]: %v", err)
+	}
 	tool := &mcp.Tool{
 		Name:         "task_view",
+		Title:        "View a task",
 		Description:  "View a single task by its ID. Returns the task.",
-		OutputSchema: taskSchema,
+		InputSchema:  inputSchema,
+		OutputSchema: outputSchema,
 	}
 
 	mcp.AddTool(s.mcpServer, tool, s.handler.view)

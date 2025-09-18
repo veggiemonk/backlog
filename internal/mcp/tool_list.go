@@ -15,29 +15,11 @@ type TaskListResponse struct {
 }
 
 func (s *Server) registerTaskList() error {
-	//TODO:
-	// taskCreateParams, err := jsonschema.For[core.CreateTaskParams](nil)
-	// if err != nil {
-	// 	return fmt.Errorf("jsonschema.For[core.CreateTaskParams]: %v", err)
-	// }
-	// taskCreateParams.Properties["id"].Type = "string"
-	// taskCreateParams.Properties["parent"].Type = "string"
-	//
-	// taskSchema, err := jsonschema.For[core.Task](nil)
-	// if err != nil {
-	// 	return fmt.Errorf("jsonschema.For[core.Task]: %v", err)
-	// }
-	// taskSchema.Properties["id"].Type = "string"
-	// taskSchema.Properties["parent"].Type = "string"
-
-	taskListParams, err := jsonschema.For[core.ListTasksParams](nil)
+	inputSchema, err := jsonschema.For[core.ListTasksParams](nil)
 	if err != nil {
 		return err
 	}
-	// taskListParams.Properties["id"].Type = "string"
-	// taskListParams.Properties["parent"].Type = "string"
-
-	taskListResponse, err := jsonschema.For[TaskListResponse](nil)
+	outputSchema, err := jsonschema.For[TaskListResponse](nil)
 	if err != nil {
 		return err
 	}
@@ -47,9 +29,10 @@ func (s *Server) registerTaskList() error {
 `
 	tool := &mcp.Tool{
 		Name:         "task_list",
+		Title:        "List tasks",
 		Description:  description,
-		InputSchema:  taskListParams,
-		OutputSchema: taskListResponse,
+		InputSchema:  inputSchema,
+		OutputSchema: outputSchema,
 	}
 
 	mcp.AddTool(s.mcpServer, tool, s.handler.list)

@@ -5,7 +5,6 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/matryer/is"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/spf13/afero"
@@ -261,32 +260,4 @@ func TestMCPHandlers(t *testing.T) {
 			is.Equal(task.Title, "Updated Title")
 		})
 	})
-}
-
-func TestSchema(t *testing.T) {
-	is := is.New(t)
-	taskListResponse, err := jsonschema.For[TaskListResponse](nil)
-	is.NoErr(err)
-	b, err := taskListResponse.MarshalJSON()
-	is.NoErr(err)
-	t.Logf("\n%s\n", string(b))
-
-	task, err := jsonschema.For[core.Task](&jsonschema.ForOptions{
-		TypeSchemas: map[any]*jsonschema.Schema{
-			core.ZeroTaskID: {
-				Type: "string",
-			},
-		},
-	})
-	is.NoErr(err)
-	b, err = task.MarshalJSON()
-	is.NoErr(err)
-	t.Logf("\n%s\n", string(b))
-
-	taskid, err := jsonschema.For[core.TaskID](nil)
-	is.NoErr(err)
-	taskid.Type = "string"
-	b, err = taskid.MarshalJSON()
-	is.NoErr(err)
-	t.Logf("\n%s\n", string(b))
 }

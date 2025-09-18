@@ -120,7 +120,9 @@ func initConfig() {
 }
 
 func checkErr(err error) {
-	logging.Error("binding environment variables", "err", err)
+	if err != nil {
+		logging.Error("binding environment variables", "err", err)
+	}
 }
 
 func setRootPersistentFlags(cmd *cobra.Command) {

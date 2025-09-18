@@ -11,19 +11,14 @@ import (
 )
 
 func (s *Server) registerTaskCreate() error {
-	taskCreateParams, err := jsonschema.For[core.CreateTaskParams](nil)
+	inputSchema, err := jsonschema.For[core.CreateTaskParams](nil)
 	if err != nil {
 		return fmt.Errorf("jsonschema.For[core.CreateTaskParams]: %v", err)
 	}
-	// taskCreateParams.Properties["id"].Type = "string"
-	// taskCreateParams.Properties["new_parent"].Type = "string"
-
-	taskSchema, err := jsonschema.For[core.Task](nil)
+	outputSchema, err := jsonschema.For[core.Task](nil)
 	if err != nil {
 		return fmt.Errorf("jsonschema.For[core.Task]: %v", err)
 	}
-	// taskSchema.Properties["id"].Type = "string"
-	// taskSchema.Properties["parent"].Type = "string"
 
 	description := `Create a new task. 
 The task ID is automatically generated. 
@@ -32,8 +27,8 @@ Returns the created task.",
 	tool := &mcp.Tool{
 		Name:         "task_create",
 		Description:  description,
-		InputSchema:  taskCreateParams,
-		OutputSchema: taskSchema,
+		InputSchema:  inputSchema,
+		OutputSchema: outputSchema,
 	}
 	mcp.AddTool(s.mcpServer, tool, s.handler.create)
 	return nil

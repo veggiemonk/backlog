@@ -3,38 +3,32 @@ package mcp
 import (
 	"context"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
 )
 
-// // TaskCreateArgs represents arguments for task_create tool
-//
-//	type TaskCreateArgs struct {
-//		Title       string   `json:"title"`
-//		Description string   `json:"description,omitempty"`
-//		Labels      []string `json:"labels,omitempty"`
-//	}
-//
-// // TaskListArgs represents arguments for task_list tool
-//
-//	type TaskListArgs struct {
-//		Status     string   `json:"status,omitempty"`
-//		Sort       []string `json:"sort,omitempty"`
-//		Reverse    bool     `json:"reverse,omitempty"`
-//		Unassigned bool     `json:"unassigned,omitempty"`
-//		Parent     string   `json:"parent,omitempty"`
-//		Labels     string   `json:"labels,omitempty"`
-//	}
 func (s *Server) registerTaskBatchCreate() error {
-	// TODO:
-	mcp.AddTool(s.mcpServer, &mcp.Tool{
-		Name: "task_batch_create",
-		Description: `Create a list of new tasks.
+	inputSchema, err := jsonschema.For[ListCreateParams](nil)
+	if err != nil {
+		return err
+	}
+	outputSchema, err := jsonschema.For[TaskListResponse](nil)
+	if err != nil {
+		return err
+	}
+	description := `Create a list of new tasks.
 The schema is a list of "task_create" input parameters.
 The task ID of each task is automatically generated. Returns the list of created task.
-`,
-	}, s.handler.batchCreate)
+`
+	tool := &mcp.Tool{
+		Name:         "task_batch_create",
+		Description:  description,
+		InputSchema:  inputSchema,
+		OutputSchema: outputSchema,
+	}
+	mcp.AddTool(s.mcpServer, tool, s.handler.batchCreate)
 	return nil
 }
 

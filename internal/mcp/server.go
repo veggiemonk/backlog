@@ -127,17 +127,14 @@ func (s *Server) addTools() error {
 	if err := s.registerTaskView(); err != nil {
 		return err
 	}
-	if err := s.registerEditTask(); err != nil {
+	if err := s.registerTaskEdit(); err != nil {
 		return err
 	}
 	if err := s.registerTaskSearch(); err != nil {
 		return err
 	}
-
-	mcp.AddTool(s.mcpServer, &mcp.Tool{
-		Name:        "task_archive",
-		Description: "Archive a task by moving it to the archived directory and setting status to archived. Returns the archived task.",
-	}, s.handler.archive)
-
+	if err := s.registerTaskArchive(); err != nil {
+		return err
+	}
 	return nil
 }

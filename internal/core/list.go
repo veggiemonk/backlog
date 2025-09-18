@@ -12,6 +12,7 @@ import (
 
 // ListTasksParams holds the parameters for listing tasks.
 type ListTasksParams struct {
+	// TODO: rangeID
 	Parent        *string  `json:"parent,omitempty" jsonschema:"Filter tasks by a parent task ID."`
 	Status        []string `json:"status,omitempty" jsonschema:"Filter tasks by status."`
 	Assigned      []string `json:"assigned,omitempty" jsonschema:"Filter tasks by assignee."`
