@@ -151,9 +151,16 @@ func TestMCPHandlers(t *testing.T) {
 				Assigned:    []string{"testuser"},
 				Labels:      []string{"test", "urgent"},
 			}
-			result, task, err := handler.create(ctx, req, params)
+			result, _, err := handler.create(ctx, req, params)
 			is.NoErr(err)
-			is.True(result == nil)
+			is.True(result != nil)
+
+			// Parse the JSON response
+			is.Equal(len(result.Content), 1)
+			txt, ok := result.Content[0].(*mcp.TextContent)
+			is.True(ok)
+			task := &core.Task{}
+			is.NoErr(json.Unmarshal([]byte(txt.Text), task))
 			is.Equal(task.Title, "Test Task")
 			is.Equal(task.Priority.String(), "high")
 		})
@@ -205,12 +212,19 @@ func TestMCPHandlers(t *testing.T) {
 			createParams := core.CreateTaskParams{
 				Title: "View Test Task",
 			}
-			_, task, err := handler.create(ctx, req, createParams)
+			createResult, _, err := handler.create(ctx, req, createParams)
 			is.NoErr(err)
+
+			// Parse the created task to get its ID
+			is.Equal(len(createResult.Content), 1)
+			createTxt, ok := createResult.Content[0].(*mcp.TextContent)
+			is.True(ok)
+			createdTask := &core.Task{}
+			is.NoErr(json.Unmarshal([]byte(createTxt.Text), createdTask))
 
 			// Now view the task
 			viewParams := ViewParams{
-				ID: task.ID.String(),
+				ID: createdTask.ID.String(),
 			}
 			result, _, err := handler.view(ctx, req, viewParams)
 			is.NoErr(err)
@@ -223,7 +237,7 @@ func TestMCPHandlers(t *testing.T) {
 
 			// is.True(result == nil)
 			is.True(ttask != nil)
-			is.Equal(ttask.ID, task.ID)
+			is.Equal(ttask.ID, createdTask.ID)
 			is.Equal(ttask.Title, "View Test Task")
 		})
 	})
@@ -272,16 +286,23 @@ func TestMCPHandlers(t *testing.T) {
 			createParams := core.CreateTaskParams{
 				Title: "Original Title",
 			}
-			_, task, err := handler.create(ctx, req, createParams)
+			createResult, _, err := handler.create(ctx, req, createParams)
 			is.NoErr(err)
+
+			// Parse the created task to get its ID
+			is.Equal(len(createResult.Content), 1)
+			createTxt, ok := createResult.Content[0].(*mcp.TextContent)
+			is.True(ok)
+			createdTask := &core.Task{}
+			is.NoErr(json.Unmarshal([]byte(createTxt.Text), createdTask))
 
 			// Now edit the task
 			newTitle := "Updated Title"
 			editParams := core.EditTaskParams{
-				ID:       task.ID.String(),
+				ID:       createdTask.ID.String(),
 				NewTitle: &newTitle,
 			}
-			_, task, err = handler.edit(ctx, req, editParams)
+			_, task, err := handler.edit(ctx, req, editParams)
 			is.NoErr(err)
 			is.Equal(task.Title, "Updated Title")
 
@@ -309,12 +330,19 @@ func TestMCPHandlers(t *testing.T) {
 				Description: "This task will be archived",
 				Priority:    "medium",
 			}
-			_, task, err := handler.create(ctx, req, createParams)
+			createResult, _, err := handler.create(ctx, req, createParams)
 			is.NoErr(err)
+
+			// Parse the created task to get its ID
+			is.Equal(len(createResult.Content), 1)
+			createTxt, ok := createResult.Content[0].(*mcp.TextContent)
+			is.True(ok)
+			createdTask := &core.Task{}
+			is.NoErr(json.Unmarshal([]byte(createTxt.Text), createdTask))
 
 			// Archive the task
 			archiveParams := ArchiveParams{
-				ID: task.ID.String(),
+				ID: createdTask.ID.String(),
 			}
 			result, _, err := handler.archive(ctx, req, archiveParams)
 			is.NoErr(err)
@@ -326,8 +354,8 @@ func TestMCPHandlers(t *testing.T) {
 			is.True(ok)
 			is.True(len(txt.Text) > 0)
 			// Should contain task ID and title in the summary
-			is.True(len(txt.Text) > len(task.ID.String()))
-			is.True(len(txt.Text) > len(task.Title))
+			is.True(len(txt.Text) > len(createdTask.ID.String()))
+			is.True(len(txt.Text) > len(createdTask.Title))
 		})
 
 		t.Run("archive_nonexistent_task", func(t *testing.T) {

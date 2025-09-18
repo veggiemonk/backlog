@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/veggiemonk/backlog/internal/core"
@@ -36,7 +37,7 @@ func (h *handler) create(
 	ctx context.Context,
 	req *mcp.CallToolRequest,
 	params core.CreateTaskParams,
-) (*mcp.CallToolResult, *core.Task, error) {
+) (*mcp.CallToolResult, any, error) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	task, err := h.store.Create(params)
@@ -48,5 +49,14 @@ func (h *handler) create(
 		// Log the error but do not fail the creation
 		logging.Warn("auto-commit failed for task creation", "task_id", task.ID, "error", err)
 	}
-	return nil, task, nil
+
+	// Manually marshal to avoid schema validation issues with custom types
+	b, err := json.Marshal(task)
+	if err != nil {
+		return nil, nil, err
+	}
+	res := &mcp.CallToolResult{
+		Content: []mcp.Content{&mcp.TextContent{Text: string(b)}},
+	}
+	return res, nil, nil
 }

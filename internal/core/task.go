@@ -18,7 +18,9 @@ var ErrInvalid = errors.New("invalid value")
 // NewTask creates a new Task with default values.
 func NewTask() *Task {
 	return &Task{
-		Status: StatusTodo, // Default status
+		Status:             StatusTodo, // Default status
+		AcceptanceCriteria: make([]AcceptanceCriterion, 0),
+		History:            make([]HistoryEntry, 0),
 	}
 }
 
