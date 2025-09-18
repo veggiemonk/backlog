@@ -20,8 +20,10 @@ const (
 )
 
 var (
-	_ yaml.Marshaler = (*Priority)(nil)
-	_ json.Marshaler = (*Priority)(nil)
+	_ yaml.Unmarshaler = (*Priority)(nil)
+	_ yaml.Marshaler   = (*Priority)(nil)
+	_ json.Unmarshaler = (*Priority)(nil)
+	_ json.Marshaler   = (*Priority)(nil)
 )
 
 var priorities = []string{
@@ -49,8 +51,35 @@ func (p Priority) String() string {
 	}
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
+func (p *Priority) UnmarshalJSON(b []byte) error {
+	var s string
+	if err := json.Unmarshal(b, &s); err != nil {
+		return err
+	}
+	var err error
+	*p, err = ParsePriority(s)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (p Priority) MarshalJSON() ([]byte, error) { return json.Marshal(p.String()) }
 
+// UnmarshalYAML implements yaml.Unmarshaler.
+func (p *Priority) UnmarshalYAML(value *yaml.Node) error {
+	var s string
+	if err := value.Decode(&s); err != nil {
+		return err
+	}
+	var err error
+	*p, err = ParsePriority(s)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 func (p Priority) MarshalYAML() (any, error) { return p.String(), nil }
 
 func ParsePriority(s string) (Priority, error) {
