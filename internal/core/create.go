@@ -11,7 +11,7 @@ import (
 type CreateTaskParams struct {
 	Title        string   `json:"title" jsonschema:"Required. The title of the task."`
 	Description  string   `json:"description" jsonschema:"A detailed description of the task."`
-	Priority     string   `json:"priority,omitempty" jsonschema:"The priority of the task."`
+	Priority     *string  `json:"priority,omitempty" jsonschema:"The priority of the task."`
 	Parent       *string  `json:"parent,omitempty" jsonschema:"The ID of the parent task."`
 	Assigned     []string `json:"assigned,omitempty" jsonschema:"A list of names assigned."`
 	Labels       []string `json:"labels,omitempty" jsonschema:"A list of labels."`
@@ -28,7 +28,7 @@ func (f *FileTaskStore) Create(params CreateTaskParams) (*Task, error) {
 		return nil, fmt.Errorf("accessing %s error: %v", f.tasksDir, err)
 	}
 	if !exists {
-		if err := f.fs.MkdirAll(f.tasksDir, 0750); err != nil {
+		if err := f.fs.MkdirAll(f.tasksDir, 0o750); err != nil {
 			return nil, fmt.Errorf("could not create tasks directory %q: %w", f.tasksDir, err)
 		}
 	}
@@ -71,9 +71,11 @@ func (f *FileTaskStore) Create(params CreateTaskParams) (*Task, error) {
 	newTask.Assigned = params.Assigned
 	newTask.Labels = params.Labels
 	newTask.Dependencies = deps
-	newTask.Priority, err = ParsePriority(params.Priority)
-	if err != nil {
-		return nil, fmt.Errorf("invalid priority %q: %w", params.Priority, err)
+	if params.Priority != nil {
+		newTask.Priority, err = ParsePriority(*params.Priority)
+		if err != nil {
+			return nil, fmt.Errorf("invalid priority %q: %w", *params.Priority, err)
+		}
 	}
 	if params.Notes != nil {
 		newTask.ImplementationNotes = fmt.Sprintf("%s\n", *params.Notes)

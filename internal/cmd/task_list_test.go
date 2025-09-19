@@ -11,7 +11,7 @@ import (
 
 func Test_runList(t *testing.T) {
 	t.Run("filter by single label", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 		output, err := exec(t, "list", runList, "-l", "first", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
@@ -21,7 +21,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("filter by multiple labels", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 		output, err := exec(t, "list", runList, "-l", "first,second,third,feature", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
@@ -30,7 +30,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("filter by status", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 		output, err := exec(t, "list", runList, "-s", "todo", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
@@ -39,7 +39,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("filter by multiple statuses", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 		output, err := exec(t, "list", runList, "-s", "todo,in-progress", "-j")
 		is.NoErr(err)
 		tasks := []*core.Task{}
@@ -59,7 +59,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("filter by multiple assigned users", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 
 		output, err := exec(t, "list", runList, "-a", "first-user,second-user", "-j")
 		is.NoErr(err)
@@ -71,7 +71,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("filter by priority", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 
 		output, err := exec(t, "list", runList, "--priority", "high", "-j")
 		is.NoErr(err)
@@ -82,7 +82,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("sort by title", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 
 		output, err := exec(t, "list", runList, "--sort", "title", "-j")
 		is.NoErr(err)
@@ -98,7 +98,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("sort by title reversed", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 
 		output, err := exec(t, "list", runList, "--sort", "title", "--reverse", "-j")
 		is.NoErr(err)
@@ -114,7 +114,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("sort by priority", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 
 		output, err := exec(t, "list", runList, "--sort", "priority", "-j")
 		is.NoErr(err)
@@ -125,7 +125,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("multiple sort fields", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 
 		output, err := exec(t, "list", runList, "--sort", "priority,title", "-j")
 		is.NoErr(err)
@@ -144,7 +144,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("markdown output format", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 
 		output, err := exec(t, "list", runList, "-m")
 		is.NoErr(err)
@@ -155,7 +155,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("hide extra fields", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 
 		output, err := exec(t, "list", runList, "--hide-extra")
 		is.NoErr(err)
@@ -170,7 +170,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("default table output format", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 
 		output, err := exec(t, "list", runList, "list")
 		is.NoErr(err)
@@ -184,7 +184,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("combined filters", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 
 		output, err := exec(t, "list", runList, "-l", "second", "-s", "todo", "--priority", "medium", "-j")
 		is.NoErr(err)
@@ -194,7 +194,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("empty results", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 		output, err := exec(t, "list", runList, "-l", "nonexistent", "-j")
 		is.NoErr(err)
 		outputStr := strings.TrimSpace(string(output))
@@ -202,7 +202,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("empty results table format", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 		output, err := exec(t, "list", runList, "-l", "nonexistent")
 		is.NoErr(err)
 		outputStr := strings.TrimSpace(string(output))
@@ -210,7 +210,7 @@ func Test_runList(t *testing.T) {
 	})
 
 	t.Run("filter unassigned tasks", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 		output, err := exec(t, "list", runList, "--unassigned", "-j")
 		is.NoErr(err)
 		// Should not error, may return empty array since all test tasks are assigned
@@ -224,7 +224,7 @@ func Test_runList(t *testing.T) {
 
 	t.Run("short flag aliases", func(t *testing.T) {
 		t.Run("json", func(t *testing.T) {
-			is := is.NewRelaxed(t)
+			is := is.New(t)
 			output, err := exec(t, "list", runList, "-j")
 			is.NoErr(err)
 			tasks := []*core.Task{}
@@ -234,7 +234,7 @@ func Test_runList(t *testing.T) {
 		})
 
 		t.Run("markdown", func(t *testing.T) {
-			is := is.NewRelaxed(t)
+			is := is.New(t)
 			output, err := exec(t, "list", runList, "-m")
 			is.NoErr(err)
 			outputStr := string(output)
@@ -242,7 +242,7 @@ func Test_runList(t *testing.T) {
 		})
 
 		t.Run("hide-extra-fields", func(t *testing.T) {
-			is := is.NewRelaxed(t)
+			is := is.New(t)
 			output, err := exec(t, "list", runList, "-e")
 			is.NoErr(err)
 			outputStr := string(output)
@@ -250,7 +250,7 @@ func Test_runList(t *testing.T) {
 		})
 
 		t.Run("reverse", func(t *testing.T) {
-			is := is.NewRelaxed(t)
+			is := is.New(t)
 			output, err := exec(t, "list", runList, "-r", "-j")
 			is.NoErr(err)
 			tasks := []*core.Task{}
@@ -260,7 +260,7 @@ func Test_runList(t *testing.T) {
 		})
 
 		t.Run("unassigned", func(t *testing.T) {
-			is := is.NewRelaxed(t)
+			is := is.New(t)
 			output, err := exec(t, "list", runList, "-u", "-j")
 			is.NoErr(err)
 			tasks := []*core.Task{}

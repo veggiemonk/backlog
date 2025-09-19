@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -76,7 +75,7 @@ backlog create "Build the new reporting feature" \
   --ac "The exported PDF has the correct branding and layout." \
   -p "23"	
 	`,
-	Run: runCreate,
+	RunE: runCreate,
 }
 
 var (
@@ -105,7 +104,7 @@ func init() {
 	createCmd.Flags().StringVar(&notes, "notes", "", "Additional notes for the task")
 }
 
-func runCreate(cmd *cobra.Command, args []string) {
+func runCreate(cmd *cobra.Command, args []string) error {
 	// Sanitize input parameters
 	sanitizer := validation.NewSanitizer()
 
@@ -113,7 +112,7 @@ func runCreate(cmd *cobra.Command, args []string) {
 		Title:        sanitizer.SanitizeTitle(args[0]),
 		Description:  sanitizer.SanitizeDescription(description),
 		Parent:       &parent,
-		Priority:     priority,
+		Priority:     &priority,
 		Assigned:     sanitizer.SanitizeSlice(assigned, sanitizer.SanitizeAssignee),
 		Labels:       sanitizer.SanitizeSlice(labels, sanitizer.SanitizeLabel),
 		Dependencies: sanitizer.SanitizeSlice(dependencies, sanitizer.SanitizeTaskID),
@@ -147,20 +146,19 @@ func runCreate(cmd *cobra.Command, args []string) {
 		for _, verr := range validationErrors {
 			logging.Error("validation error", "field", verr.Field, "value", verr.Value, "message", verr.Message, "code", verr.Code)
 		}
-		os.Exit(1)
+
 	}
 
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
 	newTask, err := store.Create(params)
 	if err != nil {
-		logging.Error("failed to create task", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("create task %q: %v", params.Title, err)
 	}
 
 	logging.Info("task created successfully", "task_id", newTask.ID)
 
 	if !viper.GetBool(configAutoCommit) {
-		return // Auto-commit is disabled
+		return nil // Auto-commit is disabled
 	}
 	// Auto-commit the change if enabled
 	filePath := store.Path(newTask)
@@ -168,4 +166,5 @@ func runCreate(cmd *cobra.Command, args []string) {
 	if err := commit.Add(filePath, "", commitMsg); err != nil {
 		logging.Warn("auto-commit failed", "task_id", newTask.ID, "error", err)
 	}
+	return nil
 }

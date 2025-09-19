@@ -41,8 +41,10 @@ func (cv *CLIValidator) ValidateCreateParams(params core.CreateTaskParams) Valid
 	}
 
 	// Validate priority
-	if err := cv.validator.ValidatePriority(params.Priority); err.Code != "" {
-		errors = append(errors, err)
+	if params.Priority != nil {
+		if err := cv.validator.ValidatePriority(*params.Priority); err.Code != "" {
+			errors = append(errors, err)
+		}
 	}
 
 	// Validate parent ID

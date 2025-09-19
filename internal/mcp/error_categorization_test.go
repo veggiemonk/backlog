@@ -104,7 +104,7 @@ func TestErrorCategorization(t *testing.T) {
 			params := core.CreateTaskParams{
 				Title:       "Test Task",
 				Description: "Test Description",
-				Priority:    "invalid-priority",
+				Priority:    ptr("invalid-priority"),
 			}
 			result, _, err := handler.create(ctx, req, params)
 			// Should return structured error response
@@ -374,4 +374,3 @@ func TestErrorContextAndDetails(t *testing.T) {
 		}
 	})
 }
-

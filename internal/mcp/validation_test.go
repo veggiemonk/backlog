@@ -198,7 +198,7 @@ func TestValidationMiddleware_ValidateCreateTaskParams(t *testing.T) {
 	validParams := core.CreateTaskParams{
 		Title:       "Test Task",
 		Description: "Test Description",
-		Priority:    "high",
+		Priority:    ptr("high"),
 		Assigned:    []string{"user1"},
 		Labels:      []string{"test"},
 	}
@@ -244,7 +244,7 @@ func TestValidationMiddleware_ValidateCreateTaskParams(t *testing.T) {
 			params: core.CreateTaskParams{
 				Title:       "Test Task",
 				Description: "Test Description",
-				Priority:    "urgent",
+				Priority:    ptr("urgent"),
 			},
 			wantError: true,
 			wantCode:  ErrorCodeInvalidPriority,

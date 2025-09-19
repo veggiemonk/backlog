@@ -233,7 +233,7 @@ func TestFileTaskStoreWithSmartFiltering(t *testing.T) {
 	task1, err := store.Create(CreateTaskParams{
 		Title:       "Task 1",
 		Description: "Description 1",
-		Priority:    "high",
+		Priority:    ptr("high"),
 		Assigned:    []string{"alice"},
 		Labels:      []string{"bug", "urgent"},
 	})
@@ -242,7 +242,7 @@ func TestFileTaskStoreWithSmartFiltering(t *testing.T) {
 	_, err = store.Create(CreateTaskParams{
 		Title:       "Task 2",
 		Description: "Description 2",
-		Priority:    "medium",
+		Priority:    ptr("medium"),
 		Assigned:    []string{"bob"},
 		Labels:      []string{"feature"},
 	})
@@ -251,7 +251,7 @@ func TestFileTaskStoreWithSmartFiltering(t *testing.T) {
 	task3, err := store.Create(CreateTaskParams{
 		Title:       "Task 3",
 		Description: "Description 3",
-		Priority:    "high",
+		Priority:    ptr("high"),
 		Assigned:    []string{"alice", "bob"},
 		Labels:      []string{"bug"},
 	})

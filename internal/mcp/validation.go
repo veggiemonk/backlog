@@ -70,11 +70,11 @@ func (v *ValidationMiddleware) ValidateStringLength(value string, fieldName stri
 			Message:  fmt.Sprintf("Field '%s' exceeds maximum length of %d characters", fieldName, maxLength),
 			Category: CategoryValidation,
 			Details: &ErrorDetails{
-				Field: fieldName,
-				Value: len(value),
+				Field:    fieldName,
+				Value:    len(value),
 				Expected: fmt.Sprintf("string length <= %d", maxLength),
 				Constraints: map[string]interface{}{
-					"max_length": maxLength,
+					"max_length":    maxLength,
 					"actual_length": len(value),
 				},
 			},
@@ -101,8 +101,8 @@ func (v *ValidationMiddleware) ValidatePriority(priority string, fieldName strin
 			Message:  fmt.Sprintf("Invalid priority '%s'. Must be one of: %s", priority, strings.Join(validValues, ", ")),
 			Category: CategoryValidation,
 			Details: &ErrorDetails{
-				Field: fieldName,
-				Value: priority,
+				Field:    fieldName,
+				Value:    priority,
 				Expected: strings.Join(validValues, ", "),
 				Constraints: map[string]interface{}{
 					"valid_values": validValues,
@@ -131,8 +131,8 @@ func (v *ValidationMiddleware) ValidateStatus(status string, fieldName string) *
 			Message:  fmt.Sprintf("Invalid status '%s'. Must be one of: %s", status, strings.Join(validValues, ", ")),
 			Category: CategoryValidation,
 			Details: &ErrorDetails{
-				Field: fieldName,
-				Value: status,
+				Field:    fieldName,
+				Value:    status,
 				Expected: strings.Join(validValues, ", "),
 				Constraints: map[string]interface{}{
 					"valid_values": validValues,
@@ -151,11 +151,11 @@ func (v *ValidationMiddleware) ValidateArray(arr []string, fieldName string, max
 			Message:  fmt.Sprintf("Field '%s' exceeds maximum number of items (%d)", fieldName, maxItems),
 			Category: CategoryValidation,
 			Details: &ErrorDetails{
-				Field: fieldName,
-				Value: len(arr),
+				Field:    fieldName,
+				Value:    len(arr),
 				Expected: fmt.Sprintf("array length <= %d", maxItems),
 				Constraints: map[string]interface{}{
-					"max_items": maxItems,
+					"max_items":    maxItems,
 					"actual_items": len(arr),
 				},
 			},
@@ -183,8 +183,10 @@ func (v *ValidationMiddleware) ValidateCreateTaskParams(params core.CreateTaskPa
 	}
 
 	// Validate priority if provided
-	if err := v.ValidatePriority(params.Priority, "priority"); err != nil {
-		return err
+	if params.Priority != nil {
+		if err := v.ValidatePriority(*params.Priority, "priority"); err != nil {
+			return err
+		}
 	}
 
 	// Validate parent task ID if provided
@@ -332,8 +334,8 @@ func (v *ValidationMiddleware) validateACIndices(indices []int, fieldName string
 				Message:  fmt.Sprintf("Invalid index in '%s': %d. Indices must be 1-based and <= 1000", fieldName, idx),
 				Category: CategoryValidation,
 				Details: &ErrorDetails{
-					Field: fmt.Sprintf("%s[%d]", fieldName, i),
-					Value: idx,
+					Field:    fmt.Sprintf("%s[%d]", fieldName, i),
+					Value:    idx,
 					Expected: "1-based index between 1 and 1000",
 					Constraints: map[string]interface{}{
 						"min_value": 1,
@@ -392,8 +394,8 @@ func (v *ValidationMiddleware) ValidateListParams(params core.ListTasksParams) *
 			Message:  "Limit must be >= 0",
 			Category: CategoryValidation,
 			Details: &ErrorDetails{
-				Field: "limit",
-				Value: *params.Limit,
+				Field:    "limit",
+				Value:    *params.Limit,
 				Expected: "integer >= 0",
 			},
 		}
@@ -404,8 +406,8 @@ func (v *ValidationMiddleware) ValidateListParams(params core.ListTasksParams) *
 			Message:  "Offset must be >= 0",
 			Category: CategoryValidation,
 			Details: &ErrorDetails{
-				Field: "offset",
-				Value: *params.Offset,
+				Field:    "offset",
+				Value:    *params.Offset,
 				Expected: "integer >= 0",
 			},
 		}
@@ -413,3 +415,4 @@ func (v *ValidationMiddleware) ValidateListParams(params core.ListTasksParams) *
 
 	return nil
 }
+

@@ -53,8 +53,8 @@ func TestLargeDatasetScenarios(t *testing.T) {
 			// For large datasets, should get structured error response with pagination suggestion
 			if tt.taskCount >= 100 {
 				// Should return structured error instead of Go error
-				is.NoErr(err) // No Go error
-				is.True(result != nil) // Should return structured error response
+				is.NoErr(err)           // No Go error
+				is.True(result != nil)  // Should return structured error response
 				is.True(result.IsError) // Should be marked as error response
 
 				txtContent, ok := result.Content[0].(*mcp.TextContent)
@@ -342,7 +342,7 @@ func createLargeDataset(t *testing.T, store TaskStore, count int) {
 		params := core.CreateTaskParams{
 			Title:       fmt.Sprintf("Task %d", i+1),
 			Description: fmt.Sprintf("Description for task %d with some additional content to make it realistic", i+1),
-			Priority:    "medium",
+			Priority:    ptr("medium"),
 			Labels:      []string{"test", fmt.Sprintf("batch-%d", i/10)},
 		}
 
@@ -370,7 +370,7 @@ func createVariedSizeTasks(t *testing.T, store TaskStore, count int) []*core.Tas
 		params := core.CreateTaskParams{
 			Title:       fmt.Sprintf("Varied Task %d", i+1),
 			Description: description,
-			Priority:    "medium",
+			Priority:    ptr("medium"),
 			Labels:      []string{"test", "varied-size"},
 		}
 

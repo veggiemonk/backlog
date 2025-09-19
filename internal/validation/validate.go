@@ -55,7 +55,7 @@ func NewValidator() *Validator {
 const (
 	MaxTitleLength        = 200
 	MaxDescriptionLength  = 5000
-	MaxLabelLength        = 50
+	MaxLabelLength        = 64
 	MaxAssigneeLength     = 100
 	MaxDependencyIDLength = 20
 	MaxACLength           = 500
@@ -486,4 +486,3 @@ func containsDangerousChars(input string) bool {
 
 	return false
 }
-

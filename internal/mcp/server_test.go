@@ -40,7 +40,7 @@ func setupTestData(t *testing.T, store *core.FileTaskStore) {
 		Title:       "Completed Feature",
 		Description: "A feature that was completed",
 		Labels:      []string{"feature", "backend"},
-		Priority:    "high",
+		Priority:    ptr("high"),
 		Assigned:    []string{"alice"},
 	})
 	is.NoErr(err)
@@ -58,7 +58,7 @@ func setupTestData(t *testing.T, store *core.FileTaskStore) {
 		Title:       "High Priority Feature",
 		Description: "An urgent feature to implement",
 		Labels:      []string{"feature", "urgent"},
-		Priority:    "high",
+		Priority:    ptr("high"),
 		Assigned:    []string{"bob"},
 	})
 	is.NoErr(err)
@@ -68,7 +68,7 @@ func setupTestData(t *testing.T, store *core.FileTaskStore) {
 		Title:       "Blocked Task",
 		Description: "This task is blocked waiting for dependencies",
 		Labels:      []string{"blocked", "backend"},
-		Priority:    "medium",
+		Priority:    ptr("medium"),
 		Assigned:    []string{"charlie"},
 	})
 	is.NoErr(err)
@@ -78,7 +78,7 @@ func setupTestData(t *testing.T, store *core.FileTaskStore) {
 		Title:       "Unassigned Task",
 		Description: "This task has no assignee",
 		Labels:      []string{"feature"},
-		Priority:    "low",
+		Priority:    ptr("low"),
 	})
 	is.NoErr(err)
 
@@ -87,7 +87,7 @@ func setupTestData(t *testing.T, store *core.FileTaskStore) {
 		Title:       "Epic: User Authentication",
 		Description: "Complete user authentication system",
 		Labels:      []string{"epic", "auth"},
-		Priority:    "high",
+		Priority:    ptr("high"),
 	})
 	is.NoErr(err)
 
@@ -97,7 +97,7 @@ func setupTestData(t *testing.T, store *core.FileTaskStore) {
 		Title:       "Login API endpoint",
 		Description: "Create login endpoint",
 		Labels:      []string{"api", "auth"},
-		Priority:    "high",
+		Priority:    ptr("high"),
 		Parent:      &parentID,
 		Assigned:    []string{"alice"},
 	})
@@ -108,7 +108,7 @@ func setupTestData(t *testing.T, store *core.FileTaskStore) {
 		Title:       "Bug: Login fails on mobile",
 		Description: "Users can't login on mobile devices",
 		Labels:      []string{"bug", "mobile"},
-		Priority:    "critical",
+		Priority:    ptr("critical"),
 		Assigned:    []string{"david"},
 	})
 	is.NoErr(err)
@@ -118,7 +118,7 @@ func setupTestData(t *testing.T, store *core.FileTaskStore) {
 		Title:       "In Progress Feature",
 		Description: "Currently being worked on",
 		Labels:      []string{"feature", "frontend"},
-		Priority:    "medium",
+		Priority:    ptr("medium"),
 		Assigned:    []string{"eve"},
 	})
 	is.NoErr(err)
@@ -159,7 +159,7 @@ func TestMCPHandlers(t *testing.T) {
 			params := core.CreateTaskParams{
 				Title:       "Test Task",
 				Description: "A test task description",
-				Priority:    "high",
+				Priority:    ptr("high"),
 				Assigned:    []string{"testuser"},
 				Labels:      []string{"test", "urgent"},
 			}
@@ -356,7 +356,7 @@ func TestMCPHandlers(t *testing.T) {
 			createParams := core.CreateTaskParams{
 				Title:       "Task to Archive",
 				Description: "This task will be archived",
-				Priority:    "medium",
+				Priority:    ptr("medium"),
 			}
 			createResult, _, err := handler.create(ctx, req, createParams)
 			is.NoErr(err)
@@ -411,19 +411,19 @@ func TestMCPHandlers(t *testing.T) {
 					{
 						Title:       "Batch Task 1",
 						Description: "First batch task",
-						Priority:    "high",
+						Priority:    ptr("high"),
 						Labels:      []string{"batch", "test"},
 					},
 					{
 						Title:       "Batch Task 2",
 						Description: "Second batch task",
-						Priority:    "medium",
+						Priority:    ptr("medium"),
 						Assigned:    []string{"user1"},
 					},
 					{
 						Title:       "Batch Task 3",
 						Description: "Third batch task",
-						Priority:    "low",
+						Priority:    ptr("low"),
 					},
 				},
 			}

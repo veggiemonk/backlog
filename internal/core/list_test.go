@@ -53,9 +53,9 @@ func TestFilterAndSortTasks(t *testing.T) {
 
 	is := is.New(t)
 	// Create tasks for testing filtering and sorting
-	_, _ = store.Create(core.CreateTaskParams{Title: "Alpha Task", Assigned: []string{"bob"}, Priority: "high"})
-	_, _ = store.Create(core.CreateTaskParams{Title: "Bravo Task", Assigned: []string{"alice"}, Priority: "medium"})
-	_, _ = store.Create(core.CreateTaskParams{Title: "Charlie Task", Assigned: []string{"alice", "bob"}, Priority: "low"})
+	_, _ = store.Create(core.CreateTaskParams{Title: "Alpha Task", Assigned: []string{"bob"}, Priority: ptr("high")})
+	_, _ = store.Create(core.CreateTaskParams{Title: "Bravo Task", Assigned: []string{"alice"}, Priority: ptr("medium")})
+	_, _ = store.Create(core.CreateTaskParams{Title: "Charlie Task", Assigned: []string{"alice", "bob"}, Priority: ptr("low")})
 	// Update status for one task
 	taskTwo, _ := store.Get("T02")
 	_, err := store.Update(taskTwo, core.EditTaskParams{

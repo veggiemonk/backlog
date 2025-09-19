@@ -84,7 +84,7 @@ func TestUpdateTaskFields(t *testing.T) {
 			Labels:      []string{"bug"},
 			Notes:       &[]string{"Initial implementation notes."}[0],
 			Plan:        &[]string{"Initial implementation plan."}[0],
-			Priority:    "medium",
+			Priority:    ptr("medium"),
 			Description: "This is the initial description.",
 		})
 		originalPath, err := fs.Stat(store.Path(task))

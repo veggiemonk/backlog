@@ -72,7 +72,7 @@ func createTestTasks(t *testing.T, store TaskStore) {
 			Title:       fmt.Sprintf("%s Task", s),
 			Assigned:    []string{assigned[i]},
 			Labels:      []string{labels[i]},
-			Priority:    "medium",
+			Priority:    ptr("medium"),
 			Notes:       &[]string{fmt.Sprintf("%s implementation notes.", s)}[0],
 			Plan:        &[]string{fmt.Sprintf("%s implementation plan.", s)}[0],
 			Description: fmt.Sprintf("%s description.", s),
@@ -99,7 +99,7 @@ func createTestTasks(t *testing.T, store TaskStore) {
 		Description: "high priority description.",
 		Assigned:    []string{"eighth-user"},
 		Labels:      []string{"eighth"},
-		Priority:    "high",
+		Priority:    ptr("high"),
 	})
 	_ = t8
 
