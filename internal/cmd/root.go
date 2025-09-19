@@ -56,6 +56,8 @@ const (
 	envVarLogLevel   = "BACKLOG_LOG_LEVEL"
 	envVarLogFormat  = "BACKLOG_LOG_FORMAT"
 	envVarAutoCommit = "BACKLOG_AUTO_COMMIT"
+	envVarPageSize   = "BACKLOG_PAGE_SIZE"
+	envVarMaxLimit   = "BACKLOG_MAX_LIMIT"
 
 	// folder
 	configFolder  = "folder"
@@ -65,6 +67,12 @@ const (
 	// git
 	configAutoCommit  = "auto-commit"
 	defaultAutoCommit = true
+
+	// pagination
+	configPageSize     = "page-size"
+	defaultPageSize    = 25
+	configMaxLimit     = "max-limit" 
+	defaultMaxLimit    = 1000
 
 	// logging
 	configLogLevel   = "log-level"
@@ -107,6 +115,8 @@ func initConfig() {
 	// Set default values
 	viper.SetDefault(configFolder, defaultFolder)
 	viper.SetDefault(configAutoCommit, defaultAutoCommit)
+	viper.SetDefault(configPageSize, defaultPageSize)
+	viper.SetDefault(configMaxLimit, defaultMaxLimit)
 	viper.SetDefault(configLogLevel, defaultLogLevel)
 	viper.SetDefault(configLogFormat, defaultLogFormat)
 	viper.SetDefault(configLogFile, defaultLogFile)
@@ -114,9 +124,43 @@ func initConfig() {
 	// Bind environment variables with their keys
 	checkErr(viper.BindEnv(configFolder, envVarDir))
 	checkErr(viper.BindEnv(configAutoCommit, envVarAutoCommit))
+	checkErr(viper.BindEnv(configPageSize, envVarPageSize))
+	checkErr(viper.BindEnv(configMaxLimit, envVarMaxLimit))
 	checkErr(viper.BindEnv(configLogLevel, envVarLogLevel))
 	checkErr(viper.BindEnv(configLogFormat, envVarLogFormat))
 	checkErr(viper.BindEnv(configLogFile, envVarLogFile))
+}
+
+// GetDefaultPageSize returns the configured default page size
+func GetDefaultPageSize() int {
+	return viper.GetInt(configPageSize)
+}
+
+// GetMaxLimit returns the configured maximum limit for pagination
+func GetMaxLimit() int {
+	return viper.GetInt(configMaxLimit)
+}
+
+// ApplyDefaultPagination applies default pagination values if not set
+func ApplyDefaultPagination(limit, offset *int) (*int, *int) {
+	// Don't apply defaults if user explicitly set offset (means they want pagination)
+	if offset != nil && *offset > 0 {
+		return limit, offset
+	}
+	
+	// Don't apply defaults if user explicitly set limit
+	if limit != nil && *limit > 0 {
+		// Enforce max limit
+		maxLimit := GetMaxLimit()
+		if *limit > maxLimit {
+			enforcedLimit := maxLimit
+			return &enforcedLimit, offset
+		}
+		return limit, offset
+	}
+	
+	// No pagination requested by user
+	return limit, offset
 }
 
 func checkErr(err error) {
@@ -128,6 +172,8 @@ func checkErr(err error) {
 func setRootPersistentFlags(cmd *cobra.Command) {
 	cmd.PersistentFlags().String(configFolder, defaultFolder, "Directory for backlog tasks")
 	cmd.PersistentFlags().Bool(configAutoCommit, defaultAutoCommit, "Auto-committing changes to git repository")
+	cmd.PersistentFlags().Int(configPageSize, defaultPageSize, "Default page size for pagination")
+	cmd.PersistentFlags().Int(configMaxLimit, defaultMaxLimit, "Maximum limit for pagination")
 	cmd.PersistentFlags().String(configLogLevel, defaultLogLevel, "Log level (debug, info, warn, error)")
 	cmd.PersistentFlags().String(configLogFormat, defaultLogFormat, "Log format (json, text)")
 	cmd.PersistentFlags().String(configLogFile, defaultLogFile, "Log file path (defaults to stderr)")
@@ -135,6 +181,8 @@ func setRootPersistentFlags(cmd *cobra.Command) {
 	// Bind flags to viper
 	checkErr(viper.BindPFlag(configFolder, cmd.PersistentFlags().Lookup(configFolder)))
 	checkErr(viper.BindPFlag(configAutoCommit, cmd.PersistentFlags().Lookup(configAutoCommit)))
+	checkErr(viper.BindPFlag(configPageSize, cmd.PersistentFlags().Lookup(configPageSize)))
+	checkErr(viper.BindPFlag(configMaxLimit, cmd.PersistentFlags().Lookup(configMaxLimit)))
 	checkErr(viper.BindPFlag(configLogLevel, cmd.PersistentFlags().Lookup(configLogLevel)))
 	checkErr(viper.BindPFlag(configLogFormat, cmd.PersistentFlags().Lookup(configLogFormat)))
 	checkErr(viper.BindPFlag(configLogFile, cmd.PersistentFlags().Lookup(configLogFile)))

@@ -1,9 +1,13 @@
 ---
 id: "16"
 title: Handle pagination
-status: todo
+status: done
 priority: medium
 created_at: 2025-09-19T22:29:45.432353Z
+updated_at: 2025-09-19T23:01:00.153115Z
+history:
+    - timestamp: 2025-09-19T23:01:00.153113Z
+      change: Status changed from "todo" to "done"
 ---
 ## Description
 

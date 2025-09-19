@@ -60,5 +60,6 @@ func (f *FileTaskStore) Search(query string, listParams ListTasksParams) ([]*Tas
 	}
 
 	SortTasks(filteredMatches, listParams.Sort, listParams.Reverse)
-	return filteredMatches, nil
+	paginatedMatches := PaginateTasks(filteredMatches, listParams.Limit, listParams.Offset)
+	return paginatedMatches, nil
 }
