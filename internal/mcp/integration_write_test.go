@@ -1,7 +1,6 @@
 package mcp
 
 import (
-	"context"
 	"encoding/json"
 	"testing"
 
@@ -11,7 +10,7 @@ import (
 	"github.com/veggiemonk/backlog/internal/core"
 )
 
-func TestMCP_Integration_Create_Edit_Batch_HTTP(t *testing.T) {
+func TestMCP_Integration_Write_HTTP(t *testing.T) {
 	// Setup isolated in-memory store and seed
 	fs := afero.NewMemMapFs()
 	store := core.NewFileTaskStore(fs, ".backlog")
@@ -23,11 +22,11 @@ func TestMCP_Integration_Create_Edit_Batch_HTTP(t *testing.T) {
 		t.Fatalf("NewServer: %v", err)
 	}
 	endpoint, shutdown := startHTTPServer(t, srv)
-	defer func() { _ = shutdown(context.Background()) }()
+	defer func() { _ = shutdown(t.Context()) }()
 
 	// Connect client session
 	sess, closeSess := newClient(t, endpoint)
-	defer func() { _ = closeSess(context.Background()) }()
+	defer func() { _ = closeSess(t.Context()) }()
 
 	is := is.New(t)
 
@@ -35,7 +34,7 @@ func TestMCP_Integration_Create_Edit_Batch_HTTP(t *testing.T) {
 	var created core.Task
 	{
 		params := core.CreateTaskParams{Title: "Schema Task", Description: "created via MCP", Labels: []string{"schema"}, Priority: "high"}
-		res, err := sess.CallTool(context.Background(), &mcp.CallToolParams{Name: "task_create", Arguments: params})
+		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_create", Arguments: params})
 		is.NoErr(err)
 		// Ensure server populated text content
 		parseTextContent(t, res, &created)
@@ -48,7 +47,7 @@ func TestMCP_Integration_Create_Edit_Batch_HTTP(t *testing.T) {
 	// 2) Edit the task title and verify via view
 	{
 		newTitle := "Schema Task (edited)"
-		res, err := sess.CallTool(context.Background(), &mcp.CallToolParams{Name: "task_edit", Arguments: core.EditTaskParams{ID: created.ID.String(), NewTitle: &newTitle}})
+		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_edit", Arguments: core.EditTaskParams{ID: created.ID.String(), NewTitle: &newTitle}})
 		is.NoErr(err)
 		// Text content should be auto-populated from structured output
 		var updated core.Task
@@ -64,7 +63,7 @@ func TestMCP_Integration_Create_Edit_Batch_HTTP(t *testing.T) {
 			{Title: "Batch Two", Priority: "medium"},
 			{Title: "Batch Three", Priority: "critical"},
 		}}
-		res, err := sess.CallTool(context.Background(), &mcp.CallToolParams{Name: "task_batch_create", Arguments: params})
+		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_batch_create", Arguments: params})
 		is.NoErr(err)
 		// Validate text content wrapper
 		wrapped := struct{ Tasks []*core.Task }{}
@@ -78,5 +77,11 @@ func TestMCP_Integration_Create_Edit_Batch_HTTP(t *testing.T) {
 		wrapped2 := struct{ Tasks []*core.Task }{}
 		is.NoErr(json.Unmarshal(b, &wrapped2))
 		is.Equal(len(wrapped2.Tasks), 3)
+	}
+	// 4) Archive the picked task
+	{
+		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_archive", Arguments: ArchiveParams{ID: created.ID.String()}})
+		is.NoErr(err)
+		is.True(res != nil)
 	}
 }

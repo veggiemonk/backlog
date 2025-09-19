@@ -21,12 +21,14 @@ The task ID of each task is automatically generated. Returns the list of created
 `
 	// Output schema: { tasks: Task[] }
 	tool := &mcp.Tool{
-		Name:         "task_batch_create",
-		Description:  description,
-		InputSchema:  inputSchema,
-		OutputSchema: &jsonschema.Schema{Type: "object", Properties: map[string]*jsonschema.Schema{
-			"tasks": {Type: "array", Items: taskJSONSchema()},
-		}},
+		Name:        "task_batch_create",
+		Description: description,
+		InputSchema: inputSchema,
+		OutputSchema: &jsonschema.Schema{
+			Type: "object", Properties: map[string]*jsonschema.Schema{
+				"tasks": {Type: "array", Items: taskJSONSchema()},
+			},
+		},
 	}
 	mcp.AddTool(s.mcpServer, tool, s.handler.batchCreate)
 	return nil
