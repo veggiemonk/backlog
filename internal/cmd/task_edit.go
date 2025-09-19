@@ -9,7 +9,6 @@ import (
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
-	"github.com/veggiemonk/backlog/internal/sanitize"
 	"github.com/veggiemonk/backlog/internal/validation"
 )
 
@@ -154,7 +153,7 @@ func setEditFlags(cmd *cobra.Command) {
 
 func runEdit(cmd *cobra.Command, args []string) {
 	// Sanitize input parameters
-	sanitizer := sanitize.NewSanitizer()
+	sanitizer := validation.NewSanitizer()
 
 	params := core.EditTaskParams{ID: sanitizer.SanitizeTaskID(args[0])}
 

@@ -1,7 +1,8 @@
-package monitoring
+package validation
 
 import (
 	"fmt"
+	"maps"
 	"runtime"
 	"time"
 
@@ -22,27 +23,27 @@ func NewSecurityMonitor() *SecurityMonitor {
 
 // SecurityEvent represents a security-related event
 type SecurityEvent struct {
-	Type        string                 `json:"type"`
-	Severity    string                 `json:"severity"`
-	Message     string                 `json:"message"`
-	Details     map[string]interface{} `json:"details"`
-	Timestamp   time.Time              `json:"timestamp"`
-	UserContext map[string]string      `json:"user_context,omitempty"`
-	StackTrace  string                 `json:"stack_trace,omitempty"`
+	Type        string            `json:"type"`
+	Severity    string            `json:"severity"`
+	Message     string            `json:"message"`
+	Details     map[string]any    `json:"details"`
+	Timestamp   time.Time         `json:"timestamp"`
+	UserContext map[string]string `json:"user_context,omitempty"`
+	StackTrace  string            `json:"stack_trace,omitempty"`
 }
 
 // Event types
 const (
-	EventValidationFailure    = "validation_failure"
-	EventSanitizationAlert    = "sanitization_alert"
-	EventFileAccessViolation  = "file_access_violation"
-	EventSuspiciousActivity   = "suspicious_activity"
-	EventConfigurationError   = "configuration_error"
-	EventAuthenticationIssue  = "authentication_issue"
-	EventCommandExecution     = "command_execution"
-	EventDataExfiltration     = "data_exfiltration"
-	EventIntegrityViolation   = "integrity_violation"
-	EventRateLimitExceeded    = "rate_limit_exceeded"
+	EventValidationFailure   = "validation_failure"
+	EventSanitizationAlert   = "sanitization_alert"
+	EventFileAccessViolation = "file_access_violation"
+	EventSuspiciousActivity  = "suspicious_activity"
+	EventConfigurationError  = "configuration_error"
+	EventAuthenticationIssue = "authentication_issue"
+	EventCommandExecution    = "command_execution"
+	EventDataExfiltration    = "data_exfiltration"
+	EventIntegrityViolation  = "integrity_violation"
+	EventRateLimitExceeded   = "rate_limit_exceeded"
 )
 
 // Severity levels
@@ -54,7 +55,7 @@ const (
 )
 
 // LogValidationFailure logs validation failures with security context
-func (sm *SecurityMonitor) LogValidationFailure(field, value, reason string, details map[string]interface{}) {
+func (sm *SecurityMonitor) LogValidationFailure(field, value, reason string, details map[string]any) {
 	if !sm.enabled {
 		return
 	}
@@ -64,7 +65,7 @@ func (sm *SecurityMonitor) LogValidationFailure(field, value, reason string, det
 		Severity:  SeverityMedium,
 		Message:   fmt.Sprintf("Validation failed for field '%s': %s", field, reason),
 		Timestamp: time.Now().UTC(),
-		Details: map[string]interface{}{
+		Details: map[string]any{
 			"field":  field,
 			"value":  value,
 			"reason": reason,
@@ -72,11 +73,7 @@ func (sm *SecurityMonitor) LogValidationFailure(field, value, reason string, det
 	}
 
 	// Add additional details if provided
-	if details != nil {
-		for k, v := range details {
-			event.Details[k] = v
-		}
-	}
+	maps.Copy(event.Details, details)
 
 	sm.logSecurityEvent(event)
 }
@@ -97,9 +94,9 @@ func (sm *SecurityMonitor) LogSanitizationAlert(input, sanitized, reason string)
 		Severity:  severity,
 		Message:   fmt.Sprintf("Input sanitization performed: %s", reason),
 		Timestamp: time.Now().UTC(),
-		Details: map[string]interface{}{
-			"original_input":    input,
-			"sanitized_output":  sanitized,
+		Details: map[string]any{
+			"original_input":   input,
+			"sanitized_output": sanitized,
 			"reason":           reason,
 			"chars_removed":    len(input) - len(sanitized),
 		},
@@ -119,7 +116,7 @@ func (sm *SecurityMonitor) LogFileAccessViolation(operation, path, reason string
 		Severity:  SeverityHigh,
 		Message:   fmt.Sprintf("File access violation: %s on '%s' - %s", operation, path, reason),
 		Timestamp: time.Now().UTC(),
-		Details: map[string]interface{}{
+		Details: map[string]any{
 			"operation": operation,
 			"path":      path,
 			"reason":    reason,
@@ -131,17 +128,17 @@ func (sm *SecurityMonitor) LogFileAccessViolation(operation, path, reason string
 }
 
 // LogSuspiciousActivity logs suspicious activities that may indicate an attack
-func (sm *SecurityMonitor) LogSuspiciousActivity(activity string, details map[string]interface{}) {
+func (sm *SecurityMonitor) LogSuspiciousActivity(activity string, details map[string]any) {
 	if !sm.enabled {
 		return
 	}
 
 	event := SecurityEvent{
-		Type:      EventSuspiciousActivity,
-		Severity:  SeverityHigh,
-		Message:   fmt.Sprintf("Suspicious activity detected: %s", activity),
-		Timestamp: time.Now().UTC(),
-		Details:   details,
+		Type:       EventSuspiciousActivity,
+		Severity:   SeverityHigh,
+		Message:    fmt.Sprintf("Suspicious activity detected: %s", activity),
+		Timestamp:  time.Now().UTC(),
+		Details:    details,
 		StackTrace: sm.getStackTrace(),
 	}
 
@@ -159,10 +156,10 @@ func (sm *SecurityMonitor) LogConfigurationError(config, value, reason string) {
 		Severity:  SeverityMedium,
 		Message:   fmt.Sprintf("Configuration error: %s", reason),
 		Timestamp: time.Now().UTC(),
-		Details: map[string]interface{}{
+		Details: map[string]any{
 			"configuration": config,
-			"value":        value,
-			"reason":       reason,
+			"value":         value,
+			"reason":        reason,
 		},
 	}
 
@@ -185,7 +182,7 @@ func (sm *SecurityMonitor) LogCommandExecution(command string, args []string, su
 		Severity:  severity,
 		Message:   fmt.Sprintf("Command executed: %s", command),
 		Timestamp: time.Now().UTC(),
-		Details: map[string]interface{}{
+		Details: map[string]any{
 			"command":   command,
 			"arguments": args,
 			"success":   success,
@@ -196,17 +193,17 @@ func (sm *SecurityMonitor) LogCommandExecution(command string, args []string, su
 }
 
 // LogIntegrityViolation logs file or data integrity violations
-func (sm *SecurityMonitor) LogIntegrityViolation(resource, violation string, details map[string]interface{}) {
+func (sm *SecurityMonitor) LogIntegrityViolation(resource, violation string, details map[string]any) {
 	if !sm.enabled {
 		return
 	}
 
 	event := SecurityEvent{
-		Type:      EventIntegrityViolation,
-		Severity:  SeverityCritical,
-		Message:   fmt.Sprintf("Integrity violation detected on %s: %s", resource, violation),
-		Timestamp: time.Now().UTC(),
-		Details:   details,
+		Type:       EventIntegrityViolation,
+		Severity:   SeverityCritical,
+		Message:    fmt.Sprintf("Integrity violation detected on %s: %s", resource, violation),
+		Timestamp:  time.Now().UTC(),
+		Details:    details,
 		StackTrace: sm.getStackTrace(),
 	}
 
@@ -224,7 +221,7 @@ func (sm *SecurityMonitor) LogRateLimitExceeded(operation, identifier string, li
 		Severity:  SeverityMedium,
 		Message:   fmt.Sprintf("Rate limit exceeded for %s: %d attempts (limit: %d)", operation, attempts, limit),
 		Timestamp: time.Now().UTC(),
-		Details: map[string]interface{}{
+		Details: map[string]any{
 			"operation":  operation,
 			"identifier": identifier,
 			"limit":      limit,
@@ -308,7 +305,7 @@ func GetSecurityMonitor() *SecurityMonitor {
 // Convenience functions for global security monitor
 
 // LogValidationFailure logs validation failures globally
-func LogValidationFailure(field, value, reason string, details map[string]interface{}) {
+func LogValidationFailure(field, value, reason string, details map[string]any) {
 	globalSecurityMonitor.LogValidationFailure(field, value, reason, details)
 }
 
@@ -323,7 +320,7 @@ func LogFileAccessViolation(operation, path, reason string) {
 }
 
 // LogSuspiciousActivity logs suspicious activities globally
-func LogSuspiciousActivity(activity string, details map[string]interface{}) {
+func LogSuspiciousActivity(activity string, details map[string]any) {
 	globalSecurityMonitor.LogSuspiciousActivity(activity, details)
 }
 
@@ -338,7 +335,7 @@ func LogCommandExecution(command string, args []string, success bool) {
 }
 
 // LogIntegrityViolation logs integrity violations globally
-func LogIntegrityViolation(resource, violation string, details map[string]interface{}) {
+func LogIntegrityViolation(resource, violation string, details map[string]any) {
 	globalSecurityMonitor.LogIntegrityViolation(resource, violation, details)
 }
 

@@ -9,7 +9,6 @@ import (
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
-	"github.com/veggiemonk/backlog/internal/sanitize"
 	"github.com/veggiemonk/backlog/internal/validation"
 )
 
@@ -108,7 +107,7 @@ func init() {
 
 func runCreate(cmd *cobra.Command, args []string) {
 	// Sanitize input parameters
-	sanitizer := sanitize.NewSanitizer()
+	sanitizer := validation.NewSanitizer()
 
 	params := core.CreateTaskParams{
 		Title:        sanitizer.SanitizeTitle(args[0]),

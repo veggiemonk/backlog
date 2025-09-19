@@ -116,6 +116,7 @@ func createTestTasks(t *testing.T, store TaskStore) {
 	if err != nil {
 		t.Fatalf("failed to update task: %v", err)
 	}
+	_ = t9
 }
 
 const countTask = 9

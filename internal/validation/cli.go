@@ -2,12 +2,12 @@ package validation
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	"github.com/veggiemonk/backlog/internal/core"
-	"github.com/veggiemonk/backlog/internal/monitoring"
 )
 
 // CLIValidator provides validation functions for CLI commands
@@ -28,8 +28,8 @@ func (cv *CLIValidator) ValidateCreateParams(params core.CreateTaskParams) Valid
 
 	// Validate title
 	if err := cv.validator.ValidateTitle(params.Title); err.Code != "" {
-		monitoring.LogValidationFailure("title", params.Title, err.Message, map[string]interface{}{
-			"code": err.Code,
+		LogValidationFailure("title", params.Title, err.Message, map[string]any{
+			"code":      err.Code,
 			"operation": "create_task",
 		})
 		errors = append(errors, err)
@@ -264,7 +264,7 @@ func (cv *CLIValidator) ValidateListParams(params core.ListTasksParams) Validati
 	// Validate status values
 	validStatuses := []string{"pending", "in-progress", "done", "archived"}
 	for i, status := range params.Status {
-		if !contains(validStatuses, status) {
+		if !slices.Contains(validStatuses, status) {
 			errors = append(errors, ValidationError{
 				Field:   fmt.Sprintf("status[%d]", i),
 				Value:   status,
@@ -277,7 +277,7 @@ func (cv *CLIValidator) ValidateListParams(params core.ListTasksParams) Validati
 	// Validate sort fields
 	validSortFields := []string{"id", "title", "status", "priority", "created_at", "updated_at", "parent"}
 	for i, field := range params.Sort {
-		if !contains(validSortFields, field) {
+		if !slices.Contains(validSortFields, field) {
 			errors = append(errors, ValidationError{
 				Field:   fmt.Sprintf("sort[%d]", i),
 				Value:   field,
@@ -339,14 +339,4 @@ func (cv *CLIValidator) ValidateSearchQuery(query string) ValidationError {
 	}
 
 	return ValidationError{}
-}
-
-// Helper function to check if slice contains string
-func contains(slice []string, item string) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
-		}
-	}
-	return false
 }

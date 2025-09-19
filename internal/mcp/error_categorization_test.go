@@ -17,7 +17,7 @@ func TestErrorCategorization(t *testing.T) {
 	// Setup test environment
 	fs := afero.NewMemMapFs()
 	// Create the .backlog directory
-	fs.MkdirAll(".backlog", 0755)
+	fs.MkdirAll(".backlog", 0o755)
 	store := core.NewFileTaskStore(fs, ".backlog")
 
 	// Initialize handler with all middleware
@@ -44,7 +44,6 @@ func TestErrorCategorization(t *testing.T) {
 				Description: "Test without title",
 			}
 			result, _, err := handler.create(ctx, req, params)
-
 			// Should return structured error response
 			if err != nil {
 				t.Fatalf("Expected no Go error, got: %v", err)
@@ -76,7 +75,6 @@ func TestErrorCategorization(t *testing.T) {
 			// Test invalid task ID format
 			params := ViewParams{ID: "invalid-id-format"}
 			result, _, err := handler.view(ctx, req, params)
-
 			// Should return structured error response
 			if err != nil {
 				t.Fatalf("Expected no Go error, got: %v", err)
@@ -109,7 +107,6 @@ func TestErrorCategorization(t *testing.T) {
 				Priority:    "invalid-priority",
 			}
 			result, _, err := handler.create(ctx, req, params)
-
 			// Should return structured error response
 			if err != nil {
 				t.Fatalf("Expected no Go error, got: %v", err)
@@ -140,7 +137,6 @@ func TestErrorCategorization(t *testing.T) {
 			// Test viewing non-existent task
 			params := ViewParams{ID: "T999"}
 			result, _, err := handler.view(ctx, req, params)
-
 			// Should return structured error response
 			if err != nil {
 				t.Fatalf("Expected no Go error, got: %v", err)
@@ -176,7 +172,6 @@ func TestErrorCategorization(t *testing.T) {
 			params := ListCreateParams{Tasks: tasks}
 
 			result, _, err := handler.batchCreate(ctx, req, params)
-
 			// Should return structured error response for the validation failure
 			if err != nil {
 				t.Fatalf("Expected no Go error, got: %v", err)
@@ -202,7 +197,7 @@ func TestErrorCategorization(t *testing.T) {
 	t.Run("MCPErrors", func(t *testing.T) {
 		t.Run("ResponseTooLarge", func(t *testing.T) {
 			// Create many tasks to trigger response size limit
-			for i := 0; i < 100; i++ {
+			for range 100 {
 				task, _ := store.Create(core.CreateTaskParams{
 					Title:       "Large Dataset Task",
 					Description: "This is a task for testing large response handling",
@@ -213,7 +208,6 @@ func TestErrorCategorization(t *testing.T) {
 			// Try to list all tasks without pagination
 			params := core.ListTasksParams{}
 			result, _, err := handler.list(ctx, req, params)
-
 			// Should return structured error response for response too large
 			if err != nil {
 				t.Fatalf("Expected no Go error, got: %v", err)
@@ -317,7 +311,7 @@ func TestErrorResponseStructure(t *testing.T) {
 			jsonStr := mcpErr.ToJSON()
 
 			// Parse back to verify structure
-			var parsed map[string]interface{}
+			var parsed map[string]any
 			if err := json.Unmarshal([]byte(jsonStr), &parsed); err != nil {
 				t.Fatalf("Failed to parse error JSON: %v", err)
 			}
@@ -380,3 +374,4 @@ func TestErrorContextAndDetails(t *testing.T) {
 		}
 	})
 }
+

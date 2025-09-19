@@ -300,9 +300,7 @@ func TestMCPHandlers(t *testing.T) {
 			is := is.New(t)
 
 			// First create a task to edit
-			createParams := core.CreateTaskParams{
-				Title: "Original Title",
-			}
+			createParams := core.CreateTaskParams{Title: "Original Title"}
 			createResult, _, err := handler.create(ctx, req, createParams)
 			is.NoErr(err)
 
@@ -398,8 +396,8 @@ func TestMCPHandlers(t *testing.T) {
 
 			// With structured error handling, we now return structured error responses
 			// instead of Go errors for "not found" cases
-			is.NoErr(err) // No Go error should be returned
-			is.True(result != nil) // Should return structured error response
+			is.NoErr(err)           // No Go error should be returned
+			is.True(result != nil)  // Should return structured error response
 			is.True(result.IsError) // Should be marked as error response
 		})
 	})

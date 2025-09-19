@@ -1,4 +1,4 @@
-package security
+package validation
 
 import (
 	"crypto/rand"
@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/spf13/afero"
-	"github.com/veggiemonk/backlog/internal/monitoring"
 )
 
 // SecureFileOps provides secure file operations with safety checks
@@ -42,7 +41,7 @@ func (sfo *SecureFileOps) ValidatePath(path string) error {
 			Path:      path,
 			Reason:    "path cannot be empty",
 		}
-		monitoring.LogFileAccessViolation("validate", path, err.Reason)
+		LogFileAccessViolation("validate", path, err.Reason)
 		return err
 	}
 
@@ -53,7 +52,7 @@ func (sfo *SecureFileOps) ValidatePath(path string) error {
 			Path:      path,
 			Reason:    "path contains null bytes",
 		}
-		monitoring.LogFileAccessViolation("validate", path, err.Reason)
+		LogFileAccessViolation("validate", path, err.Reason)
 		return err
 	}
 
@@ -64,7 +63,7 @@ func (sfo *SecureFileOps) ValidatePath(path string) error {
 			Path:      path,
 			Reason:    "path contains directory traversal sequences",
 		}
-		monitoring.LogFileAccessViolation("validate", path, err.Reason)
+		LogFileAccessViolation("validate", path, err.Reason)
 		return err
 	}
 
@@ -82,7 +81,7 @@ func (sfo *SecureFileOps) ValidatePath(path string) error {
 		"/proc/",
 		"/sys/",
 		"/dev/",
-		"\\\\.\\",  // Windows device paths
+		"\\\\.\\", // Windows device paths
 		"\\\\?\\", // Windows extended paths
 	}
 
@@ -173,7 +172,7 @@ func (sfo *SecureFileOps) SecureWrite(path string, content []byte, perm os.FileM
 		return fmt.Errorf("invalid parent directory: %w", err)
 	}
 
-	if err := sfo.fs.MkdirAll(parentDir, 0750); err != nil {
+	if err := sfo.fs.MkdirAll(parentDir, 0o750); err != nil {
 		return fmt.Errorf("failed to create parent directory: %w", err)
 	}
 
@@ -322,7 +321,7 @@ func (sfo *SecureFileOps) SecureMove(srcPath, dstPath string) error {
 
 	// Ensure destination directory exists
 	dstDir := filepath.Dir(dstPath)
-	if err := sfo.fs.MkdirAll(dstDir, 0750); err != nil {
+	if err := sfo.fs.MkdirAll(dstDir, 0o750); err != nil {
 		return fmt.Errorf("failed to create destination directory: %w", err)
 	}
 
@@ -338,7 +337,7 @@ func (sfo *SecureFileOps) SecureMove(srcPath, dstPath string) error {
 func (sfo *SecureFileOps) checkReadPermissions(path string, info os.FileInfo) error {
 	// On Unix-like systems, check if owner/group/other has read permission
 	mode := info.Mode()
-	if mode&0444 == 0 {
+	if mode&0o444 == 0 {
 		return SecurityError{
 			Operation: "read",
 			Path:      path,
@@ -356,20 +355,11 @@ func (sfo *SecureFileOps) checkWritePermissions(path string, info os.FileInfo) e
 	// Check if the file itself is writable (if it exists)
 	if info != nil {
 		mode := info.Mode()
-		if mode&0200 == 0 {
+		if mode&0o200 == 0 {
 			return SecurityError{
 				Operation: "write",
 				Path:      path,
 				Reason:    "file is not writable",
-			}
-		}
-
-		// Additional check for immutable files on Unix
-		if sfo.isImmutable(path) {
-			return SecurityError{
-				Operation: "write",
-				Path:      path,
-				Reason:    "file has immutable attribute",
 			}
 		}
 	}
@@ -378,12 +368,12 @@ func (sfo *SecureFileOps) checkWritePermissions(path string, info os.FileInfo) e
 }
 
 // isImmutable checks if a file has the immutable attribute (Unix systems)
-func (sfo *SecureFileOps) isImmutable(path string) bool {
-	// This is a simplified implementation that always returns false
-	// In a production environment, you would implement platform-specific
-	// checks for file attributes like chattr +i on Linux
-	return false
-}
+// func (sfo *SecureFileOps) isImmutable(path string) bool {
+// 	// This is a simplified implementation that always returns false
+// 	// In a production environment, you would implement platform-specific
+// 	// checks for file attributes like chattr +i on Linux
+// 	return false
+// }
 
 // generateRandomSuffix generates a random suffix for temporary files
 func generateRandomSuffix() string {
@@ -402,8 +392,8 @@ func (sfo *SecureFileOps) CreateSecureDirectory(path string, perm os.FileMode) e
 	}
 
 	// Ensure permissions are not too permissive
-	if perm&0077 != 0 {
-		perm &= ^os.FileMode(0077) // Remove group and other permissions
+	if perm&0o077 != 0 {
+		perm &= ^os.FileMode(0o077) // Remove group and other permissions
 	}
 
 	return sfo.fs.MkdirAll(path, perm)
@@ -449,3 +439,4 @@ func (sfo *SecureFileOps) CheckFileIntegrity(path string) error {
 
 	return nil
 }
+

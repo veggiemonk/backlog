@@ -1,4 +1,4 @@
-package security
+package validation
 
 import (
 	"os"
@@ -96,21 +96,21 @@ func TestSecureFileOps_SecureWrite(t *testing.T) {
 			name:      "valid write",
 			path:      "/test/file.txt",
 			content:   []byte("test content"),
-			perm:      0644,
+			perm:      0o644,
 			wantError: false,
 		},
 		{
 			name:      "invalid path",
 			path:      "",
 			content:   []byte("test"),
-			perm:      0644,
+			perm:      0o644,
 			wantError: true,
 		},
 		{
 			name:      "content too large",
 			path:      "/test/large.txt",
 			content:   make([]byte, 101*1024*1024), // 101MB
-			perm:      0644,
+			perm:      0o644,
 			wantError: true,
 		},
 	}
@@ -142,11 +142,11 @@ func TestSecureFileOps_SecureRead(t *testing.T) {
 	// Create a test file
 	testPath := "/test/file.txt"
 	testContent := []byte("test content")
-	afero.WriteFile(fs, testPath, testContent, 0644)
+	afero.WriteFile(fs, testPath, testContent, 0o644)
 
 	// Create a directory (non-regular file)
 	dirPath := "/test/dir"
-	fs.MkdirAll(dirPath, 0755)
+	fs.MkdirAll(dirPath, 0o755)
 
 	tests := []struct {
 		name      string
@@ -202,10 +202,10 @@ func TestSecureFileOps_SecureDelete(t *testing.T) {
 
 	// Create test files
 	testPath := "/test/file.txt"
-	afero.WriteFile(fs, testPath, []byte("test content"), 0644)
+	afero.WriteFile(fs, testPath, []byte("test content"), 0o644)
 
 	dirPath := "/test/dir"
-	fs.MkdirAll(dirPath, 0755)
+	fs.MkdirAll(dirPath, 0o755)
 
 	tests := []struct {
 		name      string
@@ -264,7 +264,7 @@ func TestSecureFileOps_SecureMove(t *testing.T) {
 	srcPath := "/test/src.txt"
 	dstPath := "/test/dst.txt"
 	testContent := []byte("test content")
-	afero.WriteFile(fs, srcPath, testContent, 0644)
+	afero.WriteFile(fs, srcPath, testContent, 0o644)
 
 	tests := []struct {
 		name      string
@@ -296,7 +296,7 @@ func TestSecureFileOps_SecureMove(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// For the valid move test, recreate the source file
 			if tt.name == "valid move" {
-				afero.WriteFile(fs, tt.srcPath, testContent, 0644)
+				afero.WriteFile(fs, tt.srcPath, testContent, 0o644)
 			}
 
 			err := sfo.SecureMove(tt.srcPath, tt.dstPath)
@@ -333,7 +333,7 @@ func TestSecureFileOps_CreateSecureDirectory(t *testing.T) {
 		{
 			name:      "valid directory creation",
 			path:      "/test/secure/dir",
-			perm:      0750,
+			perm:      0o750,
 			wantError: false,
 		},
 		{
@@ -344,7 +344,7 @@ func TestSecureFileOps_CreateSecureDirectory(t *testing.T) {
 		{
 			name:      "too permissive permissions (should be restricted)",
 			path:      "/test/permissive",
-			perm:      0777,
+			perm:      0o777,
 			wantError: false, // Should succeed but with restricted permissions
 		},
 	}
@@ -375,10 +375,10 @@ func TestSecureFileOps_CheckFileIntegrity(t *testing.T) {
 
 	// Create test files
 	testPath := "/test/file.txt"
-	afero.WriteFile(fs, testPath, []byte("test content"), 0644)
+	afero.WriteFile(fs, testPath, []byte("test content"), 0o644)
 
 	dirPath := "/test/dir"
-	fs.MkdirAll(dirPath, 0755)
+	fs.MkdirAll(dirPath, 0o755)
 
 	tests := []struct {
 		name      string
@@ -435,3 +435,4 @@ func TestSecurityError_Error(t *testing.T) {
 		t.Errorf("SecurityError.Error() = %v, want %v", err.Error(), expected)
 	}
 }
+

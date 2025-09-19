@@ -1,4 +1,4 @@
-package sanitize
+package validation
 
 import (
 	"testing"
@@ -496,3 +496,4 @@ func TestNormalizeLineBreaks(t *testing.T) {
 		})
 	}
 }
+

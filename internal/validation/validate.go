@@ -53,17 +53,17 @@ func NewValidator() *Validator {
 
 // Validation constants
 const (
-	MaxTitleLength       = 200
-	MaxDescriptionLength = 5000
-	MaxLabelLength       = 50
-	MaxAssigneeLength    = 100
+	MaxTitleLength        = 200
+	MaxDescriptionLength  = 5000
+	MaxLabelLength        = 50
+	MaxAssigneeLength     = 100
 	MaxDependencyIDLength = 20
-	MaxACLength          = 500
-	MaxPlanLength        = 10000
-	MaxNotesLength       = 10000
-	MaxPathLength        = 4096
-	MaxLogLevelLength    = 10
-	MaxLogFormatLength   = 10
+	MaxACLength           = 500
+	MaxPlanLength         = 10000
+	MaxNotesLength        = 10000
+	MaxPathLength         = 4096
+	MaxLogLevelLength     = 10
+	MaxLogFormatLength    = 10
 )
 
 // Regular expressions for validation
@@ -463,8 +463,8 @@ func (v *Validator) ValidateLogFormat(format string) ValidationError {
 // containsDangerousChars checks for potentially dangerous characters
 func containsDangerousChars(input string) bool {
 	dangerous := []string{
-		"\x00",        // null byte
-		"<script",     // script tags
+		"\x00",    // null byte
+		"<script", // script tags
 		"</script>",
 		"javascript:",
 		"data:",
@@ -473,8 +473,8 @@ func containsDangerousChars(input string) bool {
 		"onerror=",
 		"eval(",
 		"expression(",
-		"\\x",         // hex escape sequences
-		"\\u",         // unicode escape sequences
+		"\\x", // hex escape sequences
+		"\\u", // unicode escape sequences
 	}
 
 	lowerInput := strings.ToLower(input)
@@ -486,3 +486,4 @@ func containsDangerousChars(input string) bool {
 
 	return false
 }
+

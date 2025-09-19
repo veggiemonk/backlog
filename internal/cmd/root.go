@@ -88,7 +88,7 @@ func preRun(cmd *cobra.Command, args []string) {
 	if validationErrors := validator.ValidateConfigParams(logLevel, logFormat, logFile, tasksDir); validationErrors.HasErrors() {
 		// We can't use the logging package here since it's not initialized yet
 		for _, verr := range validationErrors {
-			os.Stderr.WriteString(fmt.Sprintf("Configuration validation error in field '%s': %s (value: '%s')\n", verr.Field, verr.Message, verr.Value))
+			fmt.Fprintf(os.Stderr, "Configuration validation error in field '%s': %s (value: '%s')\n", verr.Field, verr.Message, verr.Value)
 		}
 		os.Exit(1)
 	}

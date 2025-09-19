@@ -1,4 +1,4 @@
-package sanitize
+package validation
 
 import (
 	"html"
@@ -6,8 +6,6 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
-
-	"github.com/veggiemonk/backlog/internal/monitoring"
 )
 
 // Sanitizer provides comprehensive input sanitization functions
@@ -46,7 +44,7 @@ func (s *Sanitizer) SanitizeText(input string) string {
 
 	// Log sanitization if content was modified
 	if original != input {
-		monitoring.LogSanitizationAlert(original, input, "text sanitization performed")
+		LogSanitizationAlert(original, input, "text sanitization performed")
 	}
 
 	return input
@@ -134,7 +132,7 @@ func (s *Sanitizer) SanitizeAssignee(assignee string) string {
 	assignee = strings.TrimSpace(assignee)
 
 	// Keep only allowed characters for assignees
-	reg := regexp.MustCompile(`[^a-zA-Z0-9._-\s]`)
+	reg := regexp.MustCompile(`[^a-zA-Z0-9\.\-\ ]`)
 	assignee = reg.ReplaceAllString(assignee, "")
 
 	return assignee
@@ -268,16 +266,16 @@ func (s *Sanitizer) RemoveUnsafeCharacters(input string) string {
 
 	// Define patterns for dangerous sequences
 	dangerousPatterns := []*regexp.Regexp{
-		regexp.MustCompile(`(?i)<script[^>]*>.*?</script>`),       // Script tags
-		regexp.MustCompile(`(?i)javascript:[^"\s]*`),              // JavaScript protocol
-		regexp.MustCompile(`(?i)vbscript:[^"\s]*`),               // VBScript protocol
-		regexp.MustCompile(`(?i)data:[^"\s]*`),                   // Data protocol
-		regexp.MustCompile(`(?i)on\w+\s*=[^"\s]*`),              // Event handlers
-		regexp.MustCompile(`(?i)expression\s*\([^)]*\)`),        // CSS expressions
-		regexp.MustCompile(`(?i)eval\s*\([^)]*\)`),              // Eval function
-		regexp.MustCompile(`\\x[0-9a-fA-F]{2}`),                 // Hex escapes
-		regexp.MustCompile(`\\u[0-9a-fA-F]{4}`),                 // Unicode escapes
-		regexp.MustCompile(`\x00`),                              // Null bytes
+		regexp.MustCompile(`(?i)<script[^>]*>.*?</script>`), // Script tags
+		regexp.MustCompile(`(?i)javascript:[^"\s]*`),        // JavaScript protocol
+		regexp.MustCompile(`(?i)vbscript:[^"\s]*`),          // VBScript protocol
+		regexp.MustCompile(`(?i)data:[^"\s]*`),              // Data protocol
+		regexp.MustCompile(`(?i)on\w+\s*=[^"\s]*`),          // Event handlers
+		regexp.MustCompile(`(?i)expression\s*\([^)]*\)`),    // CSS expressions
+		regexp.MustCompile(`(?i)eval\s*\([^)]*\)`),          // Eval function
+		regexp.MustCompile(`\\x[0-9a-fA-F]{2}`),             // Hex escapes
+		regexp.MustCompile(`\\u[0-9a-fA-F]{4}`),             // Unicode escapes
+		regexp.MustCompile(`\x00`),                          // Null bytes
 	}
 
 	result := input
@@ -347,3 +345,4 @@ func (s *Sanitizer) SanitizeSlice(input []string, sanitizeFunc func(string) stri
 
 	return result
 }
+
