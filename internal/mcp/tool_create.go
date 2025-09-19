@@ -23,7 +23,7 @@ Returns the created task.
 		Name:         "task_create",
 		Description:  description,
 		InputSchema:  inputSchema,
-		OutputSchema: taskJSONSchema(),
+		OutputSchema: wrappedTaskJSONSchema(),
 	}
 	mcp.AddTool(s.mcpServer, tool, s.handler.create)
 	return nil

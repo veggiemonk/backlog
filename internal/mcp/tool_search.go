@@ -19,9 +19,7 @@ func (s *Server) registerTaskSearch() error {
 		Title:       "Search by content",
 		Description: "Search tasks by content. Returns a list of matching tasks.",
 		InputSchema: inputSchema,
-		OutputSchema: &jsonschema.Schema{Type: "object", Properties: map[string]*jsonschema.Schema{
-			"tasks": {Type: "array", Items: taskJSONSchema()},
-		}},
+		OutputSchema: wrappedTasksJSONSchema(),
 	}
 	mcp.AddTool(s.mcpServer, tool, s.handler.search)
 	return nil

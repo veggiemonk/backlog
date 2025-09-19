@@ -11,6 +11,7 @@ import (
 )
 
 func TestMCP_Integration_Write_HTTP(t *testing.T) {
+	t.Parallel()
 	// Setup isolated in-memory store and seed
 	fs := afero.NewMemMapFs()
 	store := core.NewFileTaskStore(fs, ".backlog")

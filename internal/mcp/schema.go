@@ -46,3 +46,29 @@ func taskJSONSchema() *jsonschema.Schema {
 		},
 	}
 }
+
+// wrappedTaskJSONSchema returns a JSON schema for the wrapped Task structure
+// that matches what's returned in StructuredContent: struct{ Task *core.Task }
+func wrappedTaskJSONSchema() *jsonschema.Schema {
+	return &jsonschema.Schema{
+		Type: "object",
+		Properties: map[string]*jsonschema.Schema{
+			"Task": taskJSONSchema(),
+		},
+		Required:             []string{"Task"},
+		AdditionalProperties: &jsonschema.Schema{Not: &jsonschema.Schema{}}, // No additional properties allowed
+	}
+}
+
+// wrappedTasksJSONSchema returns a JSON schema for the wrapped Tasks array structure
+// that matches what's returned in StructuredContent: struct{ Tasks []*core.Task }
+func wrappedTasksJSONSchema() *jsonschema.Schema {
+	return &jsonschema.Schema{
+		Type: "object",
+		Properties: map[string]*jsonschema.Schema{
+			"Tasks": {Type: "array", Items: taskJSONSchema()},
+		},
+		Required:             []string{"Tasks"},
+		AdditionalProperties: &jsonschema.Schema{Not: &jsonschema.Schema{}}, // No additional properties allowed
+	}
+}

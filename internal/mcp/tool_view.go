@@ -19,7 +19,7 @@ func (s *Server) registerTaskView() error {
 		Title:        "View a task",
 		Description:  "View a single task by its ID. Returns the task.",
 		InputSchema:  inputSchema,
-		OutputSchema: taskJSONSchema(),
+		OutputSchema: wrappedTaskJSONSchema(),
 	}
 
 	mcp.AddTool(s.mcpServer, tool, s.handler.view)
