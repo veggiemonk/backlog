@@ -119,7 +119,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 		}
 
 		expectedSchema := wrappedTasksJSONSchema()
-		
+
 		// Marshal and unmarshal to ensure we have proper JSON-compatible data
 		jsonData, err := json.Marshal(invalidData)
 		is.NoErr(err)
@@ -174,7 +174,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 					Priority:    "low",
 				},
 				{
-					Title:       "Batch Task 2", 
+					Title:       "Batch Task 2",
 					Description: "Second batch task",
 					Priority:    "medium",
 				},
