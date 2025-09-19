@@ -4,19 +4,29 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
 )
 
 func (s *Server) registerTaskBatchCreate() error {
+	inputSchema, err := jsonschema.For[ListCreateParams](nil)
+	if err != nil {
+		return err
+	}
 	description := `Create a list of new tasks.
 The schema is a list of "task_create" input parameters.
 The task ID of each task is automatically generated. Returns the list of created task.
 `
+	// Output schema: { tasks: Task[] }
 	tool := &mcp.Tool{
-		Name:        "task_batch_create",
-		Description: description,
+		Name:         "task_batch_create",
+		Description:  description,
+		InputSchema:  inputSchema,
+		OutputSchema: &jsonschema.Schema{Type: "object", Properties: map[string]*jsonschema.Schema{
+			"tasks": {Type: "array", Items: taskJSONSchema()},
+		}},
 	}
 	mcp.AddTool(s.mcpServer, tool, s.handler.batchCreate)
 	return nil
@@ -46,8 +56,6 @@ func (h *handler) batchCreate(ctx context.Context, req *mcp.CallToolRequest, lis
 	if err != nil {
 		return nil, nil, err
 	}
-	res := &mcp.CallToolResult{
-		Content: []mcp.Content{&mcp.TextContent{Text: string(b)}},
-	}
-	return res, nil, nil
+	res := &mcp.CallToolResult{Content: []mcp.Content{&mcp.TextContent{Text: string(b)}}}
+	return res, wrappedTask, nil
 }

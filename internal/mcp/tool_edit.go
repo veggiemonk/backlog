@@ -3,29 +3,26 @@ package mcp
 import (
 	"context"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
 )
 
 func (s *Server) registerTaskEdit() error {
-	// inputSchema, err := jsonschema.For[core.EditTaskParams](nil)
-	// if err != nil {
-	// 	return fmt.Errorf("jsonschema.For[core.EditTaskParams]: %v", err)
-	// }
-	// outputSchema, err := jsonschema.For[core.Task](nil)
-	// if err != nil {
-	// 	return fmt.Errorf("jsonschema.For[core.Task]: %v", err)
-	// }
+	inputSchema, err := jsonschema.For[core.EditTaskParams](nil)
+	if err != nil {
+		return err
+	}
 	description := `Edit an existing task by its ID.
 This is a partial update, only the provided fields will be changed. 
 Returns the updated task.`
 
 	editTool := &mcp.Tool{
-		Name:        "task_edit",
-		Description: description,
-		// InputSchema:  inputSchema,
-		// OutputSchema: outputSchema,
+		Name:         "task_edit",
+		Description:  description,
+		InputSchema:  inputSchema,
+		OutputSchema: taskJSONSchema(),
 	}
 
 	mcp.AddTool(s.mcpServer, editTool, s.handler.edit)

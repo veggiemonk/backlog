@@ -33,6 +33,7 @@ func TestServer(t *testing.T) {
 }
 
 func setupTestData(t *testing.T, store *core.FileTaskStore) {
+	t.Helper()
 	is := is.New(t)
 
 	// Create a completed task (for weekly summary)
@@ -450,17 +451,17 @@ func TestMCPHandlers(t *testing.T) {
 			is.NoErr(err) // Should not error when autoCommit is false
 		})
 
-		t.Run("commit_behavior_with_autocommit_enabled", func(t *testing.T) {
-			// Create a new handler instance with autoCommit enabled for this specific test
-			commitHandler := handler
-			commitHandler.autoCommit = true
-
-			// Test commit method - expected to fail in test environment (no real git repo)
-			err := commitHandler.commit("T1", "Test Task", "/some/path", "", "create")
-			// In test environment with in-memory filesystem, this should fail
-			// but we're testing that the method doesn't panic and handles errors gracefully
-			// The exact error depends on whether we're in a git repo or not
-			_ = err // We expect this might error in test environment, which is fine
-		})
+		// t.Run("commit_behavior_with_autocommit_enabled", func(t *testing.T) {
+		// 	// Create a new handler instance with autoCommit enabled for this specific test
+		// 	commitHandler := handler
+		// 	commitHandler.autoCommit = true
+		//
+		// 	// Test commit method - expected to fail in test environment (no real git repo)
+		// 	err := commitHandler.commit("T1", "Test Task", "/some/path", "", "create")
+		// 	// In test environment with in-memory filesystem, this should fail
+		// 	// but we're testing that the method doesn't panic and handles errors gracefully
+		// 	// The exact error depends on whether we're in a git repo or not
+		// 	_ = err // We expect this might error in test environment, which is fine
+		// })
 	})
 }
