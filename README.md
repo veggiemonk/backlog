@@ -1,31 +1,28 @@
 # Backlog <!-- omit in toc -->
 
-> Manage the backlog of your project with just markdown in git.
-> The goal is to provide a frictionless collaboration between AI agents and developers
+> Manage your project's backlog with Markdown in Git.
+> Designed for seamless collaboration between developers and AI agents.
 
-Backlog is a zero-configuration task manager written in Go where tasks live inside a Git repository. It leverages plain Markdown files for task storage and a comprehensive command-line interface (CLI) for interaction. This design makes it exceptionally well-suited for AI agents thanks to its MCP (Model Context Protocol) integration.
-
-The system is designed to be offline-first and completely portable, as the entire project state is contained within the Git repository.
+Backlog is a zero-configuration, offline-first task manager written in Go. Every task lives as a Markdown file inside your Git repository, and the Backlog CLI plus its MCP (Model Context Protocol) server keep those files consistent, searchable, and automation-friendly. Because the entire state travels with the repo, Backlog works anywhere your Git checkout does—laptops, containers, CI, or remote development environments.
 
 <!--toc:start-->
 - [Introduction](#introduction)
-- [Features](#features)
+- [Why Backlog](#why-backlog)
+- [Key Concepts](#key-concepts)
 - [Quick Start](#quick-start)
-  - [Installation](#installation)
-  - [Initialize Your Project](#initialize-your-project)
+  - [Install Backlog](#install-backlog)
+  - [Create Your First Task](#create-your-first-task)
   - [Task Directory Resolution](#task-directory-resolution)
 - [Configuration](#configuration)
 - [AI Agent Integration](#ai-agent-integration)
   - [Available Tools](#available-tools)
-  - [Usage with AI Agents](#usage-with-ai-agents)
-- [Usage Examples](#usage-examples)
-  - [AI Integration (MCP Server)](#ai-integration-mcp-server)
-  - [Basic Task Creation](#basic-task-creation)
+  - [Registering AI Agents](#registering-ai-agents)
+- [CLI Usage Examples](#cli-usage-examples)
+  - [Everyday Task Management](#everyday-task-management)
   - [Hierarchical Task Structure](#hierarchical-task-structure)
   - [Advanced Task Creation](#advanced-task-creation)
-  - [Task Management](#task-management)
-- [Task File Structure](#task-file-structure)
-- [Project Structure](#project-structure)
+- [Task File Anatomy](#task-file-anatomy)
+- [Project Layout](#project-layout)
 - [Development](#development)
 - [Inspiration](#inspiration)
 <!--toc:end-->
@@ -34,11 +31,9 @@ The system is designed to be offline-first and completely portable, as the entir
 
 **THIS SECTION IS FOR HUMANS**
 
-The context window deteriorates rapidly on large-scale projects. A workaround I found is to ask the agent to `make a plan for X, write it to a markdown file and keep it updated with the ongoing tasks`. It is a simple prompt. This technique has worked incredibly well, making refactoring and other significant code changes more resilient to failures, retries or rate-limiting from the model.
+Large refactors and long-running efforts stretch an AI assistant's context window quickly. A reliable approach is to ask the agent to "make a plan for X, write it to a markdown file, and keep it updated as work progresses." Doing that by hand leaves the repository littered with `plan.md` and other ad-hoc files. Backlog fixes that by providing a first-class tasks folder plus an MCP server the agent can understand and trust. The result is a shared backlog that stays in sync whether tasks are updated by people or by automation.
 
-However, this approach cluttered the repository's root directory with files like `plan.md` or `refactor_this_big_codebase.md`. To solve this, I created an MCP server that I could understand and trust to handle these details, which has provided a much better experience when using AI tools for complex tasks. Through trial and error, I fine-tuned the parameters to get the results I needed from this project.
-
-You can see an example in the [.backlog](./.backlog) folder of this repo. It has been generated with this prompt :
+You can browse the generated tasks for this repository under the [.backlog](./.backlog) folder. They were produced from the following prompt:
 
 ```
 If you were to recreate this project from scratch, make a plan and break it down into tasks using backlog break down prompt.
@@ -50,36 +45,39 @@ All tasks should have at least one acceptance criteria.
 Read the full instructions for backlog: ./internal/mcp/prompt.md
 ```
 
-Assuming that backlog is registered as an MCP server with the command `backlog mcp`. See config examples in [.gemini](./.gemini), [.claude](./.claude) and [.vscode](.vscode).
+Backlog is registered as an MCP server with the `backlog mcp` command. Configuration examples live in [.gemini](./.gemini), [.claude](./.claude), and [.vscode](./.vscode).
 
-Interestingly, while this codebase is mostly hand-written, the documentation, comments, examples, and some of the tests were generated with AI. I found that AI agents yield better results when the structure of the project is already there and exactly how you want it, with the libraries you want, in the code style you want. After that, it gets easier.
+While most of the codebase is hand-written, documentation, examples, and parts of the tests were produced with AI. In practice, AI agents deliver better output when the project already reflects the exact structure, libraries, and style you want. Once the scaffolding is there, collaboration becomes much easier.
 
-I used a few tools for learning purposes, all are paid tier:
+Tools used while building this project (all paid tiers):
 
 - gemini-2.5-pro
 - claude-sonnet4
 - github-copilot
 - amp
 
-> To instruct your AI tools to use `backlog`, see [./internal/mcp/prompt.md](./internal/mcp/prompt.md).
-> It is available through `backlog instructions > backlog_instructions.md`
+> To instruct your AI tools to use `backlog`, read [./internal/mcp/prompt.md](./internal/mcp/prompt.md). It is also accessible via `backlog instructions > backlog_instructions.md`.
 
-The rest of this document is mostly generated by AI (except the Inspiration section). Enjoy.
+## Why Backlog
 
-## Features
+- **Markdown-first** – tasks are plain files that work with your existing Git workflow.
+- **Offline & portable** – no database, no external service; everything travels with the repo.
+- **Zero configuration** – run the binary and start creating tasks immediately.
+- **AI-native** – the MCP server exposes a rich toolset so agents can plan, execute, and document work safely.
+- **Git-aware** – automatic commits keep changes traceable when auto-commit is enabled.
+- **Hierarchical** – parent/child IDs make breaking down work painless (e.g., `T01 → T01.01 → T01.01.01`).
 
-- **Task Management**: Create, edit, list, and view tasks with rich metadata
-- **Hierarchical Structure**: Support for parent-child-grandchild task relationships (T01 → T01.01 → T01.01.01)
-- **Search & Filter**: Find tasks by content, status, parent relationships, and labels
-- **AI-Friendly**: MCP server integration for seamless AI agent collaboration
-- **Git Integration**: Tasks are stored as Markdown files with automatic Git commits
-- **Offline-First**: Works completely offline with local Git repository storage
-- **Portable**: Entire project state contained within the Git repository
-- **Zero Configuration**: No setup files or databases required
+## Key Concepts
+
+- **Task ID**: Immutable, hierarchical identifier like `T03.01`. Generated automatically when you create tasks.
+- **Task Files**: Stored in `.backlog/` as `T{ID}-{slugified-title}.md`.
+- **TaskStore**: Backed by the filesystem via `afero`, making it easy to mock in tests.
+- **Acceptance Criteria**: Represented as ordered checkboxes; managed via CLI or MCP tools.
+- **MCP Tools**: Provide structured read/write access for agents (`task_create`, `task_edit`, etc.).
 
 ## Quick Start
 
-### Installation
+### Install Backlog
 
 ```bash
 # Build from source
@@ -90,195 +88,165 @@ go build .
 # Or install directly
 go install github.com/veggiemonk/backlog@latest
 
-# Or in a container
+# Or pull the container
 docker pull ghcr.io/veggiemonk/backlog:latest
 ```
 
-You can also download the binary from the [release page](https://github.com/veggiemonk/backlog/releases).
+You can also grab pre-built binaries from the [releases page](https://github.com/veggiemonk/backlog/releases).
 
-### Initialize Your Project
+### Create Your First Task
 
-No initialization is needed.
+```bash
+# Inside any Git repository
+backlog create "Implement password reset" \
+  -d "Users should be able to request a password reset link." \
+  --ac "Email includes secure token" \
+  --ac "Token expires after 30 minutes"
 
+# See what you just created
+backlog list
+backlog view T01
+```
+
+You do not need an init step—Backlog creates the `.backlog/` directory on demand.
 
 ### Task Directory Resolution
 
-Backlog stores tasks in a directory referred to as the "tasks folder". By default this is `.backlog`, but you can override it.
+Backlog stores tasks in a configurable "tasks folder" (default `.backlog`). Override it when needed.
 
-- How to set the folder
+- **Set the folder**
   - CLI flag: `--folder <path>` (relative or absolute)
-  - Environment variable: `BACKLOG_FOLDER` (used when set)
+  - Environment variable: `BACKLOG_FOLDER`
   - Default: `.backlog`
 
-- Resolution rules (applied to the chosen value)
-  - Absolute path: used as-is.
-  - Relative path: resolved with this precedence:
-    - If `<CWD>/<path>` exists, use it.
-    - Search parent directories; if `<ancestor>/<path>` exists, use it.
-    - If a git repository is detected, use `<gitRoot>/<path>`.
-    - Otherwise, fall back to `<CWD>/<path>` (created on demand).
+- **Resolution rules (applied to the chosen value)**
+  - Absolute paths are used as-is.
+  - Relative paths resolve with this precedence:
+    1. If `<CWD>/<path>` exists, use it.
+    2. Search parent directories for `<ancestor>/<path>`.
+    3. If a Git repo exists, prefer `<gitRoot>/<path>`.
+    4. Otherwise, fall back to `<CWD>/<path>` (created as needed).
 
-- Container tips
-  - If your container does not include the `.git` directory, the resolver still works using the upward search and CWD fallback.
-  - For predictable behavior, mount your tasks directory and set `BACKLOG_FOLDER` to its absolute mount point, or pass `--folder` with an absolute path.
+- **Container tips**
+  - If `.git` is absent in the container, upward search still works.
+  - For deterministic setups, mount the tasks directory and set `BACKLOG_FOLDER` to the absolute mount point (or pass `--folder`).
 
 ## Configuration
 
-Backlog supports configuration through command-line flags and environment variables. Command-line flags take precedence over environment variables.
+Backlog reads configuration from CLI flags (highest precedence) and environment variables.
 
-### Available Configuration Options
+| Setting | Flag | Env Var | Default | Description |
+| ------- | ---- | ------- | ------- | ----------- |
+| Tasks Directory | `--folder` | `BACKLOG_FOLDER` | `.backlog` | Location for task files |
+| Auto Commit | `--auto-commit` | `BACKLOG_AUTO_COMMIT` | `true` | Automatically commit task changes |
+| Log Level | `--log-level` | `BACKLOG_LOG_LEVEL` | `info` | `debug`, `info`, `warn`, `error` |
+| Log Format | `--log-format` | `BACKLOG_LOG_FORMAT` | `text` | `text` or `json` |
+| Log File | `--log-file` | `BACKLOG_LOG_FILE` | *(stderr)* | Destination for logs |
 
-| Configuration | Flag | Environment Variable | Default | Description |
-|--------------|------|---------------------|---------|-------------|
-| **Tasks Directory** | `--folder` | `BACKLOG_FOLDER` | `.backlog` | Directory for backlog tasks |
-| **Auto Commit** | `--auto-commit` | `BACKLOG_AUTO_COMMIT` | `true` | Auto-committing changes to git repository |
-| **Log Level** | `--log-level` | `BACKLOG_LOG_LEVEL` | `info` | Log level (debug, info, warn, error) |
-| **Log Format** | `--log-format` | `BACKLOG_LOG_FORMAT` | `text` | Log format (json, text) |
-| **Log File** | `--log-file` | `BACKLOG_LOG_FILE` | `""` | Log file path (defaults to stderr) |
-
-### Configuration Examples
+Examples:
 
 ```bash
-# Using command-line flags
-backlog --folder /custom/path --log-level debug --auto-commit false list
+# Flags
+backlog --folder /backlog --log-level debug --auto-commit false list
 
-# Using environment variables
-export BACKLOG_FOLDER="/custom/path"
-export BACKLOG_LOG_LEVEL="debug"
-export BACKLOG_AUTO_COMMIT="false"
+# Environment variables
+export BACKLOG_FOLDER=/backlog
+export BACKLOG_LOG_LEVEL=debug
+export BACKLOG_AUTO_COMMIT=false
 backlog list
 
 # Flags override environment variables
-export BACKLOG_FOLDER="/env/path"
-backlog --folder "/flag/path" list  # Uses /flag/path
+export BACKLOG_FOLDER=/env/path
+backlog --folder /flag/path list  # uses /flag/path
 
-# Logging examples
+# Logging
 backlog --log-format json --log-level debug list
-BACKLOG_LOG_FILE="/tmp/backlog.log" backlog list
+BACKLOG_LOG_FILE=/tmp/backlog.log backlog list
 ```
 
-### Configuration Notes
+Notes:
 
-- **Environment Variables**: All environment variables use the `BACKLOG_` prefix
-- **Precedence**: Command-line flags > Environment variables > Default values
-- **Log Output**: When `--log-file` is not specified, logs are written to stderr
-- **Boolean Values**: For environment variables, use `true`/`false` strings (e.g., `BACKLOG_AUTO_COMMIT=false`)
+- All environment variables use the `BACKLOG_` prefix.
+- Boolean env values should be `true`/`false` strings.
+- When `--log-file` is omitted, logs go to stderr.
 
 ## AI Agent Integration
 
-Backlog includes a Model Context Protocol (MCP) server that exposes task management capabilities to AI agents:
+Backlog ships with an MCP server that mirrors CLI functionality for AI agents. Agents can plan, create, and update tasks without ever touching the raw Markdown files.
 
 ### Available Tools
 
-- `task_create`: Create new tasks with full metadata
-- `task_list`: List and filter tasks
-- `task_view`: Get detailed task information
-- `task_edit`: Update existing tasks
-- `task_search`: Search tasks by content
-- `task_archive`: Archive tasks so they are not displayed anymore but still lives in the repository.
+- `task_create`: Create new tasks with full metadata.
+- `task_list`: Filter and page through tasks.
+- `task_view`: Retrieve a single task.
+- `task_edit`: Update titles, descriptions, status, acceptance criteria, and more.
+- `task_search`: Query tasks by content.
+- `task_archive`: Archive tasks without deleting the underlying files.
 
-### Usage with AI Agents
-
-```bash
-# Start MCP server for AI integration
-backlog mcp --http --port 8106
-# Start MCP server using STDIO
-backlog mcp
-
-# AI agents can now:
-# - Create tasks from conversation context
-# - Break down large tasks into subtasks
-# - Update task status and assignments
-# - Search and analyze task patterns
-```
-
-## Usage Examples
-
-### AI Integration (MCP Server)
+### Registering AI Agents
 
 ```bash
-# Start MCP server for AI agents (backlog mcp --http transport)
-backlog mcp --http  # default port 8106
-backlog mcp --http --port 8106 # specify the port
+# HTTP transport (default port 8106)
+backlog mcp --http
+backlog mcp --http --port 9000
 
-# Start MCP server (stdio transport)
+# STDIO transport
 backlog mcp
 ```
 
-See this repository [.gemini](./.gemini), [.claude](./.claude) and [.vscode](./.vscode) for example configurations.
+See `.gemini/`, `.claude/`, and `.vscode/` for real configuration snippets. For full agent-facing guidance, reference [internal/mcp/prompt.md](./internal/mcp/prompt.md).
 
-### Basic Task Creation
+## CLI Usage Examples
+
+### Everyday Task Management
 
 ```bash
-# Simple task
-backlog create "Fix the login button styling"
+# List everything
+backlog list
 
-# Task with description
-backlog create "Implement password reset" \
-  -d "Users should be able to request a password reset link via email"
+# Filter by status
+backlog list --status todo
+backlog list --status in-progress
+backlog list --status done
 
-# Task with assignees and labels
-backlog create "Update dependencies" \
-  -a "alex" -a "jordan" \
-  -l "maintenance,backend,security" \
-  --priority "high"
+# View or edit a single task
+backlog view T01.02
+backlog edit T01 --status in-progress --assignee "alex"
 ```
 
 ### Hierarchical Task Structure
 
 ```bash
-# Create parent task
+# Parent task
 backlog create "Implement User Authentication"
-# → Creates T01-implement_user_authentication.md
+# → T01-implement_user_authentication.md
 
-# Create subtask
-backlog create "Add Google OAuth login" -p "T01"
-# → Creates T01.01-add_google_oauth_login.md
+# Subtask
+backlog create "Add Google OAuth login" -p T01
+# → T01.01-add_google_oauth_login.md
 
-# Create sub-subtask
-backlog create "OAuth token validation" -p "T01.01"
-# → Creates T01.01.01-oauth_token_validation.md
+# Sub-subtask
+backlog create "OAuth token validation" -p T01.01
+# → T01.01.01-oauth_token_validation.md
 ```
 
 ### Advanced Task Creation
 
 ```bash
-# Comprehensive task with acceptance criteria
 backlog create "Build reporting feature" \
-  -d "Create monthly performance reports in PDF format" \
-  -a "drew" \
+  -d "Create monthly performance reports in PDF format." \
+  -a drew \
   -l "feature,frontend,backend" \
-  --priority "high" \
+  --priority high \
   --ac "Report generation logic is accurate" \
   --ac "Users can select date range" \
   --ac "PDF export works correctly" \
-  -p "23"
+  -p 23
 ```
 
-### Task Management
+## Task File Anatomy
 
-```bash
-# List all tasks
-backlog list
-
-# Filter by status
-backlog list --status "todo"
-backlog list --status "in-progress"
-backlog list --status "done"
-
-# Filter by parent (show subtasks)
-backlog list --parent "T01"
-
-# View specific task
-backlog view T01.02
-
-# Edit task
-backlog edit T01 --status "in-progress" --assignee "alex"
-```
-
-## Task File Structure
-
-Tasks are stored as Markdown files with YAML front matter in the `.backlog/` directory:
+Tasks are Markdown files with YAML frontmatter stored under `.backlog/`.
 
 ```markdown
 ---
@@ -294,39 +262,34 @@ updated_at: 2024-01-01T00:00:00Z
 ---
 
 ## Description
-
 Integrate OAuth authentication with Google and GitHub providers.
 
 ## Acceptance Criteria
-
 <!-- AC:BEGIN -->
-
 - [ ] #1 Google OAuth integration works
 - [ ] #2 GitHub OAuth integration works
 - [x] #3 OAuth scope validation implemented
 <!-- AC:END -->
 
 ## Implementation Plan
-
 1. Setup OAuth app registrations
 2. Implement OAuth flow handlers
 3. Add token validation
 4. Write integration tests
 
 ## Implementation Notes
-
 - Use oauth2 package for Go
 - Store tokens securely
 - Handle refresh token rotation
 ```
 
-**File Naming Convention**: `T{ID}-{slugified-title}.md`
+File naming convention examples:
 
-- `T01-implement_user_auth.md` (root task)
-- `T01.01-setup_oauth.md` (subtask)
-- `T01.01.01-google_oauth.md` (sub-subtask)
+- `T01-implement_user_auth.md`
+- `T01.01-setup_oauth.md`
+- `T01.01.01-google_oauth.md`
 
-## Project Structure
+## Project Layout
 
 ```
 .backlog/                     # Task storage directory
@@ -339,28 +302,17 @@ Integrate OAuth authentication with Google and GitHub providers.
 ## Development
 
 ```bash
-# Build the project
-make build
-
-# Run tests
-make test
-
-# Generate CLI documentation
-make docs
-
-# Lint code
-make lint
+make build   # Compile the CLI
+make test    # Run the full test suite
+make docs    # Generate Cobra command docs
+make lint    # Run linters
 ```
 
 ## Inspiration
 
-This project is inspired by
+Backlog draws inspiration from:
 
 - [Backlog.md](https://github.com/MrLesk/Backlog.md)
 - [TaskWing](https://github.com/josephgoksu/TaskWing)
 
-but `backlog` aims to be simpler and handle fewer use cases while remaining AI-friendly.
-
-For the MCP server, a lot of good examples are in [go-sdk](https://github.com/modelcontextprotocol/go-sdk).
-
-For real production use cases, [GoogleCloudPlatform/gke-mcp](https://github.com/GoogleCloudPlatform/gke-mcp) is highly recommended.
+For MCP-specific inspiration, see [modelcontextprotocol/go-sdk](https://github.com/modelcontextprotocol/go-sdk) and the production-grade examples in [GoogleCloudPlatform/gke-mcp](https://github.com/GoogleCloudPlatform/gke-mcp). Backlog aims to stay simpler and laser-focused on AI-friendly workflows.
