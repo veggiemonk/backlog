@@ -37,16 +37,15 @@ func TestMCP_Integration_Write_HTTP(t *testing.T) {
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_create", Arguments: params})
 		is.NoErr(err)
 		is.True(res != nil)
-		// Ensure server populated text content
-		t.Logf("TYPE = %T", res.StructuredContent)
-		var ok bool
-		created, ok = res.StructuredContent.(*core.Task)
-		is.True(ok)
+		// Structured content comes back as generic JSON over HTTP; decode it
+		var wrapped struct{ Task *core.Task }
+		b, err := json.Marshal(res.StructuredContent)
+		is.NoErr(err)
+		is.NoErr(json.Unmarshal(b, &wrapped))
+		created = wrapped.Task
 
 		is.Equal(created.Title, "Schema Task")
 		is.Equal(created.Priority.String(), "high")
-		// Structured content should also be present (validated by client)
-		is.Equal(res.StructuredContent, nil)
 	}
 
 	// 2) Edit the task title and verify via view
@@ -55,12 +54,14 @@ func TestMCP_Integration_Write_HTTP(t *testing.T) {
 		params := core.EditTaskParams{ID: created.ID.String(), NewTitle: &newTitle}
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_edit", Arguments: params})
 		is.NoErr(err)
-		// Text content should be auto-populated from structured output
-		updated, ok := res.StructuredContent.(*core.Task)
-		is.True(ok)
+		// Decode structured content
+		var wrapped struct{ Task *core.Task }
+		b, err := json.Marshal(res.StructuredContent)
+		is.NoErr(err)
+		is.NoErr(json.Unmarshal(b, &wrapped))
 
-		is.Equal(updated.Title, newTitle)
-		created = updated
+		is.Equal(wrapped.Task.Title, newTitle)
+		created = wrapped.Task
 	}
 
 	// 3) Batch create three tasks and assert count and types
@@ -73,14 +74,14 @@ func TestMCP_Integration_Write_HTTP(t *testing.T) {
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_batch_create", Arguments: params})
 		is.NoErr(err)
 		is.True(res != nil)
-		wrapped, ok := res.StructuredContent.(struct{ Tasks []*core.Task })
-		is.True(ok)
+		var wrapped struct{ Tasks []*core.Task }
+		b, err := json.Marshal(res.StructuredContent)
+		is.NoErr(err)
+		is.NoErr(json.Unmarshal(b, &wrapped))
 
 		is.Equal(len(wrapped.Tasks), 3)
-		// Validate structured content exists as well
-		is.Equal(res.StructuredContent, nil)
 		// Parse structuredContent back to the same wrapper to ensure shape
-		b, err := json.Marshal(res.StructuredContent)
+		b, err = json.Marshal(res.StructuredContent)
 		is.NoErr(err)
 		wrapped2 := struct{ Tasks []*core.Task }{}
 		is.NoErr(json.Unmarshal(b, &wrapped2))

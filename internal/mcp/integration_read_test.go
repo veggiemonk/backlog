@@ -1,6 +1,7 @@
 package mcp
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/matryer/is"
@@ -53,8 +54,10 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_list", Arguments: core.ListTasksParams{}})
 		is.NoErr(err)
 		is.True(res != nil)
-		wrapped, ok := res.StructuredContent.(struct{ Tasks []*core.Task })
-		is.True(ok)
+		var wrapped struct{ Tasks []*core.Task }
+		b, err := json.Marshal(res.StructuredContent)
+		is.NoErr(err)
+		is.NoErr(json.Unmarshal(b, &wrapped))
 
 		is.Equal(len(wrapped.Tasks), 8)
 		picked = *wrapped.Tasks[0]
@@ -65,10 +68,12 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_view", Arguments: ViewParams{ID: picked.ID.String()}})
 		is.NoErr(err)
 		is.True(res != nil)
-		viewed, ok := res.StructuredContent.(*core.Task)
-		is.True(ok)
+		var wrapped struct{ Task *core.Task }
+		b, err := json.Marshal(res.StructuredContent)
+		is.NoErr(err)
+		is.NoErr(json.Unmarshal(b, &wrapped))
 
-		is.Equal(viewed.ID.String(), picked.ID.String())
+		is.Equal(wrapped.Task.ID.String(), picked.ID.String())
 	}
 
 	// 3) Search for a known keyword
@@ -77,8 +82,10 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 		is.NoErr(err)
 		// Should have results thanks to setupTestData seeding "feature" labeled tasks
 		is.True(res != nil)
-		wrapped, ok := res.StructuredContent.(struct{ Tasks []*core.Task })
-		is.True(ok)
+		var wrapped struct{ Tasks []*core.Task }
+		b, err := json.Marshal(res.StructuredContent)
+		is.NoErr(err)
+		is.NoErr(json.Unmarshal(b, &wrapped))
 
 		is.Equal(len(wrapped.Tasks), 4)
 	}
