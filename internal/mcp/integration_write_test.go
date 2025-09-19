@@ -31,27 +31,34 @@ func TestMCP_Integration_Write_HTTP(t *testing.T) {
 	is := is.New(t)
 
 	// 1) Create a task (priority is a string enum)
-	var created core.Task
+	var created *core.Task
 	{
 		params := core.CreateTaskParams{Title: "Schema Task", Description: "created via MCP", Labels: []string{"schema"}, Priority: "high"}
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_create", Arguments: params})
 		is.NoErr(err)
+		is.True(res != nil)
 		// Ensure server populated text content
-		parseTextContent(t, res, &created)
+		t.Logf("TYPE = %T", res.StructuredContent)
+		var ok bool
+		created, ok = res.StructuredContent.(*core.Task)
+		is.True(ok)
+
 		is.Equal(created.Title, "Schema Task")
 		is.Equal(created.Priority.String(), "high")
 		// Structured content should also be present (validated by client)
-		is.True(res.StructuredContent != nil)
+		is.Equal(res.StructuredContent, nil)
 	}
 
 	// 2) Edit the task title and verify via view
 	{
 		newTitle := "Schema Task (edited)"
-		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_edit", Arguments: core.EditTaskParams{ID: created.ID.String(), NewTitle: &newTitle}})
+		params := core.EditTaskParams{ID: created.ID.String(), NewTitle: &newTitle}
+		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_edit", Arguments: params})
 		is.NoErr(err)
 		// Text content should be auto-populated from structured output
-		var updated core.Task
-		parseTextContent(t, res, &updated)
+		updated, ok := res.StructuredContent.(*core.Task)
+		is.True(ok)
+
 		is.Equal(updated.Title, newTitle)
 		created = updated
 	}
@@ -65,12 +72,13 @@ func TestMCP_Integration_Write_HTTP(t *testing.T) {
 		}}
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_batch_create", Arguments: params})
 		is.NoErr(err)
-		// Validate text content wrapper
-		wrapped := struct{ Tasks []*core.Task }{}
-		parseTextContent(t, res, &wrapped)
+		is.True(res != nil)
+		wrapped, ok := res.StructuredContent.(struct{ Tasks []*core.Task })
+		is.True(ok)
+
 		is.Equal(len(wrapped.Tasks), 3)
 		// Validate structured content exists as well
-		is.True(res.StructuredContent != nil)
+		is.Equal(res.StructuredContent, nil)
 		// Parse structuredContent back to the same wrapper to ensure shape
 		b, err := json.Marshal(res.StructuredContent)
 		is.NoErr(err)

@@ -2,7 +2,7 @@ package mcp
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -15,10 +15,10 @@ func (s *Server) registerTaskSearch() error {
 		return err
 	}
 	tool := &mcp.Tool{
-		Name:         "task_search",
-		Title:        "Search by content",
-		Description:  "Search tasks by content. Returns a list of matching tasks.",
-		InputSchema:  inputSchema,
+		Name:        "task_search",
+		Title:       "Search by content",
+		Description: "Search tasks by content. Returns a list of matching tasks.",
+		InputSchema: inputSchema,
 		OutputSchema: &jsonschema.Schema{Type: "object", Properties: map[string]*jsonschema.Schema{
 			"tasks": {Type: "array", Items: taskJSONSchema()},
 		}},
@@ -39,20 +39,14 @@ func (h *handler) search(ctx context.Context, req *mcp.CallToolRequest, params S
 	}
 	tasks, err := h.store.Search(params.Query, filters)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("search: %v", err)
 	}
 	if len(tasks) == 0 {
 		content := []mcp.Content{&mcp.TextContent{Text: "No matching tasks found."}}
 		return &mcp.CallToolResult{Content: content}, nil, nil
 	}
-
+	// Needs to be object, cannot be array
 	wrappedTask := struct{ Tasks []*core.Task }{Tasks: tasks}
-	b, err := json.Marshal(wrappedTask)
-	if err != nil {
-		return nil, nil, err
-	}
-	res := &mcp.CallToolResult{
-		Content: []mcp.Content{&mcp.TextContent{Text: string(b)}},
-	}
-	return res, wrappedTask, nil
+	res := &mcp.CallToolResult{StructuredContent: wrappedTask}
+	return res, nil, nil
 }

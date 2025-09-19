@@ -2,14 +2,12 @@ package mcp
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
 	"testing"
 	"time"
 
-	"github.com/matryer/is"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
@@ -38,7 +36,7 @@ func newClient(t *testing.T, endpoint string) (*mcp.ClientSession, func(context.
 	t.Helper()
 	transport := &mcp.StreamableClientTransport{Endpoint: endpoint, HTTPClient: &http.Client{Timeout: 10 * time.Second}}
 	client := mcp.NewClient(&mcp.Implementation{Name: "backlog-integration-tests", Title: "tests", Version: "test"}, &mcp.ClientOptions{})
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	sess, err := client.Connect(ctx, transport, &mcp.ClientSessionOptions{})
 	cancel()
 	if err != nil {
@@ -48,13 +46,14 @@ func newClient(t *testing.T, endpoint string) (*mcp.ClientSession, func(context.
 	return sess, closeFn
 }
 
-// parseTextContent decodes the first text content payload from a CallToolResult into the provided target.
-func parseTextContent(t *testing.T, res *mcp.CallToolResult, target any) {
-	t.Helper()
-	is := is.New(t)
-	is.True(res != nil)
-	is.True(len(res.Content) > 0)
-	txt, ok := res.Content[0].(*mcp.TextContent)
-	is.True(ok)
-	is.NoErr(json.Unmarshal([]byte(txt.Text), target))
-}
+//
+// // parseTextContent decodes the first text content payload from a CallToolResult into the provided target.
+// func parseTextContent(t *testing.T, res *mcp.CallToolResult, target any) {
+// 	t.Helper()
+// 	is := is.New(t)
+// 	is.True(res != nil)
+// 	is.True(len(res.StructuredContent) > 0)
+// 	txt, ok := res.Content[0].(*mcp.TextContent)
+// 	is.True(ok)
+// 	is.NoErr(json.Unmarshal([]byte(txt.Text), target))
+// }

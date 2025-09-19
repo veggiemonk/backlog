@@ -49,10 +49,13 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 	// 1) List tasks and pick one to work with
 	var picked core.Task
 	{
+		is := is.New(t)
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_list", Arguments: core.ListTasksParams{}})
 		is.NoErr(err)
-		wrapped := struct{ Tasks []*core.Task }{}
-		parseTextContent(t, res, &wrapped)
+		is.True(res != nil)
+		wrapped, ok := res.StructuredContent.(struct{ Tasks []*core.Task })
+		is.True(ok)
+
 		is.Equal(len(wrapped.Tasks), 8)
 		picked = *wrapped.Tasks[0]
 	}
@@ -61,8 +64,10 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 	{
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_view", Arguments: ViewParams{ID: picked.ID.String()}})
 		is.NoErr(err)
-		var viewed core.Task
-		parseTextContent(t, res, &viewed)
+		is.True(res != nil)
+		viewed, ok := res.StructuredContent.(*core.Task)
+		is.True(ok)
+
 		is.Equal(viewed.ID.String(), picked.ID.String())
 	}
 
@@ -71,8 +76,10 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_search", Arguments: SearchParams{Query: "feature"}})
 		is.NoErr(err)
 		// Should have results thanks to setupTestData seeding "feature" labeled tasks
-		wrapped := struct{ Tasks []*core.Task }{}
-		parseTextContent(t, res, &wrapped)
+		is.True(res != nil)
+		wrapped, ok := res.StructuredContent.(struct{ Tasks []*core.Task })
+		is.True(ok)
+
 		is.Equal(len(wrapped.Tasks), 4)
 	}
 

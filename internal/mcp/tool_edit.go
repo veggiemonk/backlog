@@ -2,6 +2,7 @@ package mcp
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -33,16 +34,16 @@ func (h *handler) edit(
 	ctx context.Context,
 	req *mcp.CallToolRequest,
 	params core.EditTaskParams,
-) (*mcp.CallToolResult, *core.Task, error) {
+) (*mcp.CallToolResult, any, error) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	task, err := h.store.Get(params.ID)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("edit: %v", err)
 	}
 	updatedTask, err := h.store.Update(task, params)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("edit: %v", err)
 	}
 	err = h.commit(
 		updatedTask.ID.Name(),
@@ -55,5 +56,8 @@ func (h *handler) edit(
 		// Log the error but do not fail the edit
 		logging.Warn("auto-commit failed for task edit", "task_id", task.ID, "error", err)
 	}
-	return nil, updatedTask, nil
+
+	wrapped := struct{ Task *core.Task }{Task: task}
+	res := &mcp.CallToolResult{StructuredContent: wrapped}
+	return res, nil, nil
 }

@@ -2,10 +2,11 @@ package mcp
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/veggiemonk/backlog/internal/core"
 )
 
 func (s *Server) registerTaskView() error {
@@ -32,14 +33,10 @@ type ViewParams struct {
 func (h *handler) view(ctx context.Context, req *mcp.CallToolRequest, params ViewParams) (*mcp.CallToolResult, any, error) {
 	task, err := h.store.Get(params.ID)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("view: %v", err)
 	}
-	b, err := json.Marshal(task)
-	if err != nil {
-		return nil, nil, err
-	}
-	res := &mcp.CallToolResult{
-		Content: []mcp.Content{&mcp.TextContent{Text: string(b)}},
-	}
-	return res, task, err
+	// Needs to be object, cause problem with pointer
+	wrapped := struct{ Task *core.Task }{Task: task}
+	res := &mcp.CallToolResult{StructuredContent: wrapped}
+	return res, nil, nil
 }

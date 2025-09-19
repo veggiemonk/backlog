@@ -2,7 +2,7 @@ package mcp
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -45,7 +45,7 @@ func (h *handler) batchCreate(ctx context.Context, req *mcp.CallToolRequest, lis
 	for _, params := range listParams.Tasks {
 		task, err := h.store.Create(params)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, fmt.Errorf("batch_create: %v", err)
 		}
 		tasks = append(tasks, task)
 		path := h.store.Path(task)
@@ -53,11 +53,8 @@ func (h *handler) batchCreate(ctx context.Context, req *mcp.CallToolRequest, lis
 			logging.Warn("auto-commit failed for task creation", "task_id", task.ID, "error", err)
 		}
 	}
-	wrappedTask := struct{ Tasks []*core.Task }{Tasks: tasks}
-	b, err := json.Marshal(wrappedTask)
-	if err != nil {
-		return nil, nil, err
-	}
-	res := &mcp.CallToolResult{Content: []mcp.Content{&mcp.TextContent{Text: string(b)}}}
-	return res, wrappedTask, nil
+	// Needs to be object, cannot be array
+	wrappedTasks := struct{ Tasks []*core.Task }{Tasks: tasks}
+	res := &mcp.CallToolResult{StructuredContent: wrappedTasks}
+	return res, nil, nil
 }

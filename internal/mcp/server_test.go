@@ -2,7 +2,7 @@ package mcp
 
 import (
 	"context"
-	"encoding/json"
+	"strings"
 	"sync"
 	"testing"
 
@@ -32,107 +32,6 @@ func TestServer(t *testing.T) {
 	is.True(server.handler != nil)
 }
 
-func setupTestData(t *testing.T, store *core.FileTaskStore) {
-	t.Helper()
-	is := is.New(t)
-
-	// Create a completed task (for weekly summary)
-	completedTask, err := store.Create(core.CreateTaskParams{
-		Title:       "Completed Feature",
-		Description: "A feature that was completed",
-		Labels:      []string{"feature", "backend"},
-		Priority:    "high",
-		Assigned:    []string{"alice"},
-	})
-	is.NoErr(err)
-
-	// Mark it as done
-	doneStatus := "done"
-	_, err = store.Update(completedTask, core.EditTaskParams{
-		ID:        completedTask.ID.String(),
-		NewStatus: &doneStatus,
-	})
-	is.NoErr(err)
-
-	// Create a high priority todo task
-	_, err = store.Create(core.CreateTaskParams{
-		Title:       "High Priority Feature",
-		Description: "An urgent feature to implement",
-		Labels:      []string{"feature", "urgent"},
-		Priority:    "high",
-		Assigned:    []string{"bob"},
-	})
-	is.NoErr(err)
-
-	// Create a blocked task
-	_, err = store.Create(core.CreateTaskParams{
-		Title:       "Blocked Task",
-		Description: "This task is blocked waiting for dependencies",
-		Labels:      []string{"blocked", "backend"},
-		Priority:    "medium",
-		Assigned:    []string{"charlie"},
-	})
-	is.NoErr(err)
-
-	// Create an unassigned task
-	_, err = store.Create(core.CreateTaskParams{
-		Title:       "Unassigned Task",
-		Description: "This task has no assignee",
-		Labels:      []string{"feature"},
-		Priority:    "low",
-	})
-	is.NoErr(err)
-
-	// Create an epic parent task
-	epic, err := store.Create(core.CreateTaskParams{
-		Title:       "Epic: User Authentication",
-		Description: "Complete user authentication system",
-		Labels:      []string{"epic", "auth"},
-		Priority:    "high",
-	})
-	is.NoErr(err)
-
-	// Create a subtask under the epic
-	parentID := epic.ID.String()[1:] // Remove the "T" prefix
-	_, err = store.Create(core.CreateTaskParams{
-		Title:       "Login API endpoint",
-		Description: "Create login endpoint",
-		Labels:      []string{"api", "auth"},
-		Priority:    "high",
-		Parent:      &parentID,
-		Assigned:    []string{"alice"},
-	})
-	is.NoErr(err)
-
-	// Create a bug report
-	_, err = store.Create(core.CreateTaskParams{
-		Title:       "Bug: Login fails on mobile",
-		Description: "Users can't login on mobile devices",
-		Labels:      []string{"bug", "mobile"},
-		Priority:    "critical",
-		Assigned:    []string{"david"},
-	})
-	is.NoErr(err)
-
-	// Create an in-progress task
-	inProgressTask, err := store.Create(core.CreateTaskParams{
-		Title:       "In Progress Feature",
-		Description: "Currently being worked on",
-		Labels:      []string{"feature", "frontend"},
-		Priority:    "medium",
-		Assigned:    []string{"eve"},
-	})
-	is.NoErr(err)
-
-	// Mark it as in-progress
-	inProgressStatus := "in-progress"
-	_, err = store.Update(inProgressTask, core.EditTaskParams{
-		ID:        inProgressTask.ID.String(),
-		NewStatus: &inProgressStatus,
-	})
-	is.NoErr(err)
-}
-
 func TestMCPHandlers(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	store := core.NewFileTaskStore(fs, ".backlog")
@@ -154,33 +53,24 @@ func TestMCPHandlers(t *testing.T) {
 			}
 			result, _, err := handler.create(ctx, req, params)
 			is.NoErr(err)
-			is.True(result != nil)
+			is.True(result != nil) // must have result
 
-			// Parse the JSON response
-			is.Equal(len(result.Content), 1)
-			txt, ok := result.Content[0].(*mcp.TextContent)
+			task, ok := result.StructuredContent.(struct{ Task *core.Task })
 			is.True(ok)
-			task := &core.Task{}
-			is.NoErr(json.Unmarshal([]byte(txt.Text), task))
-			is.Equal(task.Title, "Test Task")
-			is.Equal(task.Priority.String(), "high")
+			is.Equal(task.Task.Title, "Test Task")
+			is.Equal(task.Task.Priority.String(), "high")
 		})
 	})
 
 	t.Run("handleTaskList", func(t *testing.T) {
 		t.Run("list_all_tasks", func(t *testing.T) {
 			is := is.New(t)
-			params := core.ListTasksParams{}
-			result, _, err := handler.list(ctx, req, params)
+			result, _, err := handler.list(ctx, req, core.ListTasksParams{})
 			is.NoErr(err)
-
 			is.True(result != nil)
-			is.Equal(len(result.Content), 1)
-			txt, ok := result.Content[0].(*mcp.TextContent)
+			st, ok := result.StructuredContent.(struct{ Tasks []*core.Task })
 			is.True(ok)
-			wrappedTasks := struct{ Tasks []*core.Task }{}
-			is.NoErr(json.Unmarshal([]byte(txt.Text), &wrappedTasks))
-			is.True(len(wrappedTasks.Tasks) > 0)
+			is.Equal(len(st.Tasks), 9)
 		})
 
 		t.Run("filter_by_status", func(t *testing.T) {
@@ -192,14 +82,10 @@ func TestMCPHandlers(t *testing.T) {
 			result, _, err := handler.list(ctx, req, params)
 			is.NoErr(err)
 			is.True(result != nil)
-
-			is.Equal(len(result.Content), 1)
-			txt, ok := result.Content[0].(*mcp.TextContent)
+			st, ok := result.StructuredContent.(struct{ Tasks []*core.Task })
 			is.True(ok)
-
-			wrappedTasks := struct{ Tasks []*core.Task }{}
-			is.NoErr(json.Unmarshal([]byte(txt.Text), &wrappedTasks))
-			for _, task := range wrappedTasks.Tasks {
+			is.Equal(len(st.Tasks), 1)
+			for _, task := range st.Tasks {
 				is.Equal(string(task.Status), "done")
 			}
 		})
@@ -210,36 +96,22 @@ func TestMCPHandlers(t *testing.T) {
 			is := is.New(t)
 
 			// First create a task to view
-			createParams := core.CreateTaskParams{
-				Title: "View Test Task",
-			}
+			createParams := core.CreateTaskParams{Title: "View Test Task"}
 			createResult, _, err := handler.create(ctx, req, createParams)
 			is.NoErr(err)
-
-			// Parse the created task to get its ID
-			is.Equal(len(createResult.Content), 1)
-			createTxt, ok := createResult.Content[0].(*mcp.TextContent)
+			is.True(createResult != nil)
+			createdTask, ok := createResult.StructuredContent.(struct{ Task *core.Task })
 			is.True(ok)
-			createdTask := &core.Task{}
-			is.NoErr(json.Unmarshal([]byte(createTxt.Text), createdTask))
-
 			// Now view the task
-			viewParams := ViewParams{
-				ID: createdTask.ID.String(),
-			}
-			result, _, err := handler.view(ctx, req, viewParams)
+			viewParams := ViewParams{ID: createdTask.Task.ID.String()}
+			viewResult, _, err := handler.view(ctx, req, viewParams)
 			is.NoErr(err)
-
-			is.Equal(len(result.Content), 1)
-			txt, ok := result.Content[0].(*mcp.TextContent)
+			// Compare created task with viewed task
+			viewTask, ok := viewResult.StructuredContent.(struct{ Task *core.Task })
 			is.True(ok)
-			ttask := &core.Task{}
-			is.NoErr(json.Unmarshal([]byte(txt.Text), ttask))
-
-			// is.True(result == nil)
-			is.True(ttask != nil)
-			is.Equal(ttask.ID, createdTask.ID)
-			is.Equal(ttask.Title, "View Test Task")
+			is.True(viewTask.Task != nil)
+			is.Equal(viewTask.Task.ID.String(), createdTask.Task.ID.String())
+			is.Equal(viewTask.Task.Title, "View Test Task")
 		})
 	})
 
@@ -247,19 +119,14 @@ func TestMCPHandlers(t *testing.T) {
 		t.Run("search_with_results", func(t *testing.T) {
 			is := is.New(t)
 
-			params := SearchParams{
-				Query: "feature",
-			}
+			params := SearchParams{Query: "feature"}
 			result, _, err := handler.search(ctx, req, params)
 			is.NoErr(err)
 			is.True(result != nil)
 
-			is.Equal(len(result.Content), 1)
-			txt, ok := result.Content[0].(*mcp.TextContent)
+			tasks, ok := result.StructuredContent.(struct{ Tasks []*core.Task })
 			is.True(ok)
-			wrappedTasks := struct{ Tasks []*core.Task }{}
-			is.NoErr(json.Unmarshal([]byte(txt.Text), &wrappedTasks))
-			is.True(len(wrappedTasks.Tasks) > 0)
+			is.Equal(len(tasks.Tasks), 4)
 		})
 
 		t.Run("search_with_no_results", func(t *testing.T) {
@@ -271,6 +138,7 @@ func TestMCPHandlers(t *testing.T) {
 			result, _, err := handler.search(ctx, req, params)
 			is.NoErr(err)
 			is.True(result != nil)
+
 			// result.Content
 			is.Equal(len(result.Content), 1)
 			b, err := result.Content[0].MarshalJSON()
@@ -284,40 +152,42 @@ func TestMCPHandlers(t *testing.T) {
 			is := is.New(t)
 
 			// First create a task to edit
-			createParams := core.CreateTaskParams{
-				Title: "Original Title",
-			}
+			createParams := core.CreateTaskParams{Title: "Original Title"}
 			createResult, _, err := handler.create(ctx, req, createParams)
 			is.NoErr(err)
+			is.True(createResult != nil)
 
 			// Parse the created task to get its ID
-			is.Equal(len(createResult.Content), 1)
-			createTxt, ok := createResult.Content[0].(*mcp.TextContent)
+
+			createdTask, ok := createResult.StructuredContent.(struct{ Task *core.Task })
 			is.True(ok)
-			createdTask := &core.Task{}
-			is.NoErr(json.Unmarshal([]byte(createTxt.Text), createdTask))
+			is.True(createdTask.Task != nil)
 
 			// Now edit the task
 			newTitle := "Updated Title"
 			editParams := core.EditTaskParams{
-				ID:       createdTask.ID.String(),
+				ID:       createdTask.Task.ID.String(),
 				NewTitle: &newTitle,
 			}
-			_, task, err := handler.edit(ctx, req, editParams)
+			result, _, err := handler.edit(ctx, req, editParams)
 			is.NoErr(err)
-			is.Equal(task.Title, "Updated Title")
+			is.True(result != nil)
+			task, ok := result.StructuredContent.(struct{ Task *core.Task })
+			is.True(ok)
+			is.True(task.Task != nil)
+
+			is.Equal(task.Task.Title, "Updated Title")
 
 			// Verify the task was updated
-			viewParams := ViewParams{ID: task.ID.String()}
-			result, _, err := handler.view(ctx, req, viewParams)
+			viewParams := ViewParams{ID: task.Task.ID.String()}
+			result, _, err = handler.view(ctx, req, viewParams)
 			is.NoErr(err)
-
-			is.Equal(len(result.Content), 1)
-			txt, ok := result.Content[0].(*mcp.TextContent)
+			is.True(result != nil)
+			task, ok = result.StructuredContent.(struct{ Task *core.Task })
 			is.True(ok)
-			ttask := &core.Task{}
-			is.NoErr(json.Unmarshal([]byte(txt.Text), ttask))
-			is.Equal(task.Title, "Updated Title")
+			is.True(task.Task != nil)
+
+			is.Equal(task.Task.Title, "Updated Title")
 		})
 	})
 
@@ -335,28 +205,19 @@ func TestMCPHandlers(t *testing.T) {
 			is.NoErr(err)
 
 			// Parse the created task to get its ID
-			is.Equal(len(createResult.Content), 1)
-			createTxt, ok := createResult.Content[0].(*mcp.TextContent)
+			createdTask, ok := createResult.StructuredContent.(struct{ Task *core.Task })
 			is.True(ok)
-			createdTask := &core.Task{}
-			is.NoErr(json.Unmarshal([]byte(createTxt.Text), createdTask))
+			is.True(createdTask.Task != nil)
 
 			// Archive the task
-			archiveParams := ArchiveParams{
-				ID: createdTask.ID.String(),
-			}
+			archiveParams := ArchiveParams{ID: createdTask.Task.ID.String()}
 			result, _, err := handler.archive(ctx, req, archiveParams)
 			is.NoErr(err)
 			is.True(result != nil)
-
-			// Verify the response content
 			is.Equal(len(result.Content), 1)
-			txt, ok := result.Content[0].(*mcp.TextContent)
+			txtContent, ok := result.Content[0].(*mcp.TextContent)
 			is.True(ok)
-			is.True(len(txt.Text) > 0)
-			// Should contain task ID and title in the summary
-			is.True(len(txt.Text) > len(createdTask.ID.String()))
-			is.True(len(txt.Text) > len(createdTask.Title))
+			is.True(strings.Contains(txtContent.Text, "archived successfully"))
 		})
 
 		t.Run("archive_nonexistent_task", func(t *testing.T) {
@@ -402,22 +263,18 @@ func TestMCPHandlers(t *testing.T) {
 			is.True(result != nil)
 
 			// Verify the response content
-			is.Equal(len(result.Content), 1)
-			txt, ok := result.Content[0].(*mcp.TextContent)
+			st, ok := result.StructuredContent.(struct{ Tasks []*core.Task })
 			is.True(ok)
-
-			wrappedTasks := struct{ Tasks []*core.Task }{}
-			is.NoErr(json.Unmarshal([]byte(txt.Text), &wrappedTasks))
-			is.Equal(len(wrappedTasks.Tasks), 3)
+			is.Equal(len(st.Tasks), 3)
 
 			// Verify task details
-			is.Equal(wrappedTasks.Tasks[0].Title, "Batch Task 1")
-			is.Equal(wrappedTasks.Tasks[1].Title, "Batch Task 2")
-			is.Equal(wrappedTasks.Tasks[2].Title, "Batch Task 3")
+			is.Equal(st.Tasks[0].Title, "Batch Task 1")
+			is.Equal(st.Tasks[1].Title, "Batch Task 2")
+			is.Equal(st.Tasks[2].Title, "Batch Task 3")
 
-			is.Equal(wrappedTasks.Tasks[0].Priority.String(), "high")
-			is.Equal(wrappedTasks.Tasks[1].Priority.String(), "medium")
-			is.Equal(wrappedTasks.Tasks[2].Priority.String(), "low")
+			is.Equal(st.Tasks[0].Priority.String(), "high")
+			is.Equal(st.Tasks[1].Priority.String(), "medium")
+			is.Equal(st.Tasks[2].Priority.String(), "low")
 		})
 
 		t.Run("batch_create_empty_list", func(t *testing.T) {
@@ -432,13 +289,9 @@ func TestMCPHandlers(t *testing.T) {
 			is.True(result != nil)
 
 			// Verify empty result
-			is.Equal(len(result.Content), 1)
-			txt, ok := result.Content[0].(*mcp.TextContent)
+			st, ok := result.StructuredContent.(struct{ Tasks []*core.Task })
 			is.True(ok)
-
-			wrappedTasks := struct{ Tasks []*core.Task }{}
-			is.NoErr(json.Unmarshal([]byte(txt.Text), &wrappedTasks))
-			is.Equal(len(wrappedTasks.Tasks), 0)
+			is.Equal(len(st.Tasks), 0)
 		})
 	})
 

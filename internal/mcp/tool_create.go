@@ -2,7 +2,7 @@ package mcp
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -38,19 +38,14 @@ func (h *handler) create(
 	defer h.mu.Unlock()
 	task, err := h.store.Create(params)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("create: %v", err)
 	}
 	path := h.store.Path(task)
 	if err := h.commit(task.ID.Name(), task.Title, path, "", "create"); err != nil {
 		// Log the error but do not fail the creation
 		logging.Warn("auto-commit failed for task creation", "task_id", task.ID, "error", err)
 	}
-
-	// Provide both structured and text content for compatibility
-	b, err := json.Marshal(task)
-	if err != nil {
-		return nil, nil, err
-	}
-	res := &mcp.CallToolResult{Content: []mcp.Content{&mcp.TextContent{Text: string(b)}}}
-	return res, task, nil
+	wrapped := struct{ Task *core.Task }{Task: task}
+	res := &mcp.CallToolResult{StructuredContent: wrapped}
+	return res, nil, nil
 }
