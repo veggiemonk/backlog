@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/veggiemonk/backlog/internal/core"
@@ -24,6 +25,7 @@ func (s *Server) registerTaskList() error {
 
 func (h *handler) list(ctx context.Context, req *mcp.CallToolRequest, params core.ListTasksParams) (*mcp.CallToolResult, any, error) {
 	operation := "task_list"
+	startTime := time.Now()
 
 	// Validate input parameters
 	if validationErr := h.validator.ValidateListParams(params); validationErr != nil {
@@ -33,64 +35,97 @@ func (h *handler) list(ctx context.Context, req *mcp.CallToolRequest, params cor
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
-	tasks, err := h.store.List(params)
+	// Get pagination configuration from handler
+	paginationConfig := h.paginationConfig
+
+	// Get total count before applying pagination
+	allTasks, err := h.store.List(core.ListTasksParams{
+		Parent:        params.Parent,
+		Status:        params.Status,
+		Assigned:      params.Assigned,
+		Labels:        params.Labels,
+		Priority:      params.Priority,
+		Unassigned:    params.Unassigned,
+		DependedOn:    params.DependedOn,
+		HasDependency: params.HasDependency,
+		Sort:          params.Sort,
+		Reverse:       params.Reverse,
+		// No pagination parameters for total count
+	})
 	if err != nil {
-		// Wrap the error with proper categorization
 		mcpErr := WrapError(err, operation)
 		return h.responder.WrapError(mcpErr)
 	}
 
-	if len(tasks) == 0 {
-		// Return structured response for empty results
-		response := struct{ Tasks []*core.Task }{Tasks: []*core.Task{}}
-		return h.responder.WrapSuccess(response, operation)
-	}
+	totalCount := len(allTasks)
 
-	// Check if response will exceed token limits
-	if WillExceedLimit(tasks) {
-		// If no pagination parameters provided, suggest optimal chunk size
-		if params.Limit == nil && params.Offset == nil {
-			optimalChunkSize := CalculateOptimalChunkSize(tasks)
-			mcpErr := &MCPError{
-				Code:     ErrorCodeResponseTooLarge,
-				Message:  fmt.Sprintf("Response too large (%d tasks). Please use pagination. Suggested limit: %d", len(tasks), optimalChunkSize),
-				Category: CategoryMCP,
-				Details: &ErrorDetails{
-					Context: map[string]interface{}{
-						"total_tasks":        len(tasks),
-						"suggested_limit":    optimalChunkSize,
-						"requires_pagination": true,
-					},
+	// Check if auto-pagination should be triggered
+	if paginationConfig.ShouldAutoPaginate(totalCount) && params.Limit == nil && params.Offset == nil {
+		// Estimate average task size
+		estimatedSize := EstimateResponseSize(allTasks)
+		avgTaskSize := estimatedSize / max(totalCount, 1)
+
+		optimalPageSize := paginationConfig.CalculateOptimalPageSize(totalCount, avgTaskSize)
+
+		mcpErr := &MCPError{
+			Code:     ErrorCodeResponseTooLarge,
+			Message:  fmt.Sprintf("Large dataset detected (%d tasks). Auto-pagination recommended. Suggested limit: %d", totalCount, optimalPageSize),
+			Category: CategoryMCP,
+			Details: &ErrorDetails{
+				Context: map[string]interface{}{
+					"total_tasks":           totalCount,
+					"suggested_limit":       optimalPageSize,
+					"auto_pagination_triggered": true,
+					"estimated_response_size":   estimatedSize,
 				},
-				Operation: operation,
-			}
-			return h.responder.WrapError(mcpErr)
+			},
+			Operation: operation,
 		}
-		// If pagination is provided but still too large, return error
-		if params.Limit != nil && *params.Limit > 0 {
-			chunkSize := CalculateOptimalChunkSize(tasks)
-			if *params.Limit > chunkSize {
-				mcpErr := &MCPError{
-					Code:     ErrorCodeResponseTooLarge,
-					Message:  fmt.Sprintf("Requested limit (%d) too large. Maximum recommended limit: %d", *params.Limit, chunkSize),
-					Category: CategoryMCP,
-					Details: &ErrorDetails{
-						Field: "limit",
-						Value: *params.Limit,
-						Context: map[string]interface{}{
-							"requested_limit":   *params.Limit,
-							"maximum_limit":     chunkSize,
-						},
-					},
-					Operation: operation,
-				}
-				return h.responder.WrapError(mcpErr)
-			}
-		}
+		return h.responder.WrapError(mcpErr)
 	}
 
-	// Create response with pagination metadata if applicable
-	response := createTaskListResponse(tasks, params)
+	// Apply pagination to parameters if provided
+	if params.Limit != nil {
+		validatedLimit := paginationConfig.ValidatePageSize(*params.Limit)
+		params.Limit = &validatedLimit
+	}
+
+	// Get the actual paginated tasks
+	tasks, err := h.store.List(params)
+	if err != nil {
+		mcpErr := WrapError(err, operation)
+		return h.responder.WrapError(mcpErr)
+	}
+
+	// Check if response will still exceed token limits even with pagination
+	if len(tasks) > 0 && WillExceedLimit(tasks) {
+		estimatedSize := EstimateResponseSize(tasks)
+		avgTaskSize := estimatedSize / len(tasks)
+		optimalPageSize := paginationConfig.CalculateOptimalPageSize(totalCount, avgTaskSize)
+
+		mcpErr := &MCPError{
+			Code:     ErrorCodeResponseTooLarge,
+			Message:  fmt.Sprintf("Response still too large (%d tasks, ~%d tokens). Reduce page size to %d or less", len(tasks), estimatedSize, optimalPageSize),
+			Category: CategoryMCP,
+			Details: &ErrorDetails{
+				Field: "limit",
+				Value: len(tasks),
+				Context: map[string]interface{}{
+					"current_limit":         len(tasks),
+					"recommended_limit":     optimalPageSize,
+					"estimated_tokens":      estimatedSize,
+					"token_limit":          paginationConfig.ResponseSizeConfig.TokenLimit,
+				},
+			},
+			Operation: operation,
+		}
+		return h.responder.WrapError(mcpErr)
+	}
+
+	generationTime := time.Since(startTime)
+
+	// Create enhanced response with advanced pagination metadata
+	response := createEnhancedTaskListResponse(tasks, params, totalCount, paginationConfig, generationTime)
 
 	// Apply response monitoring middleware if available
 	if h.middleware != nil {
@@ -127,16 +162,19 @@ type PaginationMetadata struct {
 	NextPage  *int `json:"next_page,omitempty"`
 }
 
-// createTaskListResponse creates a properly formatted response with pagination metadata
-func createTaskListResponse(tasks []*core.Task, params core.ListTasksParams) interface{} {
+
+// createEnhancedTaskListResponse creates a response with advanced pagination metadata
+func createEnhancedTaskListResponse(
+	tasks []*core.Task,
+	params core.ListTasksParams,
+	totalCount int,
+	config PaginationConfig,
+	generationTime time.Duration,
+) interface{} {
 	// If no pagination parameters, return simple format for backward compatibility
 	if params.Limit == nil && params.Offset == nil {
 		return struct{ Tasks []*core.Task }{Tasks: tasks}
 	}
-
-	// Get the original total before pagination was applied
-	// We need to recalculate this since List() already applied pagination
-	allTasks, _ := getAllTasksCount(params)
 
 	offset := 0
 	if params.Offset != nil {
@@ -148,32 +186,39 @@ func createTaskListResponse(tasks []*core.Task, params core.ListTasksParams) int
 		limit = *params.Limit
 	}
 
-	hasMore := offset+len(tasks) < allTasks
-	var nextPage *int
-	if hasMore {
-		next := offset + limit
-		nextPage = &next
+	// Estimate response size for metadata
+	estimatedSize := 0
+	if len(tasks) > 0 {
+		estimatedSize = EstimateResponseSize(tasks)
 	}
 
-	pagination := &PaginationMetadata{
-		Offset:   offset,
-		Limit:    limit,
-		Total:    allTasks,
-		HasMore:  hasMore,
-		NextPage: nextPage,
-	}
+	// Create advanced pagination metadata
+	pagination := CreateAdvancedPaginationMetadata(
+		offset,
+		limit,
+		totalCount,
+		len(tasks),
+		config,
+		estimatedSize,
+		generationTime,
+	)
 
-	return &TaskListResponse{
+	return &EnhancedTaskListResponse{
 		Tasks:      tasks,
 		Pagination: pagination,
 	}
 }
 
-// getAllTasksCount gets the total count of tasks that would match the filter (without pagination)
-func getAllTasksCount(params core.ListTasksParams) (int, error) {
-	// This is a simplified implementation - in a real scenario you might want to
-	// optimize this to avoid loading all tasks just to count them
-	// For now, we'll return a reasonable default based on the context
-	// In production, this should query the actual store
-	return 50, nil // Placeholder - should be implemented to query actual count
+// EnhancedTaskListResponse wraps the task list with advanced pagination metadata
+type EnhancedTaskListResponse struct {
+	Tasks      []*core.Task                `json:"tasks"`
+	Pagination *AdvancedPaginationMetadata `json:"pagination,omitempty"`
+}
+
+// Helper function for max since Go doesn't have a built-in max for ints
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }

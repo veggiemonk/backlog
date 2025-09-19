@@ -34,7 +34,12 @@ func (f *FileTaskStore) List(params ListTasksParams) ([]*Task, error) {
 	if err != nil {
 		return nil, err
 	}
-	filteredTasks, err := FilterTasks(tasks, params)
+
+	// Update filter optimizer indexes if needed
+	f.filterOptimizer.BuildIndexes(tasks)
+
+	// Use smart filtering for better performance
+	filteredTasks, err := SmartFilterTasks(tasks, params, f.filterOptimizer)
 	if err != nil {
 		return nil, err
 	}

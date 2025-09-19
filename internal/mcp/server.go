@@ -40,12 +40,13 @@ type Server struct {
 
 // handler contains the MCP tool implementations
 type handler struct {
-	store      TaskStore
-	mu         *sync.Mutex
-	autoCommit bool
-	middleware *ResponseSizeMiddleware
-	validator  *ValidationMiddleware
-	responder  *ResponseWrapper
+	store            TaskStore
+	mu               *sync.Mutex
+	autoCommit       bool
+	middleware       *ResponseSizeMiddleware
+	validator        *ValidationMiddleware
+	responder        *ResponseWrapper
+	paginationConfig PaginationConfig
 }
 
 func (h *handler) commit(id, title, path, oldPath, msg string) error {
@@ -85,12 +86,13 @@ func NewServer(store TaskStore, autoCommit bool) (*Server, error) {
 	responder := NewResponseWrapper(middleware)
 
 	h := &handler{
-		store:      store,
-		mu:         &sync.Mutex{},
-		autoCommit: autoCommit,
-		middleware: middleware,
-		validator:  validator,
-		responder:  responder,
+		store:            store,
+		mu:               &sync.Mutex{},
+		autoCommit:       autoCommit,
+		middleware:       middleware,
+		validator:        validator,
+		responder:        responder,
+		paginationConfig: DefaultPaginationConfig(),
 	}
 
 	server := &Server{

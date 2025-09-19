@@ -79,10 +79,16 @@ func TestPaginationFunctionality(t *testing.T) {
 	store := core.NewFileTaskStore(fs, ".backlog")
 	responseSizeConfig := DefaultResponseSizeConfig()
 	middleware := NewResponseSizeMiddleware(responseSizeConfig)
+	validator := NewValidationMiddleware()
+	responder := NewResponseWrapper(middleware)
+
 	handler := &handler{
-		store:      store,
-		mu:         &sync.Mutex{},
-		middleware: middleware,
+		store:            store,
+		mu:               &sync.Mutex{},
+		middleware:       middleware,
+		validator:        validator,
+		responder:        responder,
+		paginationConfig: DefaultPaginationConfig(),
 	}
 
 	// Create 50 tasks for pagination testing
@@ -108,7 +114,7 @@ func TestPaginationFunctionality(t *testing.T) {
 		txtContent, ok := result.Content[0].(*mcp.TextContent)
 		is.True(ok)
 
-		var response TaskListResponse
+		var response EnhancedTaskListResponse
 		err = json.Unmarshal([]byte(txtContent.Text), &response)
 		is.NoErr(err)
 
@@ -140,7 +146,7 @@ func TestPaginationFunctionality(t *testing.T) {
 		txtContent, ok := result.Content[0].(*mcp.TextContent)
 		is.True(ok)
 
-		var response TaskListResponse
+		var response EnhancedTaskListResponse
 		err = json.Unmarshal([]byte(txtContent.Text), &response)
 		is.NoErr(err)
 
@@ -172,7 +178,7 @@ func TestPaginationFunctionality(t *testing.T) {
 		txtContent, ok := result.Content[0].(*mcp.TextContent)
 		is.True(ok)
 
-		var response TaskListResponse
+		var response EnhancedTaskListResponse
 		err = json.Unmarshal([]byte(txtContent.Text), &response)
 		is.NoErr(err)
 

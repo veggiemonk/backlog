@@ -18,14 +18,16 @@ const (
 )
 
 type FileTaskStore struct {
-	fs       afero.Fs
-	tasksDir string
+	fs              afero.Fs
+	tasksDir        string
+	filterOptimizer *FilterOptimizer
 }
 
 func NewFileTaskStore(fs afero.Fs, tasksDir string) *FileTaskStore {
 	return &FileTaskStore{
-		fs:       fs,
-		tasksDir: tasksDir,
+		fs:              fs,
+		tasksDir:        tasksDir,
+		filterOptimizer: NewFilterOptimizer(),
 	}
 }
 
