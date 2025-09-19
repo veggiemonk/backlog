@@ -38,6 +38,11 @@ backlog search "api" --json
 
 # Search with additional columns displayed
 backlog search "user" --labels --priority --assigned
+
+# Search with pagination
+backlog search "api" --limit 5                  # Show first 5 search results
+backlog search "bug" --limit 3 --offset 5       # Show 3 results starting from 6th match
+backlog search "feature" --status "todo" --limit 10  # Show first 10 "todo" feature results
 	`,
 	Run: runSearch,
 }
@@ -58,6 +63,9 @@ var (
 	// output format
 	searchMarkdownOutput bool
 	searchJSONOutput     bool
+	// pagination
+	searchLimitFlag  int
+	searchOffsetFlag int
 )
 
 func init() {
@@ -82,11 +90,23 @@ func setSearchFlags(cmd *cobra.Command) {
 	// output format
 	cmd.Flags().BoolVarP(&searchMarkdownOutput, "markdown", "m", false, "Print markdown table")
 	cmd.Flags().BoolVarP(&searchJSONOutput, "json", "j", false, "Print JSON output")
+	// pagination
+	cmd.Flags().IntVar(&searchLimitFlag, "limit", 0, "Maximum number of tasks to return (0 means no limit)")
+	cmd.Flags().IntVar(&searchOffsetFlag, "offset", 0, "Number of tasks to skip from the beginning")
 }
 
 func runSearch(cmd *cobra.Command, args []string) {
 	query := args[0]
 	sortFieldsSlice := parseSortFields(searchSortFields)
+	
+	var limit, offset *int
+	if searchLimitFlag > 0 {
+		limit = &searchLimitFlag
+	}
+	if searchOffsetFlag > 0 {
+		offset = &searchOffsetFlag
+	}
+	
 	params := core.ListTasksParams{
 		Parent:        &searchParent,
 		Status:        searchStatus,
@@ -97,24 +117,67 @@ func runSearch(cmd *cobra.Command, args []string) {
 		DependedOn:    searchDependedon,
 		Sort:          sortFieldsSlice,
 		Reverse:       searchReverseOrder,
+		Limit:         limit,
+		Offset:        offset,
 	}
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
+	
+	// Get total search count without pagination for metadata
+	totalParams := params
+	totalParams.Limit = nil
+	totalParams.Offset = nil
+	allTasks, err := store.Search(query, totalParams)
+	if err != nil {
+		logging.Error("failed to search tasks", "query", query, "error", err)
+		os.Exit(1)
+	}
+	totalCount := len(allTasks)
+	
+	// Get paginated search results
 	tasks, err := store.Search(query, params)
 	if err != nil {
 		logging.Error("failed to search tasks", "query", query, "error", err)
 		os.Exit(1)
 	}
+	
 	messagePrefix := ""
 	if !searchJSONOutput {
 		switch {
-		case len(tasks) == 0:
+		case totalCount == 0:
 			messagePrefix = fmt.Sprintf("No tasks found matching '%s'.", query)
-		case len(tasks) > 0:
-			messagePrefix = fmt.Sprintf("Found %d task(s) matching '%s':", len(tasks), query)
+		case totalCount > 0:
+			if limit != nil || offset != nil {
+				// Show pagination info in search prefix
+				messagePrefix = fmt.Sprintf("Found %d task(s) matching '%s':", totalCount, query)
+			} else {
+				messagePrefix = fmt.Sprintf("Found %d task(s) matching '%s':", len(tasks), query)
+			}
+		}
+	}
+	
+	// Create pagination info
+	var paginationInfo *core.PaginationInfo
+	if limit != nil || offset != nil {
+		offsetVal := 0
+		if offset != nil {
+			offsetVal = *offset
+		}
+		limitVal := 0
+		if limit != nil {
+			limitVal = *limit
+		}
+		hasMore := (offsetVal + len(tasks)) < totalCount
+		
+		paginationInfo = &core.PaginationInfo{
+			TotalResults:    totalCount,
+			DisplayedResults: len(tasks),
+			Offset:          offsetVal,
+			Limit:           limitVal,
+			HasMore:         hasMore,
 		}
 	}
 
-	if err := renderTaskResults(cmd.OutOrStdout(), tasks, searchJSONOutput, searchMarkdownOutput, searchHideExtraFields, messagePrefix); err != nil {
+	if err := renderTaskResultsWithPagination(cmd.OutOrStdout(), tasks, searchJSONOutput, searchMarkdownOutput, searchHideExtraFields, messagePrefix, paginationInfo); err != nil {
 		logging.Error("failed to render task results", "query", query, "error", err)
 		os.Exit(1)
 	}
