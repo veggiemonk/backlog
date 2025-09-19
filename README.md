@@ -132,6 +132,8 @@ Backlog supports configuration through command-line flags and environment variab
 |--------------|------|---------------------|---------|-------------|
 | **Tasks Directory** | `--folder` | `BACKLOG_FOLDER` | `.backlog` | Directory for backlog tasks |
 | **Auto Commit** | `--auto-commit` | `BACKLOG_AUTO_COMMIT` | `true` | Auto-committing changes to git repository |
+| **Page Size** | `--page-size` | `BACKLOG_PAGE_SIZE` | `25` | Default page size for pagination |
+| **Max Limit** | `--max-limit` | `BACKLOG_MAX_LIMIT` | `1000` | Maximum limit for pagination |
 | **Log Level** | `--log-level` | `BACKLOG_LOG_LEVEL` | `info` | Log level (debug, info, warn, error) |
 | **Log Format** | `--log-format` | `BACKLOG_LOG_FORMAT` | `text` | Log format (json, text) |
 | **Log File** | `--log-file` | `BACKLOG_LOG_FILE` | `""` | Log file path (defaults to stderr) |
@@ -142,10 +144,15 @@ Backlog supports configuration through command-line flags and environment variab
 # Using command-line flags
 backlog --folder /custom/path --log-level debug --auto-commit false list
 
+# Configure pagination limits
+backlog --page-size 10 --max-limit 100 list
+
 # Using environment variables
 export BACKLOG_FOLDER="/custom/path"
 export BACKLOG_LOG_LEVEL="debug"
 export BACKLOG_AUTO_COMMIT="false"
+export BACKLOG_PAGE_SIZE="10"
+export BACKLOG_MAX_LIMIT="100"
 backlog list
 
 # Flags override environment variables
@@ -268,6 +275,15 @@ backlog list --status "done"
 
 # Filter by parent (show subtasks)
 backlog list --parent "T01"
+
+# Pagination for large task lists
+backlog list --limit 10                         # First 10 tasks
+backlog list --limit 5 --offset 10              # Tasks 11-15
+backlog list --status "todo" --limit 3          # First 3 todo tasks
+
+# Search with pagination
+backlog search "api" --limit 5                  # First 5 API-related tasks
+backlog search "bug" --limit 3 --offset 5       # Search results 6-8
 
 # View specific task
 backlog view T01.02

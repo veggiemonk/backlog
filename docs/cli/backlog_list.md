@@ -54,6 +54,12 @@ backlog list -markdown                          # List tasks in markdown format
 backlog list --json                             # List tasks in JSON format
 backlog list -j                                 # List tasks in JSON format
 backlog list --status "todo" --json             # List "todo" tasks in JSON format
+
+# pagination
+backlog list --limit 10                         # List first 10 tasks
+backlog list --limit 5 --offset 10              # List 5 tasks starting from 11th task
+backlog list --status "todo" --limit 3          # List first 3 "todo" tasks
+backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
 	
 ```
 
@@ -67,7 +73,9 @@ backlog list --status "todo" --json             # List "todo" tasks in JSON form
   -e, --hide-extra         Hide extra fields (labels, priority, assigned)
   -j, --json               Print JSON output
   -l, --labels strings     Filter tasks by labels
+      --limit int          Maximum number of tasks to return (0 means no limit)
   -m, --markdown           print markdown table
+      --offset int         Number of tasks to skip from the beginning
   -p, --parent string      Filter tasks by parent ID
       --priority string    Filter tasks by priority
   -r, --reverse            Reverse the order of tasks
@@ -84,6 +92,8 @@ backlog list --status "todo" --json             # List "todo" tasks in JSON form
       --log-file string     Log file path (defaults to stderr)
       --log-format string   Log format (json, text) (default "text")
       --log-level string    Log level (debug, info, warn, error) (default "info")
+      --max-limit int       Maximum limit for pagination (default 1000)
+      --page-size int       Default page size for pagination (default 25)
 ```
 
 ### SEE ALSO

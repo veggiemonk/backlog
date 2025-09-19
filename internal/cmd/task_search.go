@@ -107,6 +107,9 @@ func runSearch(cmd *cobra.Command, args []string) {
 		offset = &searchOffsetFlag
 	}
 	
+	// Apply configuration defaults and limits
+	limit, offset = ApplyDefaultPagination(limit, offset)
+	
 	params := core.ListTasksParams{
 		Parent:        &searchParent,
 		Status:        searchStatus,

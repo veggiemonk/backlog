@@ -302,6 +302,11 @@ When you are done implementing a task, write a clean description in the task not
 {"name": "task_list", "arguments": {"labels": "bug,critical"}}  // Tasks with specific labels
 {"name": "task_list", "arguments": {"status": "todo", "sort": ["priority"], "reverse": true}}  // High priority first
 
+// Pagination examples
+{"name": "task_list", "arguments": {"limit": 5}}  // Get first 5 tasks
+{"name": "task_list", "arguments": {"status": "todo", "limit": 10}}  // First 10 todo tasks
+{"name": "task_search", "arguments": {"query": "feature", "filters": {"limit": 3}}}  // First 3 feature matches
+
 // 2. Read task details
 {"name": "task_view", "arguments": {"id": "42"}}
 
@@ -443,7 +448,7 @@ Edits an existing task.
 
 ### `task_list`
 
-Lists tasks, optionally filtering them.
+Lists tasks with optional filtering, sorting, and pagination. When pagination is used, returns structured results with pagination metadata.
 
 | Parameter        | Type          | Description                                           |
 | ---------------- | ------------- | ----------------------------------------------------- |
@@ -457,6 +462,8 @@ Lists tasks, optionally filtering them.
 | `hide_extra`     | `bool`        | Hide extra fields (labels, priority, assigned).       |
 | `sort`           | `list[string]`| Fields to sort by (id, title, status, priority, created, updated). |
 | `reverse`        | `bool`        | Reverse the sort order.                               |
+| `limit`          | `int`         | Maximum number of tasks to return (0 means no limit). |
+| `offset`         | `int`         | Number of tasks to skip from the beginning.          |
 
 ### `task_view`
 
@@ -468,11 +475,12 @@ Retrieves and displays the details of a single task.
 
 ### `task_search`
 
-Searches tasks by content.
+Searches tasks by content with optional filtering and pagination. When pagination is used, returns structured results with pagination metadata.
 
 | Parameter | Type     | Description                       |
 | --------- | -------- | --------------------------------- |
 | `query`   | `string` | **Required.** The search query.   |
+| `filters` | `object` | Optional filters (same as task_list parameters including limit/offset). |
 
 ### `task_archive`
 
@@ -484,8 +492,75 @@ Archives a task by moving it to the archived directory and setting status to arc
 
 ---
 
+## 10. Pagination: Handling Large Task Lists
 
-## 10. Advanced Workflows: Batch Task Creation
+### When to Use Pagination
+
+Use pagination when:
+- Working with projects that have many tasks (>25)
+- Performing exploratory queries where you want to see a sample first
+- Building interfaces that need to display results in pages
+- Avoiding overwhelming output in conversations
+
+### Pagination Parameters
+
+Both `task_list` and `task_search` support pagination:
+
+- **`limit`**: Maximum number of results to return (0 = no limit)
+- **`offset`**: Number of results to skip from the beginning
+
+### Pagination Examples
+
+```json
+// Get first 10 tasks
+{"name": "task_list", "arguments": {"limit": 10}}
+
+// Get next 10 tasks (pagination)
+{"name": "task_list", "arguments": {"limit": 10, "offset": 10}}
+
+// Get first 5 high-priority tasks
+{"name": "task_list", "arguments": {"status": "todo", "sort": ["priority"], "reverse": true, "limit": 5}}
+
+// Search with pagination
+{"name": "task_search", "arguments": {"query": "api", "filters": {"limit": 3}}}
+
+// Search second page
+{"name": "task_search", "arguments": {"query": "api", "filters": {"limit": 3, "offset": 3}}}
+```
+
+### Pagination Response Format
+
+When pagination is used, responses include metadata:
+
+```json
+{
+  "tasks": [...],
+  "pagination": {
+    "total_results": 45,
+    "displayed_results": 10,
+    "offset": 0,
+    "limit": 10,
+    "has_more": true
+  }
+}
+```
+
+### Best Practices
+
+1. **Start with small limits**: Use `limit: 10` to get an overview
+2. **Check `has_more`**: Use pagination metadata to determine if more results exist
+3. **Progressive exploration**: Increase offset to see more results
+4. **Combine with filtering**: Use pagination with status/priority filters for focused results
+
+### Configuration
+
+Users can configure pagination defaults:
+- **Environment variables**: `BACKLOG_PAGE_SIZE`, `BACKLOG_MAX_LIMIT`
+- **CLI flags**: `--page-size 25`, `--max-limit 1000`
+
+---
+
+## 11. Advanced Workflows: Batch Task Creation
 
 When a user asks you to perform a multi-step operation like creating a full project plan, your goal is to gather all necessary information from the initial prompt and execute the steps in logical order, using parallel tool calls to be efficient.
 

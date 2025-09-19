@@ -131,6 +131,9 @@ func runList(cmd *cobra.Command, args []string) {
 		offset = &offsetFlag
 	}
 	
+	// Apply configuration defaults and limits
+	limit, offset = ApplyDefaultPagination(limit, offset)
+	
 	params := core.ListTasksParams{
 		Parent:        &filterParent,
 		Priority:      &filterPriority,

@@ -37,6 +37,11 @@ backlog search "api" --json
 
 # Search with additional columns displayed
 backlog search "user" --labels --priority --assigned
+
+# Search with pagination
+backlog search "api" --limit 5                  # Show first 5 search results
+backlog search "bug" --limit 3 --offset 5       # Show 3 results starting from 6th match
+backlog search "feature" --status "todo" --limit 10  # Show first 10 "todo" feature results
 	
 ```
 
@@ -50,7 +55,9 @@ backlog search "user" --labels --priority --assigned
   -e, --hide-extra         Hide extra fields (labels, priority, assigned)
   -j, --json               Print JSON output
   -l, --labels strings     Filter tasks by labels
+      --limit int          Maximum number of tasks to return (0 means no limit)
   -m, --markdown           Print markdown table
+      --offset int         Number of tasks to skip from the beginning
   -p, --parent string      Filter tasks by parent ID
   -r, --reverse            Reverse the order of tasks
       --sort string        Sort tasks by comma-separated fields (id, title, status, priority, created, updated)
@@ -66,6 +73,8 @@ backlog search "user" --labels --priority --assigned
       --log-file string     Log file path (defaults to stderr)
       --log-format string   Log format (json, text) (default "text")
       --log-level string    Log level (debug, info, warn, error) (default "info")
+      --max-limit int       Maximum limit for pagination (default 1000)
+      --page-size int       Default page size for pagination (default 25)
 ```
 
 ### SEE ALSO
