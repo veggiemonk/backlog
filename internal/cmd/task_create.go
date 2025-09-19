@@ -9,13 +9,18 @@ import (
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
+	"github.com/veggiemonk/backlog/internal/sanitize"
+	"github.com/veggiemonk/backlog/internal/validation"
 )
 
 var createCmd = &cobra.Command{
 	Use:   "create <title>",
 	Short: "Create a new task",
 	Long:  `Creates a new task in the backlog.`,
-	Args:  cobra.ExactArgs(1),
+	Args: func(cmd *cobra.Command, args []string) error {
+		validator := validation.NewCLIValidator()
+		return validator.ValidateArgs(cmd, args, 1)
+	},
 	Example: `
 # Create tasks using the "backlog create" command with its different flags.
 # Here are some examples of how to use this command effectively:
@@ -102,17 +107,48 @@ func init() {
 }
 
 func runCreate(cmd *cobra.Command, args []string) {
+	// Sanitize input parameters
+	sanitizer := sanitize.NewSanitizer()
+
 	params := core.CreateTaskParams{
-		Title:        args[0],
-		Description:  description,
+		Title:        sanitizer.SanitizeTitle(args[0]),
+		Description:  sanitizer.SanitizeDescription(description),
 		Parent:       &parent,
 		Priority:     priority,
-		Assigned:     assigned,
-		Labels:       labels,
-		Dependencies: dependencies,
-		AC:           ac,
+		Assigned:     sanitizer.SanitizeSlice(assigned, sanitizer.SanitizeAssignee),
+		Labels:       sanitizer.SanitizeSlice(labels, sanitizer.SanitizeLabel),
+		Dependencies: sanitizer.SanitizeSlice(dependencies, sanitizer.SanitizeTaskID),
+		AC:           sanitizer.SanitizeSlice(ac, sanitizer.SanitizeAcceptanceCriterion),
 		Plan:         &plan,
 		Notes:        &notes,
+	}
+
+	// Sanitize parent ID if provided
+	if parent != "" {
+		sanitizedParent := sanitizer.SanitizeTaskID(parent)
+		params.Parent = &sanitizedParent
+	}
+
+	// Sanitize plan if provided
+	if plan != "" {
+		sanitizedPlan := sanitizer.SanitizePlan(plan)
+		params.Plan = &sanitizedPlan
+	}
+
+	// Sanitize notes if provided
+	if notes != "" {
+		sanitizedNotes := sanitizer.SanitizeNotes(notes)
+		params.Notes = &sanitizedNotes
+	}
+
+	// Validate input parameters
+	validator := validation.NewCLIValidator()
+	if validationErrors := validator.ValidateCreateParams(params); validationErrors.HasErrors() {
+		logging.Error("validation failed", "errors", validationErrors.Error())
+		for _, verr := range validationErrors {
+			logging.Error("validation error", "field", verr.Field, "value", verr.Value, "message", verr.Message, "code", verr.Code)
+		}
+		os.Exit(1)
 	}
 
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)

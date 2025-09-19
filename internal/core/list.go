@@ -23,6 +23,8 @@ type ListTasksParams struct {
 	DependedOn    bool     `json:"depended_on,omitempty" jsonschema:"Filter tasks that other tasks depend on."`
 	HasDependency bool     `json:"has_dependency,omitempty" jsonschema:"Filter tasks that have at least one dependency."`
 	Reverse       bool     `json:"reverse,omitempty" jsonschema:"Reverse the sort order."`
+	Limit         *int     `json:"limit,omitempty" jsonschema:"Maximum number of tasks to return."`
+	Offset        *int     `json:"offset,omitempty" jsonschema:"Number of tasks to skip from the beginning."`
 }
 
 // List implements TaskStore.
@@ -37,6 +39,12 @@ func (f *FileTaskStore) List(params ListTasksParams) ([]*Task, error) {
 		return nil, err
 	}
 	SortTasks(filteredTasks, params.Sort, params.Reverse)
+
+	// Apply pagination if specified
+	if params.Offset != nil || params.Limit != nil {
+		return ApplyPagination(filteredTasks, params.Offset, params.Limit), nil
+	}
+
 	return filteredTasks, nil
 }
 
@@ -268,4 +276,29 @@ func SortTasks(tasks []*Task, sortFields []string, reverse bool) {
 	if reverse {
 		slices.Reverse(tasks)
 	}
+}
+
+// ApplyPagination applies offset and limit to a slice of tasks
+func ApplyPagination(tasks []*Task, offset *int, limit *int) []*Task {
+	if len(tasks) == 0 {
+		return tasks
+	}
+
+	start := 0
+	if offset != nil && *offset > 0 {
+		start = *offset
+		if start >= len(tasks) {
+			return []*Task{} // No tasks to return if offset is beyond the slice
+		}
+	}
+
+	end := len(tasks)
+	if limit != nil && *limit > 0 {
+		proposedEnd := start + *limit
+		if proposedEnd < len(tasks) {
+			end = proposedEnd
+		}
+	}
+
+	return tasks[start:end]
 }

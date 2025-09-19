@@ -3,6 +3,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/spf13/afero"
@@ -11,6 +12,7 @@ import (
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
 	"github.com/veggiemonk/backlog/internal/paths"
+	"github.com/veggiemonk/backlog/internal/validation"
 )
 
 type contextKey string
@@ -76,15 +78,25 @@ const (
 )
 
 func preRun(cmd *cobra.Command, args []string) {
+	// Validate configuration parameters
+	validator := validation.NewCLIValidator()
+	logLevel := viper.GetString(configLogLevel)
+	logFormat := viper.GetString(configLogFormat)
+	logFile := viper.GetString(configLogFile)
+	tasksDir := viper.GetString(configFolder)
+
+	if validationErrors := validator.ValidateConfigParams(logLevel, logFormat, logFile, tasksDir); validationErrors.HasErrors() {
+		// We can't use the logging package here since it's not initialized yet
+		for _, verr := range validationErrors {
+			os.Stderr.WriteString(fmt.Sprintf("Configuration validation error in field '%s': %s (value: '%s')\n", verr.Field, verr.Message, verr.Value))
+		}
+		os.Exit(1)
+	}
+
 	// Initialize logging using Viper values
-	logging.Init(
-		viper.GetString(configLogLevel),
-		viper.GetString(configLogFormat),
-		viper.GetString(configLogFile),
-	)
+	logging.Init(logLevel, logFormat, logFile)
 
 	// Use Viper to get the tasks directory
-	tasksDir := viper.GetString(configFolder)
 	autoCommit := viper.GetBool(configAutoCommit)
 
 	logging.Debug("resolve env var", configFolder, tasksDir, configAutoCommit, autoCommit)

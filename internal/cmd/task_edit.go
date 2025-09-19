@@ -9,13 +9,18 @@ import (
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
+	"github.com/veggiemonk/backlog/internal/sanitize"
+	"github.com/veggiemonk/backlog/internal/validation"
 )
 
 var editCmd = &cobra.Command{
 	Use:   "edit <id>",
 	Short: "Edit an existing task",
 	Long:  `Edit an existing task by providing its ID and flags for the fields to update.`,
-	Args:  cobra.ExactArgs(1),
+	Args: func(cmd *cobra.Command, args []string) error {
+		validator := validation.NewCLIValidator()
+		return validator.ValidateArgs(cmd, args, 1)
+	},
 	Example: `
 # Edit tasks using the "backlog edit" command with its different flags.
 # Let's assume you have a task with ID "42" that you want to modify.
@@ -148,14 +153,19 @@ func setEditFlags(cmd *cobra.Command) {
 }
 
 func runEdit(cmd *cobra.Command, args []string) {
-	params := core.EditTaskParams{ID: args[0]}
+	// Sanitize input parameters
+	sanitizer := sanitize.NewSanitizer()
+
+	params := core.EditTaskParams{ID: sanitizer.SanitizeTaskID(args[0])}
 
 	// Set optional pointers for fields that were changed
 	if cmd.Flags().Changed("title") {
-		params.NewTitle = &newTitle
+		sanitizedTitle := sanitizer.SanitizeTitle(newTitle)
+		params.NewTitle = &sanitizedTitle
 	}
 	if cmd.Flags().Changed("description") {
-		params.NewDescription = &newDescription
+		sanitizedDescription := sanitizer.SanitizeDescription(newDescription)
+		params.NewDescription = &sanitizedDescription
 	}
 	if cmd.Flags().Changed("status") {
 		params.NewStatus = &newStatus
@@ -164,38 +174,51 @@ func runEdit(cmd *cobra.Command, args []string) {
 		params.NewPriority = &newPriority
 	}
 	if cmd.Flags().Changed("parent") {
-		params.NewParent = &newParent
+		sanitizedParent := sanitizer.SanitizeTaskID(newParent)
+		params.NewParent = &sanitizedParent
 	}
 	if cmd.Flags().Changed("dep") {
-		params.NewDependencies = newDependencies
+		params.NewDependencies = sanitizer.SanitizeSlice(newDependencies, sanitizer.SanitizeTaskID)
 	}
 	if cmd.Flags().Changed("assigned") {
-		params.AddAssigned = addAssigned
+		params.AddAssigned = sanitizer.SanitizeSlice(addAssigned, sanitizer.SanitizeAssignee)
 	}
 	if cmd.Flags().Changed("remove-assigned") {
-		params.RemoveAssigned = removeAssigned
+		params.RemoveAssigned = sanitizer.SanitizeSlice(removeAssigned, sanitizer.SanitizeAssignee)
 	}
 	// New labels
 	if cmd.Flags().Changed("labels") {
-		params.AddLabels = addLabels
+		params.AddLabels = sanitizer.SanitizeSlice(addLabels, sanitizer.SanitizeLabel)
 	}
 	// Remove labels
 	if cmd.Flags().Changed("remove-labels") {
-		params.RemoveLabels = removeLabels
+		params.RemoveLabels = sanitizer.SanitizeSlice(removeLabels, sanitizer.SanitizeLabel)
 	}
 	// Other optional fields
 	if cmd.Flags().Changed("notes") {
-		params.NewNotes = &newNotes
+		sanitizedNotes := sanitizer.SanitizeNotes(newNotes)
+		params.NewNotes = &sanitizedNotes
 	}
 	if cmd.Flags().Changed("plan") {
-		params.NewPlan = &newPlan
+		sanitizedPlan := sanitizer.SanitizePlan(newPlan)
+		params.NewPlan = &sanitizedPlan
 	}
 
 	// AC params
-	params.AddAC = addAC
+	params.AddAC = sanitizer.SanitizeSlice(addAC, sanitizer.SanitizeAcceptanceCriterion)
 	params.CheckAC = checkAC
 	params.UncheckAC = uncheckAC
 	params.RemoveAC = removeAC
+
+	// Validate input parameters
+	validator := validation.NewCLIValidator()
+	if validationErrors := validator.ValidateEditParams(params); validationErrors.HasErrors() {
+		logging.Error("validation failed", "errors", validationErrors.Error())
+		for _, verr := range validationErrors {
+			logging.Error("validation error", "field", verr.Field, "value", verr.Value, "message", verr.Message, "code", verr.Code)
+		}
+		os.Exit(1)
+	}
 
 	// get store from context
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)

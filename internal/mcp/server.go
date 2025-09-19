@@ -43,6 +43,7 @@ type handler struct {
 	store      TaskStore
 	mu         *sync.Mutex
 	autoCommit bool
+	middleware *ResponseSizeMiddleware
 }
 
 func (h *handler) commit(id, title, path, oldPath, msg string) error {
@@ -71,10 +72,15 @@ func NewServer(store TaskStore, autoCommit bool) (*Server, error) {
 		},
 	)
 
+	// Initialize response size monitoring
+	responseSizeConfig := DefaultResponseSizeConfig()
+	middleware := NewResponseSizeMiddleware(responseSizeConfig)
+
 	h := &handler{
 		store:      store,
 		mu:         &sync.Mutex{},
 		autoCommit: autoCommit,
+		middleware: middleware,
 	}
 
 	server := &Server{
@@ -137,4 +143,9 @@ func (s *Server) addTools() error {
 		return err
 	}
 	return nil
+}
+
+// GetResponseStats returns current response size statistics
+func (s *Server) GetResponseStats() ResponseSizeStats {
+	return s.handler.middleware.GetMonitor().GetStats()
 }
