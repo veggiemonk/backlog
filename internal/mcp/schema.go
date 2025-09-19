@@ -72,3 +72,36 @@ func wrappedTasksJSONSchema() *jsonschema.Schema {
 		AdditionalProperties: &jsonschema.Schema{Not: &jsonschema.Schema{}}, // No additional properties allowed
 	}
 }
+
+// paginationInfoJSONSchema returns a JSON schema for core.PaginationInfo
+func paginationInfoJSONSchema() *jsonschema.Schema {
+	return &jsonschema.Schema{
+		Type: "object",
+		Properties: map[string]*jsonschema.Schema{
+			"total_results":    {Type: "integer", Description: "Total number of results matching the query"},
+			"displayed_results": {Type: "integer", Description: "Number of results in this response"},
+			"offset":           {Type: "integer", Description: "Number of results skipped from the beginning"},
+			"limit":            {Type: "integer", Description: "Maximum number of results requested (0 means no limit)"},
+			"has_more":         {Type: "boolean", Description: "Whether there are more results available"},
+		},
+		Required:             []string{"total_results", "displayed_results", "offset", "limit", "has_more"},
+		AdditionalProperties: &jsonschema.Schema{Not: &jsonschema.Schema{}},
+	}
+}
+
+// listResultJSONSchema returns a JSON schema for core.ListResult with pagination
+// that matches what's returned in StructuredContent: core.ListResult
+func listResultJSONSchema() *jsonschema.Schema {
+	return &jsonschema.Schema{
+		Type: "object",
+		Properties: map[string]*jsonschema.Schema{
+			"tasks": {Type: "array", Items: taskJSONSchema()},
+			"pagination": {OneOf: []*jsonschema.Schema{
+				paginationInfoJSONSchema(),
+				{Type: "null"},
+			}},
+		},
+		Required:             []string{"tasks"},
+		AdditionalProperties: &jsonschema.Schema{Not: &jsonschema.Schema{}},
+	}
+}

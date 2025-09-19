@@ -68,9 +68,9 @@ func TestMCPHandlers(t *testing.T) {
 			result, _, err := handler.list(ctx, req, core.ListTasksParams{})
 			is.NoErr(err)
 			is.True(result != nil)
-			st, ok := result.StructuredContent.(struct{ Tasks []*core.Task })
+			listResult, ok := result.StructuredContent.(*core.ListResult)
 			is.True(ok)
-			is.Equal(len(st.Tasks), 9)
+			is.Equal(len(listResult.Tasks), 9)
 		})
 
 		t.Run("filter_by_status", func(t *testing.T) {
@@ -82,10 +82,10 @@ func TestMCPHandlers(t *testing.T) {
 			result, _, err := handler.list(ctx, req, params)
 			is.NoErr(err)
 			is.True(result != nil)
-			st, ok := result.StructuredContent.(struct{ Tasks []*core.Task })
+			listResult, ok := result.StructuredContent.(*core.ListResult)
 			is.True(ok)
-			is.Equal(len(st.Tasks), 1)
-			for _, task := range st.Tasks {
+			is.Equal(len(listResult.Tasks), 1)
+			for _, task := range listResult.Tasks {
 				is.Equal(string(task.Status), "done")
 			}
 		})
@@ -124,9 +124,9 @@ func TestMCPHandlers(t *testing.T) {
 			is.NoErr(err)
 			is.True(result != nil)
 
-			tasks, ok := result.StructuredContent.(struct{ Tasks []*core.Task })
+			listResult, ok := result.StructuredContent.(*core.ListResult)
 			is.True(ok)
-			is.Equal(len(tasks.Tasks), 4)
+			is.Equal(len(listResult.Tasks), 4)
 		})
 
 		t.Run("search_with_no_results", func(t *testing.T) {

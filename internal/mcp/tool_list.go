@@ -14,15 +14,16 @@ func (s *Server) registerTaskList() error {
 	if err != nil {
 		return err
 	}
-	description := `List tasks, with optional filtering and sorting. 
-	Returns a list of tasks.
+	description := `List tasks, with optional filtering, sorting, and pagination. 
+	Returns a list of tasks with optional pagination metadata.
+	Use 'limit' and 'offset' parameters for pagination.
 `
 	tool := &mcp.Tool{
 		Name:        "task_list",
 		Title:       "List tasks",
 		Description: description,
 		InputSchema: inputSchema,
-		OutputSchema: wrappedTasksJSONSchema(),
+		OutputSchema: listResultJSONSchema(),
 	}
 	mcp.AddTool(s.mcpServer, tool, s.handler.list)
 	return nil
@@ -32,15 +33,52 @@ func (h *handler) list(ctx context.Context, req *mcp.CallToolRequest, params cor
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
+	// Get total count without pagination for metadata
+	totalParams := params
+	totalParams.Limit = nil
+	totalParams.Offset = nil
+	allTasks, err := h.store.List(totalParams)
+	if err != nil {
+		return nil, nil, fmt.Errorf("list (total count): %v", err)
+	}
+	totalCount := len(allTasks)
+
+	// Get paginated results
 	tasks, err := h.store.List(params)
 	if err != nil {
 		return nil, nil, fmt.Errorf("list: %v", err)
 	}
-	if len(tasks) == 0 {
-		return &mcp.CallToolResult{Content: []mcp.Content{&mcp.TextContent{Text: "No tasks found."}}}, nil, nil
+	
+	// Create result with pagination info
+	result := &core.ListResult{
+		Tasks: tasks,
 	}
-	// Needs to be object, cannot be array
-	wrapped := struct{ Tasks []*core.Task }{Tasks: tasks}
-	res := &mcp.CallToolResult{StructuredContent: wrapped}
+	
+	// Add pagination info if pagination was requested
+	if params.Limit != nil || params.Offset != nil {
+		offsetVal := 0
+		if params.Offset != nil {
+			offsetVal = *params.Offset
+		}
+		limitVal := 0
+		if params.Limit != nil {
+			limitVal = *params.Limit
+		}
+		hasMore := (offsetVal + len(tasks)) < totalCount
+		
+		result.Pagination = &core.PaginationInfo{
+			TotalResults:    totalCount,
+			DisplayedResults: len(tasks),
+			Offset:          offsetVal,
+			Limit:           limitVal,
+			HasMore:         hasMore,
+		}
+	}
+
+	if len(tasks) == 0 {
+		return &mcp.CallToolResult{Content: []mcp.Content{&mcp.TextContent{Text: "No tasks found."}}}, result, nil
+	}
+
+	res := &mcp.CallToolResult{StructuredContent: result}
 	return res, nil, nil
 }

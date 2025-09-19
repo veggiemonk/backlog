@@ -145,7 +145,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 		is.True(result.StructuredContent != nil)
 
 		// Validate the StructuredContent against the expected schema
-		expectedSchema := wrappedTasksJSONSchema()
+		expectedSchema := listResultJSONSchema()
 		validateStructuredContent(t, expectedSchema, result.StructuredContent)
 	})
 
@@ -159,7 +159,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 
 		// Only validate if we have StructuredContent (search can return empty results with just Content)
 		if result.StructuredContent != nil {
-			expectedSchema := wrappedTasksJSONSchema()
+			expectedSchema := listResultJSONSchema()
 			validateStructuredContent(t, expectedSchema, result.StructuredContent)
 		}
 	})
