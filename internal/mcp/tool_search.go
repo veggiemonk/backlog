@@ -2,7 +2,6 @@ package mcp
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/veggiemonk/backlog/internal/core"
@@ -24,26 +23,50 @@ type SearchParams struct {
 }
 
 func (h *handler) search(ctx context.Context, req *mcp.CallToolRequest, params SearchParams) (*mcp.CallToolResult, any, error) {
-	var filters core.ListTasksParams
-	if params.Filters != nil {
-		filters = *params.Filters
-	}
-	tasks, err := h.store.Search(params.Query, filters)
-	if err != nil {
-		return nil, nil, err
-	}
-	if len(tasks) == 0 {
-		content := []mcp.Content{&mcp.TextContent{Text: "No matching tasks found."}}
-		return &mcp.CallToolResult{Content: content}, nil, nil
+	operation := "task_search"
+
+	// Validate search query
+	if params.Query == "" {
+		validationErr := NewMissingRequiredError("query")
+		return h.responder.WrapValidationError(validationErr, operation)
 	}
 
-	wrappedTask := struct{ Tasks []*core.Task }{Tasks: tasks}
-	b, err := json.Marshal(wrappedTask)
+	// Validate search query length
+	if len(params.Query) > 1000 {
+		validationErr := &MCPError{
+			Code:     ErrorCodeInvalidInput,
+			Message:  "Search query too long. Maximum length is 1000 characters",
+			Category: CategoryValidation,
+			Details: &ErrorDetails{
+				Field: "query",
+				Value: len(params.Query),
+				Expected: "string length <= 1000",
+				Constraints: map[string]interface{}{
+					"max_length": 1000,
+					"actual_length": len(params.Query),
+				},
+			},
+		}
+		return h.responder.WrapValidationError(validationErr, operation)
+	}
+
+	// Validate filters if provided
+	var filters core.ListTasksParams
+	if params.Filters != nil {
+		if validationErr := h.validator.ValidateListParams(*params.Filters); validationErr != nil {
+			return h.responder.WrapValidationError(validationErr, operation)
+		}
+		filters = *params.Filters
+	}
+
+	tasks, err := h.store.Search(params.Query, filters)
 	if err != nil {
-		return nil, nil, err
+		// Wrap the error with proper categorization
+		mcpErr := WrapError(err, operation)
+		return h.responder.WrapError(mcpErr)
 	}
-	res := &mcp.CallToolResult{
-		Content: []mcp.Content{&mcp.TextContent{Text: string(b)}},
-	}
-	return res, nil, nil
+
+	// Return structured response for search results
+	response := struct{ Tasks []*core.Task }{Tasks: tasks}
+	return h.responder.WrapSuccess(response, operation)
 }

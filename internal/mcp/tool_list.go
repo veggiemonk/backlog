@@ -23,14 +23,27 @@ func (s *Server) registerTaskList() error {
 }
 
 func (h *handler) list(ctx context.Context, req *mcp.CallToolRequest, params core.ListTasksParams) (*mcp.CallToolResult, any, error) {
+	operation := "task_list"
+
+	// Validate input parameters
+	if validationErr := h.validator.ValidateListParams(params); validationErr != nil {
+		return h.responder.WrapValidationError(validationErr, operation)
+	}
+
 	h.mu.Lock()
 	defer h.mu.Unlock()
+
 	tasks, err := h.store.List(params)
 	if err != nil {
-		return nil, nil, err
+		// Wrap the error with proper categorization
+		mcpErr := WrapError(err, operation)
+		return h.responder.WrapError(mcpErr)
 	}
+
 	if len(tasks) == 0 {
-		return &mcp.CallToolResult{Content: []mcp.Content{&mcp.TextContent{Text: "No tasks found."}}}, nil, nil
+		// Return structured response for empty results
+		response := struct{ Tasks []*core.Task }{Tasks: []*core.Task{}}
+		return h.responder.WrapSuccess(response, operation)
 	}
 
 	// Check if response will exceed token limits
@@ -38,21 +51,40 @@ func (h *handler) list(ctx context.Context, req *mcp.CallToolRequest, params cor
 		// If no pagination parameters provided, suggest optimal chunk size
 		if params.Limit == nil && params.Offset == nil {
 			optimalChunkSize := CalculateOptimalChunkSize(tasks)
-			message := fmt.Sprintf("Response too large (%d tasks). Please use pagination. Suggested limit: %d",
-				len(tasks), optimalChunkSize)
-			return &mcp.CallToolResult{
-				Content: []mcp.Content{&mcp.TextContent{Text: message}},
-			}, nil, nil
+			mcpErr := &MCPError{
+				Code:     ErrorCodeResponseTooLarge,
+				Message:  fmt.Sprintf("Response too large (%d tasks). Please use pagination. Suggested limit: %d", len(tasks), optimalChunkSize),
+				Category: CategoryMCP,
+				Details: &ErrorDetails{
+					Context: map[string]interface{}{
+						"total_tasks":        len(tasks),
+						"suggested_limit":    optimalChunkSize,
+						"requires_pagination": true,
+					},
+				},
+				Operation: operation,
+			}
+			return h.responder.WrapError(mcpErr)
 		}
 		// If pagination is provided but still too large, return error
 		if params.Limit != nil && *params.Limit > 0 {
 			chunkSize := CalculateOptimalChunkSize(tasks)
 			if *params.Limit > chunkSize {
-				message := fmt.Sprintf("Requested limit (%d) too large. Maximum recommended limit: %d",
-					*params.Limit, chunkSize)
-				return &mcp.CallToolResult{
-					Content: []mcp.Content{&mcp.TextContent{Text: message}},
-				}, nil, nil
+				mcpErr := &MCPError{
+					Code:     ErrorCodeResponseTooLarge,
+					Message:  fmt.Sprintf("Requested limit (%d) too large. Maximum recommended limit: %d", *params.Limit, chunkSize),
+					Category: CategoryMCP,
+					Details: &ErrorDetails{
+						Field: "limit",
+						Value: *params.Limit,
+						Context: map[string]interface{}{
+							"requested_limit":   *params.Limit,
+							"maximum_limit":     chunkSize,
+						},
+					},
+					Operation: operation,
+				}
+				return h.responder.WrapError(mcpErr)
 			}
 		}
 	}
@@ -62,12 +94,16 @@ func (h *handler) list(ctx context.Context, req *mcp.CallToolRequest, params cor
 
 	// Apply response monitoring middleware if available
 	if h.middleware != nil {
-		response = h.middleware.WrapResponse(response, "task_list")
+		if wrapped := h.middleware.WrapResponse(response, operation); wrapped != nil {
+			response = wrapped
+		}
 	}
 
+	// Marshal and create final response
 	b, err := json.Marshal(response)
 	if err != nil {
-		return nil, nil, err
+		mcpErr := NewSystemError(operation, "Failed to serialize task list response", err)
+		return h.responder.WrapError(mcpErr)
 	}
 
 	res := &mcp.CallToolResult{

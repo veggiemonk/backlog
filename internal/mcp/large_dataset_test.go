@@ -49,15 +49,23 @@ func TestLargeDatasetScenarios(t *testing.T) {
 			params := core.ListTasksParams{}
 
 			result, _, err := handler.list(ctx, req, params)
-			is.NoErr(err)
-			is.True(result != nil)
 
-			// For large datasets, should get pagination suggestion
+			// For large datasets, should get structured error response with pagination suggestion
 			if tt.taskCount >= 100 {
+				// Should return structured error instead of Go error
+				is.NoErr(err) // No Go error
+				is.True(result != nil) // Should return structured error response
+				is.True(result.IsError) // Should be marked as error response
+
 				txtContent, ok := result.Content[0].(*mcp.TextContent)
 				is.True(ok)
-				// Should contain suggestion for pagination
+				// Should contain structured error with pagination suggestion
 				is.True(len(txtContent.Text) > 0)
+			} else {
+				// For smaller datasets, should return successful response
+				is.NoErr(err)
+				is.True(result != nil)
+				is.True(!result.IsError)
 			}
 		})
 	}

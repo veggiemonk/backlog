@@ -2,7 +2,6 @@ package mcp
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/veggiemonk/backlog/internal/core"
@@ -38,25 +37,28 @@ func (h *handler) create(
 	req *mcp.CallToolRequest,
 	params core.CreateTaskParams,
 ) (*mcp.CallToolResult, any, error) {
+	operation := "task_create"
+
+	// Validate input parameters
+	if validationErr := h.validator.ValidateCreateTaskParams(params); validationErr != nil {
+		return h.responder.WrapValidationError(validationErr, operation)
+	}
+
 	h.mu.Lock()
 	defer h.mu.Unlock()
+
 	task, err := h.store.Create(params)
 	if err != nil {
-		return nil, nil, err
+		// Wrap the error with proper categorization
+		mcpErr := WrapError(err, operation)
+		return h.responder.WrapError(mcpErr)
 	}
+
 	path := h.store.Path(task)
 	if err := h.commit(task.ID.Name(), task.Title, path, "", "create"); err != nil {
 		// Log the error but do not fail the creation
 		logging.Warn("auto-commit failed for task creation", "task_id", task.ID, "error", err)
 	}
 
-	// Manually marshal to avoid schema validation issues with custom types
-	b, err := json.Marshal(task)
-	if err != nil {
-		return nil, nil, err
-	}
-	res := &mcp.CallToolResult{
-		Content: []mcp.Content{&mcp.TextContent{Text: string(b)}},
-	}
-	return res, nil, nil
+	return h.responder.WrapSuccess(task, operation)
 }

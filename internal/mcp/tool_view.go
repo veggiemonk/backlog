@@ -2,7 +2,6 @@ package mcp
 
 import (
 	"context"
-	"encoding/json"
 
 	// "github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -47,16 +46,19 @@ type ViewParams struct {
 }
 
 func (h *handler) view(ctx context.Context, req *mcp.CallToolRequest, params ViewParams) (*mcp.CallToolResult, any, error) {
+	operation := "task_view"
+
+	// Validate input parameters
+	if validationErr := h.validator.ValidateViewParams(params.ID); validationErr != nil {
+		return h.responder.WrapValidationError(validationErr, operation)
+	}
+
 	task, err := h.store.Get(params.ID)
 	if err != nil {
-		return nil, nil, err
+		// Wrap the error with proper categorization
+		mcpErr := WrapError(err, operation)
+		return h.responder.WrapError(mcpErr)
 	}
-	b, err := json.Marshal(task)
-	if err != nil {
-		return nil, nil, err
-	}
-	res := &mcp.CallToolResult{
-		Content: []mcp.Content{&mcp.TextContent{Text: string(b)}},
-	}
-	return res, nil, err
+
+	return h.responder.WrapSuccess(task, operation)
 }

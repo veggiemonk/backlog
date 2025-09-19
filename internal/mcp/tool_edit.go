@@ -36,17 +36,31 @@ func (h *handler) edit(
 	ctx context.Context,
 	req *mcp.CallToolRequest,
 	params core.EditTaskParams,
-) (*mcp.CallToolResult, *core.Task, error) {
+) (*mcp.CallToolResult, any, error) {
+	operation := "task_edit"
+
+	// Validate input parameters
+	if validationErr := h.validator.ValidateEditTaskParams(params); validationErr != nil {
+		return h.responder.WrapValidationError(validationErr, operation)
+	}
+
 	h.mu.Lock()
 	defer h.mu.Unlock()
+
 	task, err := h.store.Get(params.ID)
 	if err != nil {
-		return nil, nil, err
+		// Wrap the error with proper categorization
+		mcpErr := WrapError(err, operation)
+		return h.responder.WrapError(mcpErr)
 	}
+
 	updatedTask, err := h.store.Update(task, params)
 	if err != nil {
-		return nil, nil, err
+		// Wrap the error with proper categorization
+		mcpErr := WrapError(err, operation)
+		return h.responder.WrapError(mcpErr)
 	}
+
 	err = h.commit(
 		updatedTask.ID.Name(),
 		updatedTask.Title,
@@ -58,5 +72,6 @@ func (h *handler) edit(
 		// Log the error but do not fail the edit
 		logging.Warn("auto-commit failed for task edit", "task_id", task.ID, "error", err)
 	}
-	return nil, updatedTask, nil
+
+	return h.responder.WrapSuccess(updatedTask, operation)
 }

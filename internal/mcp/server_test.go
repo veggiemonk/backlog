@@ -137,7 +137,19 @@ func TestMCPHandlers(t *testing.T) {
 	store := core.NewFileTaskStore(fs, ".backlog")
 	setupTestData(t, store)
 
-	handler := &handler{store: store, mu: &sync.Mutex{}}
+	// Initialize middleware components for testing
+	responseSizeConfig := DefaultResponseSizeConfig()
+	middleware := NewResponseSizeMiddleware(responseSizeConfig)
+	validator := NewValidationMiddleware()
+	responder := NewResponseWrapper(middleware)
+
+	handler := &handler{
+		store:      store,
+		mu:         &sync.Mutex{},
+		middleware: middleware,
+		validator:  validator,
+		responder:  responder,
+	}
 	ctx := context.Background()
 	req := &mcp.CallToolRequest{}
 
@@ -210,7 +222,8 @@ func TestMCPHandlers(t *testing.T) {
 
 			// First create a task to view
 			createParams := core.CreateTaskParams{
-				Title: "View Test Task",
+				Title:       "View Test Task",
+				Description: "A test task for viewing",
 			}
 			createResult, _, err := handler.create(ctx, req, createParams)
 			is.NoErr(err)
@@ -270,11 +283,15 @@ func TestMCPHandlers(t *testing.T) {
 			result, _, err := handler.search(ctx, req, params)
 			is.NoErr(err)
 			is.True(result != nil)
-			// result.Content
+			// Check for structured response with empty tasks array
 			is.Equal(len(result.Content), 1)
-			b, err := result.Content[0].MarshalJSON()
-			is.NoErr(err)
-			is.Equal(string(b), `{"type":"text","text":"No matching tasks found."}`)
+			txt, ok := result.Content[0].(*mcp.TextContent)
+			is.True(ok)
+
+			// Parse the JSON response and verify it's an empty tasks array
+			var searchResponse struct{ Tasks []*core.Task }
+			is.NoErr(json.Unmarshal([]byte(txt.Text), &searchResponse))
+			is.Equal(len(searchResponse.Tasks), 0)
 		})
 	})
 
@@ -302,8 +319,21 @@ func TestMCPHandlers(t *testing.T) {
 				ID:       createdTask.ID.String(),
 				NewTitle: &newTitle,
 			}
-			_, task, err := handler.edit(ctx, req, editParams)
+			editResult, _, err := handler.edit(ctx, req, editParams)
 			is.NoErr(err)
+
+			// Parse the edit response to get the updated task
+			is.Equal(len(editResult.Content), 1)
+			editTxt, ok := editResult.Content[0].(*mcp.TextContent)
+			is.True(ok)
+			t.Logf("Edit response JSON: %s", editTxt.Text)
+			task := &core.Task{}
+			err = json.Unmarshal([]byte(editTxt.Text), task)
+			if err != nil {
+				t.Logf("Failed to unmarshal JSON: %v, Content: %s", err, editTxt.Text)
+			}
+			is.NoErr(err)
+			t.Logf("Task title: '%s', Expected: 'Updated Title'", task.Title)
 			is.Equal(task.Title, "Updated Title")
 
 			// Verify the task was updated
@@ -365,8 +395,12 @@ func TestMCPHandlers(t *testing.T) {
 				ID: "nonexistent",
 			}
 			result, _, err := handler.archive(ctx, req, archiveParams)
-			is.True(err != nil) // Should return an error
-			is.True(result == nil)
+
+			// With structured error handling, we now return structured error responses
+			// instead of Go errors for "not found" cases
+			is.NoErr(err) // No Go error should be returned
+			is.True(result != nil) // Should return structured error response
+			is.True(result.IsError) // Should be marked as error response
 		})
 	})
 

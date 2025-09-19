@@ -44,6 +44,8 @@ type handler struct {
 	mu         *sync.Mutex
 	autoCommit bool
 	middleware *ResponseSizeMiddleware
+	validator  *ValidationMiddleware
+	responder  *ResponseWrapper
 }
 
 func (h *handler) commit(id, title, path, oldPath, msg string) error {
@@ -76,11 +78,19 @@ func NewServer(store TaskStore, autoCommit bool) (*Server, error) {
 	responseSizeConfig := DefaultResponseSizeConfig()
 	middleware := NewResponseSizeMiddleware(responseSizeConfig)
 
+	// Initialize validation middleware
+	validator := NewValidationMiddleware()
+
+	// Initialize response wrapper
+	responder := NewResponseWrapper(middleware)
+
 	h := &handler{
 		store:      store,
 		mu:         &sync.Mutex{},
 		autoCommit: autoCommit,
 		middleware: middleware,
+		validator:  validator,
+		responder:  responder,
 	}
 
 	server := &Server{
