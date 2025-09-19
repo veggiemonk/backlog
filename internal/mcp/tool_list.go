@@ -4,18 +4,27 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/veggiemonk/backlog/internal/core"
 )
 
 func (s *Server) registerTaskList() error {
+	inputSchema, err := jsonschema.For[core.ListTasksParams](nil)
+	if err != nil {
+		return err
+	}
 	description := `List tasks, with optional filtering and sorting. 
 	Returns a list of tasks.
 `
 	tool := &mcp.Tool{
-		Name:        "task_list",
-		Title:       "List tasks",
-		Description: description,
+		Name:         "task_list",
+		Title:        "List tasks",
+		Description:  description,
+		InputSchema:  inputSchema,
+		OutputSchema: &jsonschema.Schema{Type: "object", Properties: map[string]*jsonschema.Schema{
+			"tasks": {Type: "array", Items: taskJSONSchema()},
+		}},
 	}
 	mcp.AddTool(s.mcpServer, tool, s.handler.list)
 	return nil
@@ -39,5 +48,5 @@ func (h *handler) list(ctx context.Context, req *mcp.CallToolRequest, params cor
 	res := &mcp.CallToolResult{
 		Content: []mcp.Content{&mcp.TextContent{Text: string(b)}},
 	}
-	return res, nil, nil
+	return res, wrappedTask, nil
 }

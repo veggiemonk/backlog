@@ -4,15 +4,24 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/veggiemonk/backlog/internal/core"
 )
 
 func (s *Server) registerTaskSearch() error {
+	inputSchema, err := jsonschema.For[SearchParams](nil)
+	if err != nil {
+		return err
+	}
 	tool := &mcp.Tool{
-		Name:        "task_search",
-		Title:       "Search by content",
-		Description: "Search tasks by content. Returns a list of matching tasks.",
+		Name:         "task_search",
+		Title:        "Search by content",
+		Description:  "Search tasks by content. Returns a list of matching tasks.",
+		InputSchema:  inputSchema,
+		OutputSchema: &jsonschema.Schema{Type: "object", Properties: map[string]*jsonschema.Schema{
+			"tasks": {Type: "array", Items: taskJSONSchema()},
+		}},
 	}
 	mcp.AddTool(s.mcpServer, tool, s.handler.search)
 	return nil
@@ -45,5 +54,5 @@ func (h *handler) search(ctx context.Context, req *mcp.CallToolRequest, params S
 	res := &mcp.CallToolResult{
 		Content: []mcp.Content{&mcp.TextContent{Text: string(b)}},
 	}
-	return res, nil, nil
+	return res, wrappedTask, nil
 }
