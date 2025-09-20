@@ -45,18 +45,12 @@ func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error)
 		t.Fatalf("no command called %s", use)
 	}
 	args = slices.Insert(args, 0, use)
-	return execute(t, testRootCmd, args...)
-}
-
-func execute(t *testing.T, c *cobra.Command, args ...string) ([]byte, error) {
-	t.Helper()
-
 	buf := new(bytes.Buffer)
-	c.SetOut(buf)
-	c.SetErr(buf)
-	c.SetArgs(args)
+	testRootCmd.SetOut(buf)
+	testRootCmd.SetErr(buf)
+	testRootCmd.SetArgs(args)
 
-	err := c.Execute()
+	err := testRootCmd.Execute()
 	return bytes.TrimSpace(buf.Bytes()), err
 }
 
@@ -116,6 +110,7 @@ func createTestTasks(t *testing.T, store TaskStore) {
 	if err != nil {
 		t.Fatalf("failed to update task: %v", err)
 	}
+	_ = t9
 }
 
 const countTask = 9
