@@ -28,7 +28,7 @@ func (f *FileTaskStore) Create(params CreateTaskParams) (*Task, error) {
 		return nil, fmt.Errorf("accessing %s error: %v", f.tasksDir, err)
 	}
 	if !exists {
-		if err := f.fs.MkdirAll(f.tasksDir, 0750); err != nil {
+		if err := f.fs.MkdirAll(f.tasksDir, 0o750); err != nil {
 			return nil, fmt.Errorf("could not create tasks directory %q: %w", f.tasksDir, err)
 		}
 	}

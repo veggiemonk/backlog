@@ -68,6 +68,7 @@ func NewServer(store TaskStore, autoCommit bool) (*Server, error) {
 			HasPrompts:   true,
 			HasTools:     true,
 			HasResources: true,
+			PageSize:     10, // TODO: test how it interacts with --limit and --offset
 		},
 	)
 

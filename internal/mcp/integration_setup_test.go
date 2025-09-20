@@ -45,15 +45,3 @@ func newClient(t *testing.T, endpoint string) (*mcp.ClientSession, func(context.
 	closeFn := func(ctx context.Context) error { _ = sess.Close(); return nil }
 	return sess, closeFn
 }
-
-//
-// // parseTextContent decodes the first text content payload from a CallToolResult into the provided target.
-// func parseTextContent(t *testing.T, res *mcp.CallToolResult, target any) {
-// 	t.Helper()
-// 	is := is.New(t)
-// 	is.True(res != nil)
-// 	is.True(len(res.StructuredContent) > 0)
-// 	txt, ok := res.Content[0].(*mcp.TextContent)
-// 	is.True(ok)
-// 	is.NoErr(json.Unmarshal([]byte(txt.Text), target))
-// }
