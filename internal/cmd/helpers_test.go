@@ -13,6 +13,7 @@ import (
 )
 
 type runFunc func(cmd *cobra.Command, args []string)
+type runEFunc func(cmd *cobra.Command, args []string) error
 
 func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error) {
 	t.Helper()
@@ -28,17 +29,53 @@ func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error)
 	testRootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
 		cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
 	}
-	testCmd := &cobra.Command{Use: use, Run: run}
+	var testCmd *cobra.Command
+
+	// Use proper command configuration based on command type
+	switch use {
+	case "create":
+		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), Run: run}
+	case "edit":
+		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), Run: run}
+	case "view":
+		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), Run: run}
+	case "archive":
+		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), Run: run}
+	case "search":
+		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), Run: run}
+	default:
+		testCmd = &cobra.Command{Use: use, Run: run}
+	}
 
 	setRootPersistentFlags(testRootCmd)
 	testRootCmd.AddCommand(testCmd)
 	switch use {
+	case "create":
+		// Create command flags are set in init() function via setCreateFlags()
+		// We need to manually set them here for testing
+		testCmd.Flags().StringVarP(&description, "description", "d", "", "Description of the task")
+		testCmd.Flags().StringVarP(&parent, "parent", "p", "", "Parent task ID")
+		testCmd.Flags().StringVar(&priority, "priority", "medium", "Priority of the task (low, medium, high, critical)")
+		testCmd.Flags().StringSliceVarP(&assigned, "assigned", "a", []string{}, "Assignee for the task (can be specified multiple times)")
+		testCmd.Flags().StringSliceVarP(&labels, "labels", "l", []string{}, "Comma-separated labels for the task")
+		testCmd.Flags().StringSliceVar(&dependencies, "deps", []string{}, "Add a dependency (can be used multiple times)")
+		testCmd.Flags().StringSliceVar(&ac, "ac", []string{}, "Acceptance criterion (can be specified multiple times)")
+		testCmd.Flags().StringVar(&plan, "plan", "", "Implementation plan for the task")
+		testCmd.Flags().StringVar(&notes, "notes", "", "Additional notes for the task")
 	case "list":
 		setListFlags(testCmd)
 	case "search":
 		setSearchFlags(testCmd)
 	case "edit":
 		setEditFlags(testCmd)
+	case "view":
+		setViewFlags(testCmd)
+	case "archive":
+		// Archive command has no flags
+	case "version":
+		// Version command has no flags
+	case "instructions":
+		// Instructions command has no flags
 	case "mcp":
 		setMCPFlags(testCmd)
 	default:
@@ -52,6 +89,16 @@ func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error)
 
 	err := testRootCmd.Execute()
 	return bytes.TrimSpace(buf.Bytes()), err
+}
+
+func execE(t *testing.T, use string, run runEFunc, args ...string) ([]byte, error) {
+	// Wrap the runEFunc to match runFunc signature
+	wrappedRun := func(cmd *cobra.Command, args []string) {
+		if err := run(cmd, args); err != nil {
+			cmd.PrintErrln("Error:", err)
+		}
+	}
+	return exec(t, use, wrappedRun, args...)
 }
 
 func createTestTasks(t *testing.T, store TaskStore) {

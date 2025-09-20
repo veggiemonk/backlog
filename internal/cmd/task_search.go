@@ -14,36 +14,7 @@ var searchCmd = &cobra.Command{
 	Short: "Search tasks by content",
 	Long:  `Search for tasks containing the specified query string.`,
 	Args:  cobra.ExactArgs(1),
-	Example: `
-# Search for tasks containing "login" in any field
-backlog search "login"
-
-# Search for tasks containing "bug" 
-backlog search "bug"
-
-# Search for tasks assigned to a specific person
-backlog search "@john"
-
-# Search for tasks with specific labels
-backlog search "frontend"
-
-# Search in acceptance criteria
-backlog search "validation"
-
-# Search with markdown output
-backlog search "api" --markdown
-
-# Search with JSON output
-backlog search "api" --json
-
-# Search with additional columns displayed
-backlog search "user" --labels --priority --assigned
-
-# Search with pagination
-backlog search "api" --limit 5                  # Show first 5 search results
-backlog search "bug" --limit 3 --offset 5       # Show 3 results starting from 6th match
-backlog search "feature" --status "todo" --limit 10  # Show first 10 "todo" feature results
-	`,
+	Example: SearchExamples.GenerateExampleText(),
 	Run: runSearch,
 }
 

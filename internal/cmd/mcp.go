@@ -11,15 +11,11 @@ import (
 )
 
 var mcpCmd = &cobra.Command{
-	Use:   "mcp",
-	Short: "Start the MCP server",
-	Long:  `Starts an MCP server to provide programmatic access to backlog tasks.`,
-	Example: `
-backlog mcp --http             # Start the MCP server using HTTP transport on default port 8106
-backlog mcp --http --port 4321 # Start the MCP server using HTTP transport on port 4321
-backlog mcp                    # Start the MCP server using stdio transport
-`,
-	RunE: runMcpServer,
+	Use:     "mcp",
+	Short:   "Start the MCP server",
+	Long:    `Starts an MCP server to provide programmatic access to backlog tasks.`,
+	Example: MCPExamples.GenerateExampleText(),
+	RunE:    runMcpServer,
 }
 
 var (

@@ -10,11 +10,12 @@ import (
 )
 
 var archiveCmd = &cobra.Command{
-	Use:   "archive <task-id>",
-	Short: "Archive a task",
-	Long:  `Archives a task, moving it to the archived directory.`,
-	Args:  cobra.ExactArgs(1),
-	RunE:  runArchive,
+	Use:     "archive <task-id>",
+	Short:   "Archive a task",
+	Long:    `Archives a task, moving it to the archived directory.`,
+	Example: ArchiveExamples.GenerateExampleText(),
+	Args:    cobra.ExactArgs(1),
+	RunE:    runArchive,
 }
 
 func init() {

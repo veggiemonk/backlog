@@ -19,54 +19,7 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all tasks",
 	Long:  `Lists all tasks in the backlog except archived tasks.`,
-	Example: `
-# List all tasks
-backlog list                                    # List all tasks with all columns
-backlog list --status "todo"                    # List tasks with status "todo"
-backlog list --status "todo,in-progress"        # List tasks with status "todo" or "in-progress"
-backlog list --status "done"                    # List tasks with status "done"
-backlog list --parent "12345"                   # List tasks that are sub-tasks of the task with ID "12345"
-backlog list --status "todo" --parent "12345"   # List "todo" sub-tasks of task "12345"
-backlog list --assigned "alice"                 # List tasks assigned to alice
-backlog list --unassigned                       # List tasks that have no one assigned
-backlog list --labels "bug"                     # List tasks containing the label "bug"
-backlog list --labels "bug,feature"             # List tasks containing either "bug" or "feature" labels
-backlog list --priority "high"                  # List all high priority tasks
-
-# dependency filters
-backlog list --has-dependency                   # List tasks that have at least one dependency
-backlog list --depended-on                      # List tasks that are depended on by other tasks
-backlog list --depended-on --status "todo"      # List all the blocking tasks.
-
-# column visibility
-backlog list --hide-extra                       # Hide extra fields (labels, priority, assigned)
-backlog list -e                                 # Hide extra fields (labels, priority, assigned)
-backlog list --status "todo" --hide-extra       # List "todo" tasks with minimal columns
-
-# sorting
-backlog list --sort "priority"                  # Sort tasks by priority
-backlog list --sort "updated,priority"          # Sort tasks by updated date, then priority
-backlog list --sort "status,created"            # Sort tasks by status, then creation date
-backlog list --reverse                          # Reverse the order of tasks
-backlog list --sort "priority" --reverse        # Sort by priority in reverse order
-backlog list --status "todo" \
-	--priority "medium"  \
-	--sort "priority"    \
-	--reverse                               # Combine all options
-
-# output format
-backlog list -m                                 # List tasks in markdown format
-backlog list -markdown                          # List tasks in markdown format
-backlog list --json                             # List tasks in JSON format
-backlog list -j                                 # List tasks in JSON format
-backlog list --status "todo" --json             # List "todo" tasks in JSON format
-
-# pagination
-backlog list --limit 10                         # List first 10 tasks
-backlog list --limit 5 --offset 10              # List 5 tasks starting from 11th task
-backlog list --status "todo" --limit 3          # List first 3 "todo" tasks
-backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
-	`,
+	Example: ListExamples.GenerateExampleText(),
 	Run: runList,
 }
 

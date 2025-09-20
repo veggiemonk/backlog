@@ -8,14 +8,11 @@ import (
 )
 
 var instructionsCmd = &cobra.Command{
-	Use:   "instructions",
-	Short: "instructions for agents to learn to use backlog",
-	Long:  `Instructions for agents to learn to use backlog by including them into a prompt.`,
-	Example: `
-backlog instructions               # outputs the instructions 
-backlog instructions >> AGENTS.md  # add instructions to agent base prompt.
-`,
-	Run: runInstructions,
+	Use:     "instructions",
+	Short:   "instructions for agents to learn to use backlog",
+	Long:    `Instructions for agents to learn to use backlog by including them into a prompt.`,
+	Example: InstructionsExamples.GenerateExampleText(),
+	Run:     runInstructions,
 }
 
 func init() {
