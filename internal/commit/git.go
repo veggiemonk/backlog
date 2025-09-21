@@ -12,6 +12,8 @@ import (
 	"github.com/go-git/go-git/v6"
 	"github.com/go-git/go-git/v6/plumbing/object"
 	"github.com/imjasonh/version"
+	"github.com/spf13/afero"
+	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
 )
 
@@ -92,5 +94,104 @@ func Add(path, oldPath, message string) error {
 		return fmt.Errorf("error creating commit: %w", err)
 	}
 	logging.Info("changes committed successfully", "path", path, "oldPath", oldPath)
+	return nil
+}
+
+// CheckForTaskConflicts detects and optionally resolves ID conflicts in the backlog
+func CheckForTaskConflicts(tasksDir string, autoResolve bool) error {
+	fs := afero.NewOsFs()
+	detector := core.NewConflictDetector(fs, tasksDir)
+
+	// Detect conflicts
+	conflicts, err := detector.DetectConflicts()
+	if err != nil {
+		return fmt.Errorf("failed to detect conflicts: %w", err)
+	}
+
+	if len(conflicts) == 0 {
+		logging.Info("no task ID conflicts detected")
+		return nil
+	}
+
+	// Log detected conflicts
+	summary := core.SummarizeConflicts(conflicts)
+	logging.Warn("task ID conflicts detected",
+		"total", summary.TotalConflicts,
+		"duplicate_ids", summary.DuplicateIDs,
+		"orphaned_children", summary.OrphanedChildren,
+		"invalid_hierarchy", summary.InvalidHierarchy,
+	)
+
+	// If auto-resolve is enabled, attempt to resolve conflicts
+	if autoResolve {
+		return resolveConflictsAutomatically(detector, conflicts, tasksDir)
+	}
+
+	// Otherwise, just log the conflicts for manual resolution
+	for _, conflict := range conflicts {
+		logging.Error("conflict requires manual resolution",
+			"type", conflict.Type.String(),
+			"id", conflict.ConflictID.String(),
+			"files", conflict.Files,
+			"description", conflict.Description,
+		)
+	}
+
+	return fmt.Errorf("found %d task ID conflicts that require manual resolution", len(conflicts))
+}
+
+// resolveConflictsAutomatically attempts to resolve conflicts using the chronological strategy
+func resolveConflictsAutomatically(detector *core.ConflictDetector, conflicts []core.IDConflict, tasksDir string) error {
+	fs := afero.NewOsFs()
+	store := core.NewFileTaskStore(fs, tasksDir)
+	resolver := core.NewConflictResolver(detector, store)
+
+	// Create resolution plan using chronological strategy (keeps older tasks)
+	plan, err := resolver.CreateResolutionPlan(conflicts, core.ResolutionStrategyChronological)
+	if err != nil {
+		return fmt.Errorf("failed to create resolution plan: %w", err)
+	}
+
+	logging.Info("executing automatic conflict resolution", "actions", len(plan.Actions))
+
+	// Execute the plan with reference updates (not dry run)
+	results, err := resolver.ExecuteResolutionPlanWithReferences(plan, false)
+	if err != nil {
+		return fmt.Errorf("failed to execute resolution plan: %w", err)
+	}
+
+	// Log the results
+	for _, result := range results {
+		logging.Info("conflict resolution action", "result", result)
+	}
+
+	logging.Info("automatic conflict resolution completed", "actions_executed", len(results))
+	return nil
+}
+
+// PostMergeConflictCheck should be called after Git merge operations to detect ID conflicts
+func PostMergeConflictCheck(tasksDir string) error {
+	return CheckForTaskConflicts(tasksDir, true) // Auto-resolve after merges
+}
+
+// PreCommitConflictCheck should be called before commits to ensure no conflicts exist
+func PreCommitConflictCheck(tasksDir string) error {
+	return CheckForTaskConflicts(tasksDir, false) // Don't auto-resolve before commits, just detect
+}
+
+// AddWithConflictDetection adds and commits files with automatic conflict detection
+func AddWithConflictDetection(path, oldPath, message, tasksDir string) error {
+	// First, check for conflicts before committing
+	if err := PreCommitConflictCheck(tasksDir); err != nil {
+		logging.Warn("conflicts detected before commit", "error", err)
+		// Continue with commit even if conflicts exist (they'll be flagged for manual resolution)
+	}
+
+	// Perform the normal commit
+	if err := Add(path, oldPath, message); err != nil {
+		return err
+	}
+
+	logging.Info("commit completed with conflict detection")
 	return nil
 }

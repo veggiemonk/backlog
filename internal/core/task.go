@@ -126,8 +126,10 @@ type AcceptanceCriterion struct {
 
 // HistoryEntry represents a single entry in the task's history.
 type HistoryEntry struct {
-	Timestamp time.Time `yaml:"timestamp" json:"timestamp"`
-	Change    string    `yaml:"change" json:"change"`
+	Timestamp time.Time              `yaml:"timestamp" json:"timestamp"`
+	Change    string                 `yaml:"change" json:"change"`
+	Type      string                 `yaml:"type,omitempty" json:"type,omitempty"`         // Type of change: "field_update", "id_change", "conflict_resolution", etc.
+	Metadata  map[string]interface{} `yaml:"metadata,omitempty" json:"metadata,omitempty"` // Additional metadata about the change
 }
 
 // RecordChange adds a history entry to the task for the given change
@@ -135,6 +137,122 @@ func RecordChange(task *Task, change string) {
 	entry := HistoryEntry{
 		Timestamp: time.Now().UTC(),
 		Change:    change,
+		Type:      "field_update",
 	}
 	task.History = append(task.History, entry)
+}
+
+// RecordIDChange adds a specialized history entry for ID changes during conflict resolution
+func RecordIDChange(task *Task, oldID, newID TaskID, reason string, metadata map[string]interface{}) {
+	if metadata == nil {
+		metadata = make(map[string]interface{})
+	}
+
+	metadata["old_id"] = oldID.String()
+	metadata["new_id"] = newID.String()
+	metadata["reason"] = reason
+
+	entry := HistoryEntry{
+		Timestamp: time.Now().UTC(),
+		Change:    fmt.Sprintf("ID changed from %s to %s (%s)", oldID.String(), newID.String(), reason),
+		Type:      "id_change",
+		Metadata:  metadata,
+	}
+	task.History = append(task.History, entry)
+}
+
+// RecordConflictResolution adds a history entry for conflict resolution actions
+func RecordConflictResolution(task *Task, action, description string, metadata map[string]interface{}) {
+	if metadata == nil {
+		metadata = make(map[string]interface{})
+	}
+
+	metadata["action"] = action
+	metadata["resolution_timestamp"] = time.Now().UTC()
+
+	entry := HistoryEntry{
+		Timestamp: time.Now().UTC(),
+		Change:    description,
+		Type:      "conflict_resolution",
+		Metadata:  metadata,
+	}
+	task.History = append(task.History, entry)
+}
+
+// RecordParentChange adds a history entry for parent reference changes
+func RecordParentChange(task *Task, oldParent, newParent TaskID, reason string) {
+	metadata := map[string]interface{}{
+		"old_parent": oldParent.String(),
+		"new_parent": newParent.String(),
+		"reason":     reason,
+	}
+
+	var changeDesc string
+	if newParent.IsZero() {
+		changeDesc = fmt.Sprintf("Removed parent reference %s (%s)", oldParent.String(), reason)
+	} else if oldParent.IsZero() {
+		changeDesc = fmt.Sprintf("Added parent reference %s (%s)", newParent.String(), reason)
+	} else {
+		changeDesc = fmt.Sprintf("Updated parent from %s to %s (%s)", oldParent.String(), newParent.String(), reason)
+	}
+
+	entry := HistoryEntry{
+		Timestamp: time.Now().UTC(),
+		Change:    changeDesc,
+		Type:      "parent_change",
+		Metadata:  metadata,
+	}
+	task.History = append(task.History, entry)
+}
+
+// GetIDChangeHistory returns all ID change history entries for this task
+func (t *Task) GetIDChangeHistory() []HistoryEntry {
+	var idChanges []HistoryEntry
+	for _, entry := range t.History {
+		if entry.Type == "id_change" {
+			idChanges = append(idChanges, entry)
+		}
+	}
+	return idChanges
+}
+
+// GetConflictResolutionHistory returns all conflict resolution history entries for this task
+func (t *Task) GetConflictResolutionHistory() []HistoryEntry {
+	var resolutions []HistoryEntry
+	for _, entry := range t.History {
+		if entry.Type == "conflict_resolution" {
+			resolutions = append(resolutions, entry)
+		}
+	}
+	return resolutions
+}
+
+// HasBeenRenamed checks if this task has ever had its ID changed
+func (t *Task) HasBeenRenamed() bool {
+	for _, entry := range t.History {
+		if entry.Type == "id_change" {
+			return true
+		}
+	}
+	return false
+}
+
+// GetOriginalID attempts to find the original ID of this task before any renaming
+func (t *Task) GetOriginalID() (TaskID, bool) {
+	idChanges := t.GetIDChangeHistory()
+	if len(idChanges) == 0 {
+		return t.ID, false // Current ID is the original
+	}
+
+	// Return the old_id from the first ID change
+	firstChange := idChanges[0]
+	if oldIDStr, exists := firstChange.Metadata["old_id"]; exists {
+		if oldIDString, ok := oldIDStr.(string); ok {
+			if originalID, err := parseTaskID(oldIDString); err == nil {
+				return originalID, true
+			}
+		}
+	}
+
+	return ZeroTaskID, false
 }
