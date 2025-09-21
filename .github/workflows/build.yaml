@@ -1,0 +1,27 @@
+name: Go
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read # access to check out code and install dependencies
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "stable"
+          # go-version-file: './go.mod'
+          check-latest: true
+          # cache-dependency-path: "**/*.sum"
+          cache-dependency-path: |
+            go.sum
+
+      - run: go build .
+      - run: go test -race ./...
