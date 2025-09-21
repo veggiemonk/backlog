@@ -71,7 +71,7 @@ You MUST use the `gopls` tools for code intelligence.
 
 1.  **NEVER EDIT TASK FILES DIRECTLY**: Do not write to, modify, or delete any file in the `.backlog/` directory. All task manipulations MUST go through the `backlog` CLI commands. Direct edits will corrupt metadata and break the system.
 2.  **DO NOT DELETE TASK FILES**: Never delete task markdown files. Use the `backlog archive` command instead.
-3.  **USE THE `backlog` TOOL**: For any operation related to task management (create, list, view, edit, search, archive), you MUST use the `backlog` CLI tool.
+3.  **ALWAYS USE THE `backlog` TOOL**: For any operation related to task management (create, list, view, edit, search, archive), you MUST use the `backlog` CLI tool.
 
 ---
 

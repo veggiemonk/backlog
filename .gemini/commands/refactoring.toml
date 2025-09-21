@@ -1,7 +1,7 @@
-Description = "WIP - a single prompt to handle the entire refactoring process, from analysis to implementation."
+Description = "a single prompt to handle the entire refactoring process, from analysis to implementation."
 
 prompt = """
-### The Ultimate Refactoring Prompt
+### Refactoring
 
 **Objective:** To perform a safe, well-planned, and comprehensive refactoring of a specific part of the codebase.
 
@@ -56,4 +56,6 @@ You MUST follow this multi-step workflow precisely. Do not skip any steps. Your 
 **Phase 4: Final Review**
 
 Once all tasks are completed, provide a final summary of the changes made and confirm that the original `Refactoring Goal` has been fully achieved.
+
 """
+

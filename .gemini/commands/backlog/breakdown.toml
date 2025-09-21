@@ -18,6 +18,5 @@ Instructions:
 9. Set the status of each task to "todo".
 10. Assign a priority level to each task (low, medium, high).
 
-@docs/cli/backlog_create.md
-
 """
+
