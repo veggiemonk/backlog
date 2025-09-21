@@ -13,10 +13,15 @@ backlog instructions [flags]
 ### Examples
 
 ```
+# Output Instructions
 
-backlog instructions               # outputs the instructions 
-backlog instructions >> AGENTS.md  # add instructions to agent base prompt.
+# outputs the instructions
+backlog backlog instructions
 
+# Save Instructions to File
+
+# add instructions to agent base prompt
+backlog backlog instructions >> AGENTS.md
 ```
 
 ### Options
@@ -28,7 +33,7 @@ backlog instructions >> AGENTS.md  # add instructions to agent base prompt.
 ### Options inherited from parent commands
 
 ```
-      --auto-commit         Auto-committing changes to git repository (default true)
+      --auto-commit         Auto-committing changes to git repository
       --folder string       Directory for backlog tasks (default ".backlog")
       --log-file string     Log file path (defaults to stderr)
       --log-format string   Log format (json, text) (default "text")
@@ -39,5 +44,5 @@ backlog instructions >> AGENTS.md  # add instructions to agent base prompt.
 
 ### SEE ALSO
 
-* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+* [backlog](backlog.md)	 - backlog is a git-native, markdown-based task manager
 

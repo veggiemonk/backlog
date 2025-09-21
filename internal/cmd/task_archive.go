@@ -13,7 +13,7 @@ var archiveCmd = &cobra.Command{
 	Use:     "archive <task-id>",
 	Short:   "Archive a task",
 	Long:    `Archives a task, moving it to the archived directory.`,
-	Example: ArchiveExamples.GenerateExampleText(),
+	Example: generateExampleText(ArchiveExamples),
 	Args:    cobra.ExactArgs(1),
 	RunE:    runArchive,
 }
@@ -28,18 +28,12 @@ func runArchive(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("get task %q: %v", args[0], err)
 	}
-
-	// Save path for commit
-	oldPath := store.Path(task)
-
-	newPath, err := store.Archive(task.ID)
+	oldPath := store.Path(task)            // Save path for commit
+	newPath, err := store.Archive(task.ID) // In case the title has changed
 	if err != nil {
 		return fmt.Errorf("archive task %q: %v", task.ID.String(), err)
 	}
-
 	logging.Info("task archived successfully", "task_id", task.ID)
-	// fmt.Printf("Task %s archived successfully.\n", archivedTask.ID)
-
 	if !viper.GetBool(configAutoCommit) {
 		return nil // Auto-commit is disabled
 	}

@@ -6,8 +6,6 @@ import (
 	"github.com/matryer/is"
 )
 
-// No wrapper needed, we'll use execE directly
-
 func Test_runArchive(t *testing.T) {
 	t.Run("archive existing task", func(t *testing.T) {
 		is := is.NewRelaxed(t)
@@ -16,7 +14,7 @@ func Test_runArchive(t *testing.T) {
 		is.NoErr(err)
 
 		// Then archive it
-		output, err := execE(t, "archive", runArchive, "1")
+		output, err := exec(t, "archive", runArchive, "1")
 		is.NoErr(err)
 		_ = output
 	})
@@ -28,7 +26,7 @@ func Test_runArchive(t *testing.T) {
 		is.NoErr(err)
 
 		// Then archive using partial ID
-		output, err := execE(t, "archive", runArchive, "1")
+		output, err := exec(t, "archive", runArchive, "1")
 		is.NoErr(err)
 		_ = output
 	})
@@ -40,7 +38,7 @@ func Test_runArchive(t *testing.T) {
 		is.NoErr(err)
 
 		// Then archive using full ID format
-		output, err := execE(t, "archive", runArchive, "T1")
+		output, err := exec(t, "archive", runArchive, "T1")
 		is.NoErr(err)
 		_ = output
 	})
@@ -56,7 +54,7 @@ func Test_runArchive(t *testing.T) {
 		is.NoErr(err)
 
 		// Then archive it
-		output, err := execE(t, "archive", runArchive, "1")
+		output, err := exec(t, "archive", runArchive, "1")
 		is.NoErr(err)
 		_ = output
 	})
@@ -64,19 +62,19 @@ func Test_runArchive(t *testing.T) {
 	// Test error cases
 	t.Run("archive nonexistent task should fail", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		_, err := execE(t, "archive", runArchive, "999")
+		_, err := exec(t, "archive", runArchive, "999")
 		is.True(err != nil) // Should error when task doesn't exist
 	})
 
 	t.Run("archive without task ID should fail", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		_, err := execE(t, "archive", runArchive)
+		_, err := exec(t, "archive", runArchive)
 		is.True(err != nil) // Should error when no task ID provided
 	})
 
 	t.Run("archive with invalid task ID should fail", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		_, err := execE(t, "archive", runArchive, "invalid")
+		_, err := exec(t, "archive", runArchive, "invalid")
 		is.True(err != nil) // Should error with invalid task ID
 	})
 
@@ -87,28 +85,26 @@ func Test_runArchive(t *testing.T) {
 		is.NoErr(err)
 
 		// Archive it once
-		_, err = execE(t, "archive", runArchive, "1")
+		_, err = exec(t, "archive", runArchive, "1")
 		is.NoErr(err)
 
 		// Try to archive again - should fail
-		_, err = execE(t, "archive", runArchive, "1")
+		_, err = exec(t, "archive", runArchive, "1")
 		is.True(err != nil) // Should error when trying to archive already archived task
 	})
 }
 
 // Test generated examples
 func Test_ArchiveExamples(t *testing.T) {
-	testableExamples := ArchiveTestableExamples()
-
-	for _, example := range testableExamples {
-		t.Run("example_"+example.TestName, func(t *testing.T) {
+	for _, ex := range ArchiveExamples.Examples {
+		t.Run("example_"+generateTestName(ex.Description), func(t *testing.T) {
 			// Create a test task first for archive examples
 			_, err := exec(t, "create", runCreate, "Test Task for Archive Example")
 			if err != nil {
 				t.Fatalf("Failed to create test task: %v", err)
 			}
 
-			args := example.GenerateArgsSlice()
+			args := generateArgsSlice(ex)
 			// Replace T01 with 1 since our test creates task with ID 1
 			for i, arg := range args {
 				if arg == "T01" {
@@ -116,10 +112,10 @@ func Test_ArchiveExamples(t *testing.T) {
 				}
 			}
 
-			output, err := execE(t, "archive", runArchive, args...)
+			output, err := exec(t, "archive", runArchive, args...)
 
 			// Use the custom validator for this example
-			example.OutputValidator(t, output, err)
+			ex.OutputValidator(t, output, err)
 		})
 	}
 }

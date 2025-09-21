@@ -127,15 +127,14 @@ func Test_runCreate(t *testing.T) {
 
 // Test generated examples
 func Test_CreateExamples(t *testing.T) {
-	testableExamples := CreateTestableExamples()
-
-	for _, example := range testableExamples {
-		t.Run("example_"+example.TestName, func(t *testing.T) {
-			args := example.GenerateArgsSlice()
+	for _, ex := range CreateExamples.Examples {
+		t.Run("example_"+generateTestName(ex.Description), func(t *testing.T) {
+			args := generateArgsSlice(ex)
 			output, err := exec(t, "create", runCreate, args...)
 
 			// Use the custom validator for this example
-			example.OutputValidator(t, output, err)
+			ex.OutputValidator(t, output, err)
 		})
 	}
 }
+

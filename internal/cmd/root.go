@@ -3,6 +3,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/spf13/afero"
@@ -12,6 +13,8 @@ import (
 	"github.com/veggiemonk/backlog/internal/logging"
 	"github.com/veggiemonk/backlog/internal/paths"
 )
+
+const Name = "backlog"
 
 type contextKey string
 
@@ -36,43 +39,43 @@ func init() {
 }
 
 var rootCmd = &cobra.Command{
-	Use:   "backlog",
-	Short: "Backlog is a git-native, markdown-based task manager",
+	Use:   Name,
+	Short: "git-native, markdown-based task manager",
 	Long: `A Git-native, Markdown-based task manager for developers and AI agents.
 Backlog helps you manage tasks within your git repository.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// Default action when no subcommand is provided
 		if err := cmd.Help(); err != nil {
-			logging.Error("failed to display help", "error", err)
-			os.Exit(1)
+			return fmt.Errorf("display help: %v", err)
 		}
+		return nil
 	},
 }
 
 const (
 	// Environment variable names for configuration
 	envPrefix        = "BACKLOG"
-	envVarLogFile    = "BACKLOG_LOG_FILE"
-	envVarLogLevel   = "BACKLOG_LOG_LEVEL"
-	envVarLogFormat  = "BACKLOG_LOG_FORMAT"
-	envVarAutoCommit = "BACKLOG_AUTO_COMMIT"
-	envVarPageSize   = "BACKLOG_PAGE_SIZE"
-	envVarMaxLimit   = "BACKLOG_MAX_LIMIT"
+	envVarLogFile    = envPrefix + "_LOG_FILE"
+	envVarLogLevel   = envPrefix + "_LOG_LEVEL"
+	envVarLogFormat  = envPrefix + "_LOG_FORMAT"
+	envVarAutoCommit = envPrefix + "_AUTO_COMMIT"
+	envVarPageSize   = envPrefix + "_PAGE_SIZE"
+	envVarMaxLimit   = envPrefix + "_MAX_LIMIT"
 
 	// folder
 	configFolder  = "folder"
-	envVarDir     = "BACKLOG_FOLDER"
+	envVarDir     = envPrefix + "_FOLDER"
 	defaultFolder = ".backlog"
 
 	// git
 	configAutoCommit  = "auto-commit"
-	defaultAutoCommit = true
+	defaultAutoCommit = false
 
 	// pagination
-	configPageSize     = "page-size"
-	defaultPageSize    = 25
-	configMaxLimit     = "max-limit" 
-	defaultMaxLimit    = 1000
+	configPageSize  = "page-size"
+	defaultPageSize = 25
+	configMaxLimit  = "max-limit"
+	defaultMaxLimit = 1000
 
 	// logging
 	configLogLevel   = "log-level"
@@ -147,7 +150,7 @@ func ApplyDefaultPagination(limit, offset *int) (*int, *int) {
 	if offset != nil && *offset > 0 {
 		return limit, offset
 	}
-	
+
 	// Don't apply defaults if user explicitly set limit
 	if limit != nil && *limit > 0 {
 		// Enforce max limit
@@ -158,7 +161,7 @@ func ApplyDefaultPagination(limit, offset *int) (*int, *int) {
 		}
 		return limit, offset
 	}
-	
+
 	// No pagination requested by user
 	return limit, offset
 }

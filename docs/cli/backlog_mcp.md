@@ -13,11 +13,20 @@ backlog mcp [flags]
 ### Examples
 
 ```
+# Start MCP Server with HTTP
 
-backlog mcp --http             # Start the MCP server using HTTP transport on default port 8106
-backlog mcp --http --port 4321 # Start the MCP server using HTTP transport on port 4321
-backlog mcp                    # Start the MCP server using stdio transport
+# Start the MCP server using HTTP transport on default port 8106
+backlog backlog mcp --http
 
+# Start MCP Server with Custom Port
+
+# Start the MCP server using HTTP transport on port 4321
+backlog backlog mcp --http --port "4321"
+
+# Start MCP Server with Stdio
+
+# Start the MCP server using stdio transport
+backlog backlog mcp
 ```
 
 ### Options
@@ -31,7 +40,7 @@ backlog mcp                    # Start the MCP server using stdio transport
 ### Options inherited from parent commands
 
 ```
-      --auto-commit         Auto-committing changes to git repository (default true)
+      --auto-commit         Auto-committing changes to git repository
       --folder string       Directory for backlog tasks (default ".backlog")
       --log-file string     Log file path (defaults to stderr)
       --log-format string   Log format (json, text) (default "text")
@@ -42,5 +51,5 @@ backlog mcp                    # Start the MCP server using stdio transport
 
 ### SEE ALSO
 
-* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+* [backlog](backlog.md)	 - backlog is a git-native, markdown-based task manager
 

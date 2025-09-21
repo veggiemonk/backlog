@@ -3,40 +3,37 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/veggiemonk/backlog/internal/logging"
 )
 
 var viewJSON bool
 
 // viewCmd represents the view command
 var viewCmd = &cobra.Command{
-	Use:   "view <id>",
-	Short: "View a task by providing its ID",
+	Use:     "view <id>",
+	Short:   "View a task by providing its ID",
 	Long:    `View a task by providing its ID. You can output in markdown or JSON format.`,
-	Example: ViewExamples.GenerateExampleText(),
-	Args: cobra.ExactArgs(1),
-	Run:  view,
+	Example: generateExampleText(ViewExamples),
+	Args:    cobra.ExactArgs(1),
+	RunE:    view,
 }
 
-func view(cmd *cobra.Command, args []string) {
+func view(cmd *cobra.Command, args []string) error {
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
 	t, err := store.Get(args[0])
 	if err != nil {
-		logging.Error("failed to view task", "task_id", args[0], "error", err)
-		os.Exit(1)
+		return fmt.Errorf("view task %q: %v", args[0], err)
 	}
 
 	if viewJSON {
 		if err := json.NewEncoder(cmd.OutOrStdout()).Encode(t); err != nil {
-			logging.Error("failed to encode JSON", "task_id", args[0], "error", err)
-			os.Exit(1)
+			return fmt.Errorf("view task %q: %v", args[0], err)
 		}
 	} else {
 		fmt.Printf("%s\n", string(t.Bytes()))
 	}
+	return nil
 }
 
 func setViewFlags(cmd *cobra.Command) {

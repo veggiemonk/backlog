@@ -2,20 +2,18 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/veggiemonk/backlog/internal/core"
-	"github.com/veggiemonk/backlog/internal/logging"
 )
 
 var searchCmd = &cobra.Command{
-	Use:   "search <query>",
-	Short: "Search tasks by content",
-	Long:  `Search for tasks containing the specified query string.`,
-	Args:  cobra.ExactArgs(1),
-	Example: SearchExamples.GenerateExampleText(),
-	Run: runSearch,
+	Use:     "search <query>",
+	Short:   "Search tasks by content",
+	Long:    `Search for tasks containing the specified query string.`,
+	Args:    cobra.ExactArgs(1),
+	Example: generateExampleText(SearchExamples),
+	RunE:    runSearch,
 }
 
 var (
@@ -66,10 +64,10 @@ func setSearchFlags(cmd *cobra.Command) {
 	cmd.Flags().IntVar(&searchOffsetFlag, "offset", 0, "Number of tasks to skip from the beginning")
 }
 
-func runSearch(cmd *cobra.Command, args []string) {
+func runSearch(cmd *cobra.Command, args []string) error {
 	query := args[0]
 	sortFieldsSlice := parseSortFields(searchSortFields)
-	
+
 	var limit, offset *int
 	if searchLimitFlag > 0 {
 		limit = &searchLimitFlag
@@ -77,10 +75,10 @@ func runSearch(cmd *cobra.Command, args []string) {
 	if searchOffsetFlag > 0 {
 		offset = &searchOffsetFlag
 	}
-	
+
 	// Apply configuration defaults and limits
 	limit, offset = ApplyDefaultPagination(limit, offset)
-	
+
 	params := core.ListTasksParams{
 		Parent:        &searchParent,
 		Status:        searchStatus,
@@ -95,25 +93,23 @@ func runSearch(cmd *cobra.Command, args []string) {
 		Offset:        offset,
 	}
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
-	
+
 	// Get total search count without pagination for metadata
 	totalParams := params
 	totalParams.Limit = nil
 	totalParams.Offset = nil
 	allTasks, err := store.Search(query, totalParams)
 	if err != nil {
-		logging.Error("failed to search tasks", "query", query, "error", err)
-		os.Exit(1)
+		return fmt.Errorf("search tasks %q: %v", query, err)
 	}
 	totalCount := len(allTasks)
-	
+
 	// Get paginated search results
 	tasks, err := store.Search(query, params)
 	if err != nil {
-		logging.Error("failed to search tasks", "query", query, "error", err)
-		os.Exit(1)
+		return fmt.Errorf("search tasks %q: %v", query, err)
 	}
-	
+
 	messagePrefix := ""
 	if !searchJSONOutput {
 		switch {
@@ -128,7 +124,7 @@ func runSearch(cmd *cobra.Command, args []string) {
 			}
 		}
 	}
-	
+
 	// Create pagination info
 	var paginationInfo *core.PaginationInfo
 	if limit != nil || offset != nil {
@@ -141,18 +137,18 @@ func runSearch(cmd *cobra.Command, args []string) {
 			limitVal = *limit
 		}
 		hasMore := (offsetVal + len(tasks)) < totalCount
-		
+
 		paginationInfo = &core.PaginationInfo{
-			TotalResults:    totalCount,
+			TotalResults:     totalCount,
 			DisplayedResults: len(tasks),
-			Offset:          offsetVal,
-			Limit:           limitVal,
-			HasMore:         hasMore,
+			Offset:           offsetVal,
+			Limit:            limitVal,
+			HasMore:          hasMore,
 		}
 	}
 
 	if err := renderTaskResultsWithPagination(cmd.OutOrStdout(), tasks, searchJSONOutput, searchMarkdownOutput, searchHideExtraFields, messagePrefix, paginationInfo); err != nil {
-		logging.Error("failed to render task results", "query", query, "error", err)
-		os.Exit(1)
+		return fmt.Errorf("render task results %q: %v", query, err)
 	}
+	return nil
 }

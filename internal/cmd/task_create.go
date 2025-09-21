@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -12,12 +11,12 @@ import (
 )
 
 var createCmd = &cobra.Command{
-	Use:   "create <title>",
-	Short: "Create a new task",
-	Long:  `Creates a new task in the backlog.`,
-	Args:  cobra.ExactArgs(1),
-	Example: CreateExamples.GenerateExampleText(),
-	Run: runCreate,
+	Use:     "create <title>",
+	Short:   "Create a new task",
+	Long:    `Creates a new task in the backlog.`,
+	Args:    cobra.ExactArgs(1),
+	Example: generateExampleText(CreateExamples),
+	RunE:    runCreate,
 }
 
 var (
@@ -34,19 +33,22 @@ var (
 
 func init() {
 	rootCmd.AddCommand(createCmd)
-
-	createCmd.Flags().StringVarP(&description, "description", "d", "", "Description of the task")
-	createCmd.Flags().StringVarP(&parent, "parent", "p", "", "Parent task ID")
-	createCmd.Flags().StringVar(&priority, "priority", "medium", "Priority of the task (low, medium, high, critical)")
-	createCmd.Flags().StringSliceVarP(&assigned, "assigned", "a", []string{}, "Assignee for the task (can be specified multiple times)")
-	createCmd.Flags().StringSliceVarP(&labels, "labels", "l", []string{}, "Comma-separated labels for the task")
-	createCmd.Flags().StringSliceVar(&dependencies, "deps", []string{}, "Add a dependency (can be used multiple times)")
-	createCmd.Flags().StringSliceVar(&ac, "ac", []string{}, "Acceptance criterion (can be specified multiple times)")
-	createCmd.Flags().StringVar(&plan, "plan", "", "Implementation plan for the task")
-	createCmd.Flags().StringVar(&notes, "notes", "", "Additional notes for the task")
+	setCreateFlags(createCmd)
 }
 
-func runCreate(cmd *cobra.Command, args []string) {
+func setCreateFlags(cmd *cobra.Command) {
+	cmd.Flags().StringVarP(&description, "description", "d", "", "Description of the task")
+	cmd.Flags().StringVarP(&parent, "parent", "p", "", "Parent task ID")
+	cmd.Flags().StringVar(&priority, "priority", "medium", "Priority of the task (low, medium, high, critical)")
+	cmd.Flags().StringSliceVarP(&assigned, "assigned", "a", []string{}, "Assignee for the task (can be specified multiple times)")
+	cmd.Flags().StringSliceVarP(&labels, "labels", "l", []string{}, "Comma-separated labels for the task")
+	cmd.Flags().StringSliceVar(&dependencies, "deps", []string{}, "Add a dependency (can be used multiple times)")
+	cmd.Flags().StringSliceVar(&ac, "ac", []string{}, "Acceptance criterion (can be specified multiple times)")
+	cmd.Flags().StringVar(&plan, "plan", "", "Implementation plan for the task")
+	cmd.Flags().StringVar(&notes, "notes", "", "Additional notes for the task")
+}
+
+func runCreate(cmd *cobra.Command, args []string) error {
 	params := core.CreateTaskParams{
 		Title:        args[0],
 		Description:  description,
@@ -63,14 +65,13 @@ func runCreate(cmd *cobra.Command, args []string) {
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
 	newTask, err := store.Create(params)
 	if err != nil {
-		logging.Error("failed to create task", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("create task: %v", err)
 	}
 
 	logging.Info("task created successfully", "task_id", newTask.ID)
 
 	if !viper.GetBool(configAutoCommit) {
-		return // Auto-commit is disabled
+		return nil // Auto-commit is disabled
 	}
 	// Auto-commit the change if enabled
 	filePath := store.Path(newTask)
@@ -78,4 +79,5 @@ func runCreate(cmd *cobra.Command, args []string) {
 	if err := commit.Add(filePath, "", commitMsg); err != nil {
 		logging.Warn("auto-commit failed", "task_id", newTask.ID, "error", err)
 	}
+	return nil
 }

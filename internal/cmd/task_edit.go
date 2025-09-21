@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -12,12 +11,12 @@ import (
 )
 
 var editCmd = &cobra.Command{
-	Use:   "edit <id>",
-	Short: "Edit an existing task",
-	Long:  `Edit an existing task by providing its ID and flags for the fields to update.`,
-	Args:  cobra.ExactArgs(1),
-	Example: EditExamples.GenerateExampleText(),
-	Run: runEdit,
+	Use:     "edit <id>",
+	Short:   "Edit an existing task",
+	Long:    `Edit an existing task by providing its ID and flags for the fields to update.`,
+	Args:    cobra.ExactArgs(1),
+	Example: generateExampleText(EditExamples),
+	RunE:    runEdit,
 }
 
 var (
@@ -65,7 +64,7 @@ func setEditFlags(cmd *cobra.Command) {
 	cmd.Flags().IntSliceVar(&removeAC, "remove-ac", nil, "Remove an acceptance criterion by its index")
 }
 
-func runEdit(cmd *cobra.Command, args []string) {
+func runEdit(cmd *cobra.Command, args []string) error {
 	params := core.EditTaskParams{ID: args[0]}
 
 	// Set optional pointers for fields that were changed
@@ -121,16 +120,14 @@ func runEdit(cmd *cobra.Command, args []string) {
 	// current task
 	task, err := store.Get(params.ID)
 	if err != nil {
-		logging.Error("failed to retrieve task", "task_id", params.ID, "error", err)
-		os.Exit(1)
+		return fmt.Errorf("get task %q: %v", params.ID, err)
 	}
 	// save the old path in case of a rename
 	oldFilePath := store.Path(task)
 
 	updatedTask, err := store.Update(task, params)
 	if err != nil {
-		logging.Error("failed to update task", "task_id", params.ID, "error", err)
-		os.Exit(1)
+		return fmt.Errorf("edit task %q: %v", params.ID, err)
 	}
 
 	defer func() {
@@ -139,7 +136,7 @@ func runEdit(cmd *cobra.Command, args []string) {
 	}()
 
 	if !viper.GetBool(configAutoCommit) {
-		return // autocommit is disabled
+		return nil // autocommit is disabled
 	}
 
 	// paths to commit
@@ -152,4 +149,5 @@ func runEdit(cmd *cobra.Command, args []string) {
 	if err := commit.Add(currentFilePath, oldFilePath, commitMsg); err != nil {
 		logging.Warn("auto-commit failed", "task_id", updatedTask.ID, "error", err)
 	}
+	return nil
 }

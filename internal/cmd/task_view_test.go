@@ -20,9 +20,9 @@ func Test_runView(t *testing.T) {
 		output, err := exec(t, "view", view, "1")
 		is.NoErr(err)
 		outputStr := string(output)
-		is.True(len(outputStr) > 0)                               // Should produce output
-		is.True(strings.Contains(outputStr, "Task to View"))      // Should contain task title
-		is.True(strings.Contains(outputStr, "Test description"))  // Should contain description
+		is.True(len(outputStr) > 0)                              // Should produce output
+		is.True(strings.Contains(outputStr, "Task to View"))     // Should contain task title
+		is.True(strings.Contains(outputStr, "Test description")) // Should contain description
 	})
 
 	t.Run("view task in JSON format", func(t *testing.T) {
@@ -105,28 +105,27 @@ func Test_runView(t *testing.T) {
 
 // Test generated examples
 func Test_ViewExamples(t *testing.T) {
-	testableExamples := ViewTestableExamples()
-
-	for _, example := range testableExamples {
-		t.Run("example_"+example.TestName, func(t *testing.T) {
+	for _, ex := range ViewExamples.Examples {
+		t.Run("example_"+generateTestName(ex.Description), func(t *testing.T) {
 			// Create a test task first for view examples
 			_, err := exec(t, "create", runCreate, "Test Task for View Example")
 			if err != nil {
 				t.Fatalf("Failed to create test task: %v", err)
 			}
 
-			args := example.GenerateArgsSlice()
-			// Replace T01 with 1 since our test creates task with ID 1
-			for i, arg := range args {
-				if arg == "T01" {
-					args[i] = "1"
-				}
-			}
+			args := generateArgsSlice(ex)
+			// // Replace T01 with 1 since our test creates task with ID 1
+			// for i, arg := range args {
+			// 	if arg == "T01" {
+			// 		args[i] = "1"
+			// 	}
+			// }
 
 			output, err := exec(t, "view", view, args...)
 
 			// Use the custom validator for this example
-			example.OutputValidator(t, output, err)
+			ex.OutputValidator(t, output, err)
 		})
 	}
 }
+

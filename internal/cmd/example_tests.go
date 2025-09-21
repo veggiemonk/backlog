@@ -8,35 +8,66 @@ import (
 
 	"github.com/matryer/is"
 	"github.com/veggiemonk/backlog/internal/core"
+	"github.com/veggiemonk/strcase"
 )
+
+// CommandExample represents a single example for a command
+type CommandExample struct {
+	Description     string                                       // Human readable description
+	Command         string                                       // The base command (e.g., "backlog create")
+	Args            []string                                     // Positional arguments
+	Flags           map[string]string                            // Flag name to value mapping
+	Comment         string                                       // Optional comment to explain the example
+	ExpectedError   bool                                         // Whether this example should produce an error
+	OutputValidator func(t *testing.T, output []byte, err error) // Custom validation function
+}
+
+// CommandExamples holds all examples for a command
+type CommandExamples struct {
+	Name     string
+	Examples []CommandExample
+}
+
+// GenerateExampleText creates the full Example field content for a cobra command
+func generateExampleText(ces CommandExamples) string {
+	if len(ces.Examples) == 0 {
+		return ""
+	}
+	var examples []string
+	for _, example := range ces.Examples {
+		examples = append(examples, formatExample(example))
+	}
+	return strings.Join(examples, "\n\n")
+}
 
 // TestableExample represents an example that can be tested
 type TestableExample struct {
 	CommandExample
-	TestName        string // Generated test name
-	ExpectedError   bool   // Whether this example should produce an error
+	TestName        string                                       // Generated test name
+	ExpectedError   bool                                         // Whether this example should produce an error
 	OutputValidator func(t *testing.T, output []byte, err error) // Custom validation function
 }
 
 // GenerateTestName creates a descriptive test name from the example
-func (ce CommandExample) GenerateTestName() string {
-	// Clean up the description to make it a valid test name
-	name := strings.ReplaceAll(ce.Description, " ", "_")
-	name = strings.ReplaceAll(name, "-", "_")
-	name = strings.ReplaceAll(name, "/", "_")
-	name = strings.ReplaceAll(name, ":", "")
-	name = strings.ReplaceAll(name, ",", "_")
-	name = strings.ReplaceAll(name, "(", "")
-	name = strings.ReplaceAll(name, ")", "")
-	name = strings.ToLower(name)
-	return name
+func generateTestName(description string) string {
+	return strcase.Snake(description)
+	// // Clean up the description to make it a valid test name
+	// name := strings.ReplaceAll(ce.Description, " ", "_")
+	// name = strings.ReplaceAll(name, "-", "_")
+	// name = strings.ReplaceAll(name, "/", "_")
+	// name = strings.ReplaceAll(name, ":", "")
+	// name = strings.ReplaceAll(name, ",", "_")
+	// name = strings.ReplaceAll(name, "(", "")
+	// name = strings.ReplaceAll(name, ")", "")
+	// name = strings.ToLower(name)
+	// return name
 }
 
 // ToTestableExample converts a CommandExample to a TestableExample with default behavior
 func (ce CommandExample) ToTestableExample() TestableExample {
 	return TestableExample{
 		CommandExample: ce,
-		TestName:       ce.GenerateTestName(),
+		TestName:       generateTestName(ce.Description),
 		ExpectedError:  false,
 		OutputValidator: func(t *testing.T, output []byte, err error) {
 			is := is.New(t)
@@ -46,14 +77,12 @@ func (ce CommandExample) ToTestableExample() TestableExample {
 }
 
 // GenerateArgsSlice creates the argument slice for exec() function
-func (te TestableExample) GenerateArgsSlice() []string {
+func generateArgsSlice(ce CommandExample) []string {
 	var args []string
-
 	// Add positional arguments
-	args = append(args, te.Args...)
-
+	args = append(args, ce.Args...)
 	// Add flags
-	for flag, value := range te.Flags {
+	for flag, value := range ce.Flags {
 		if value == "" {
 			// Boolean flag
 			args = append(args, fmt.Sprintf("--%s", flag))
@@ -62,8 +91,98 @@ func (te TestableExample) GenerateArgsSlice() []string {
 			args = append(args, fmt.Sprintf("--%s", flag), value)
 		}
 	}
-
 	return args
+}
+
+//	func (te TestableExample) GenerateArgsSlice() []string {
+//		var args []string
+//		// Add positional arguments
+//		args = append(args, te.Args...)
+//		// Add flags
+//		for flag, value := range te.Flags {
+//			if value == "" {
+//				// Boolean flag
+//				args = append(args, fmt.Sprintf("--%s", flag))
+//			} else {
+//				// Flag with value
+//				args = append(args, fmt.Sprintf("--%s", flag), value)
+//			}
+//		}
+//		return args
+// }
+
+func testForExamples(ex CommandExamples) []TestableExample {
+	var testable []TestableExample
+	for _, example := range ex.Examples {
+		te := example.ToTestableExample()
+		// Customize validation based on flags
+		if _, hasJSON := example.Flags["json"]; hasJSON {
+			te.OutputValidator = ValidateJSONOutput
+		} else if _, hasMarkdown := example.Flags["markdown"]; hasMarkdown {
+			te.OutputValidator = ValidateMarkdownOutput
+		} else {
+			// Default table output
+			te.OutputValidator = func(t *testing.T, output []byte, err error) {
+				is := is.New(t)
+				is.NoErr(err) // Command should not error
+				outputStr := string(output)
+				// Should contain table headers or "No tasks found"
+				is.True(strings.Contains(outputStr, "ID") || strings.Contains(outputStr, "No tasks found"))
+			}
+		}
+		testable = append(testable, te)
+	}
+	return testable
+}
+
+// formatExample converts a CommandExample to the CLI example string format
+func formatExample(ce CommandExample) string {
+	var parts []string
+
+	if ce.Description != "" {
+		parts = append(parts, fmt.Sprintf("# %s\n", ce.Description))
+	}
+	// Add comment if provided
+	if ce.Comment != "" {
+		parts = append(parts, fmt.Sprintf("# %s", ce.Comment))
+	}
+
+	// Build command line
+	cmdLine := Name + " " + ce.Command
+	for _, arg := range ce.Args {
+		cmdLine += fmt.Sprintf(" %q", arg)
+	}
+
+	// Add flags
+	for flag, value := range ce.Flags {
+		if value == "" {
+			cmdLine += fmt.Sprintf(" --%s", flag)
+		} else {
+			cmdLine += fmt.Sprintf(" --%s %q", flag, value)
+		}
+	}
+
+	parts = append(parts, cmdLine)
+
+	// Add expected output comment if provided
+	// if ce.Expected != "" {
+	// 	parts = append(parts, fmt.Sprintf("# Expected: %s", ce.Expected))
+	// }
+	//
+	return strings.Join(parts, "\n")
+}
+
+// These functions should exist in the package
+var expectedTestFunctions = []string{
+	"CreateTestableExamples",
+	"ListTestableExamples",
+	"SearchTestableExamples",
+	"EditTestableExamples",
+	"ViewTestableExamples",
+	"ArchiveTestableExamples",
+	"VersionTestableExamples",
+	"InstructionsTestableExamples",
+	"MCPTestableExamples",
 }
 
 // ValidateJSONOutput is a common validator for JSON output
@@ -84,8 +203,8 @@ func ValidateJSONOutput(t *testing.T, output []byte, err error) {
 // ValidateNonEmptyOutput ensures command produces some output
 func ValidateNonEmptyOutput(t *testing.T, output []byte, err error) {
 	is := is.New(t)
-	is.NoErr(err)                          // Command should not error
-	is.True(len(output) > 0)               // Should produce some output
+	is.NoErr(err)                                                // Command should not error
+	is.True(len(output) > 0)                                     // Should produce some output
 	is.True(!strings.Contains(string(output), "No tasks found")) // Should not be empty result
 }
 
@@ -96,191 +215,6 @@ func ValidateMarkdownOutput(t *testing.T, output []byte, err error) {
 	outputStr := string(output)
 	is.True(strings.Contains(outputStr, "|"))    // Markdown tables contain pipes
 	is.True(strings.Contains(outputStr, ":---")) // Markdown table separator
-}
-
-// CreateTestableExamples generates testable examples for create command
-func CreateTestableExamples() []TestableExample {
-	var testable []TestableExample
-
-	for _, example := range CreateExamples.Examples {
-		te := example.ToTestableExample()
-
-		// Customize validation based on example type
-		te.OutputValidator = func(t *testing.T, output []byte, err error) {
-			is := is.New(t)
-			is.NoErr(err) // Create command should not error
-			// Create command doesn't produce JSON output by default,
-			// it just logs success
-		}
-
-		testable = append(testable, te)
-	}
-
-	return testable
-}
-
-// ListTestableExamples generates testable examples for list command
-func ListTestableExamples() []TestableExample {
-	var testable []TestableExample
-
-	for _, example := range ListExamples.Examples {
-		te := example.ToTestableExample()
-
-		// Customize validation based on flags
-		if _, hasJSON := example.Flags["json"]; hasJSON {
-			te.OutputValidator = ValidateJSONOutput
-		} else if _, hasMarkdown := example.Flags["markdown"]; hasMarkdown {
-			te.OutputValidator = ValidateMarkdownOutput
-		} else {
-			// Default table output
-			te.OutputValidator = func(t *testing.T, output []byte, err error) {
-				is := is.New(t)
-				is.NoErr(err) // Command should not error
-				outputStr := string(output)
-				// Should contain table headers or "No tasks found"
-				is.True(strings.Contains(outputStr, "ID") || strings.Contains(outputStr, "No tasks found"))
-			}
-		}
-
-		testable = append(testable, te)
-	}
-
-	return testable
-}
-
-// SearchTestableExamples generates testable examples for search command
-func SearchTestableExamples() []TestableExample {
-	var testable []TestableExample
-
-	for _, example := range SearchExamples.Examples {
-		te := example.ToTestableExample()
-
-		// Customize validation based on flags
-		if _, hasJSON := example.Flags["json"]; hasJSON {
-			te.OutputValidator = ValidateJSONOutput
-		} else if _, hasMarkdown := example.Flags["markdown"]; hasMarkdown {
-			te.OutputValidator = ValidateMarkdownOutput
-		} else {
-			// Default table output
-			te.OutputValidator = func(t *testing.T, output []byte, err error) {
-				is := is.New(t)
-				is.NoErr(err) // Command should not error
-				outputStr := string(output)
-				// Should contain search results or "No tasks found matching"
-				is.True(strings.Contains(outputStr, "Found") || strings.Contains(outputStr, "No tasks found"))
-			}
-		}
-
-		testable = append(testable, te)
-	}
-
-	return testable
-}
-
-// EditTestableExamples generates testable examples for edit command
-func EditTestableExamples() []TestableExample {
-	var testable []TestableExample
-
-	for _, example := range EditExamples.Examples {
-		te := example.ToTestableExample()
-
-		// Edit commands need existing tasks, so we might need to create them first
-		te.OutputValidator = func(t *testing.T, output []byte, err error) {
-			is := is.New(t)
-			is.NoErr(err) // Edit command should not error
-			// Edit command doesn't produce output by default, just logs success
-		}
-
-		testable = append(testable, te)
-	}
-
-	return testable
-}
-
-// ViewTestableExamples generates testable examples for view command
-func ViewTestableExamples() []TestableExample {
-	var testable []TestableExample
-
-	for _, example := range ViewExamples.Examples {
-		te := example.ToTestableExample()
-
-		// Customize validation based on flags
-		if _, hasJSON := example.Flags["json"]; hasJSON {
-			te.OutputValidator = ValidateJSONOutput
-		} else {
-			// Default markdown output
-			te.OutputValidator = func(t *testing.T, output []byte, err error) {
-				is := is.New(t)
-				is.NoErr(err) // Command should not error
-				outputStr := string(output)
-				// Should contain task content in markdown format
-				is.True(len(outputStr) > 0) // Should produce some output
-			}
-		}
-
-		testable = append(testable, te)
-	}
-
-	return testable
-}
-
-// ArchiveTestableExamples generates testable examples for archive command
-func ArchiveTestableExamples() []TestableExample {
-	var testable []TestableExample
-
-	for _, example := range ArchiveExamples.Examples {
-		te := example.ToTestableExample()
-
-		te.OutputValidator = func(t *testing.T, output []byte, err error) {
-			is := is.New(t)
-			is.NoErr(err) // Archive command should not error
-			// Archive command doesn't produce output by default, just logs success
-		}
-
-		testable = append(testable, te)
-	}
-
-	return testable
-}
-
-// VersionTestableExamples generates testable examples for version command
-func VersionTestableExamples() []TestableExample {
-	var testable []TestableExample
-
-	for _, example := range VersionExamples.Examples {
-		te := example.ToTestableExample()
-
-		te.OutputValidator = func(t *testing.T, output []byte, err error) {
-			is := is.New(t)
-			is.NoErr(err) // Version command should not error
-			outputStr := string(output)
-			is.True(strings.Contains(outputStr, "Backlog version")) // Should contain version info
-		}
-
-		testable = append(testable, te)
-	}
-
-	return testable
-}
-
-// InstructionsTestableExamples generates testable examples for instructions command
-func InstructionsTestableExamples() []TestableExample {
-	var testable []TestableExample
-
-	for _, example := range InstructionsExamples.Examples {
-		te := example.ToTestableExample()
-
-		te.OutputValidator = func(t *testing.T, output []byte, err error) {
-			is := is.New(t)
-			is.NoErr(err) // Instructions command should not error
-			outputStr := string(output)
-			is.True(len(outputStr) > 0) // Should produce some output
-		}
-
-		testable = append(testable, te)
-	}
-
-	return testable
 }
 
 // MCPTestableExamples generates testable examples for MCP command
@@ -302,4 +236,32 @@ func MCPTestableExamples() []TestableExample {
 	}
 
 	return testable
+}
+
+// MCPExamples contains all examples for the MCP command
+var MCPExamples = CommandExamples{
+	Examples: []CommandExample{
+		{
+			Description: "Start MCP Server with HTTP",
+			Command:     "backlog mcp",
+			Flags: map[string]string{
+				"http": "",
+			},
+			Comment: "Start the MCP server using HTTP transport on default port 8106",
+		},
+		{
+			Description: "Start MCP Server with Custom Port",
+			Command:     "backlog mcp",
+			Flags: map[string]string{
+				"http": "",
+				"port": "4321",
+			},
+			Comment: "Start the MCP server using HTTP transport on port 4321",
+		},
+		{
+			Description: "Start MCP Server with Stdio",
+			Command:     "backlog mcp",
+			Comment:     "Start the MCP server using stdio transport",
+		},
+	},
 }

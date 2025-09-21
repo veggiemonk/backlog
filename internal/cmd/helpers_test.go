@@ -12,17 +12,17 @@ import (
 	"github.com/veggiemonk/backlog/internal/core"
 )
 
-type runFunc func(cmd *cobra.Command, args []string)
 type runEFunc func(cmd *cobra.Command, args []string) error
 
-func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error) {
+var testTasksDir = ".backlog"
+
+func exec(t *testing.T, use string, run runEFunc, args ...string) ([]byte, error) {
 	t.Helper()
 	if use == "" {
 		return nil, fmt.Errorf("'use' cannot be empty: %v", args)
 	}
 	fs := afero.NewMemMapFs()
-	tasksDir := ".backlog"
-	store := core.NewFileTaskStore(fs, tasksDir)
+	store := core.NewFileTaskStore(fs, testTasksDir)
 	createTestTasks(t, store)
 	// Create fresh command to avoid state pollution
 	testRootCmd := &cobra.Command{Use: "backlog"}
@@ -34,34 +34,24 @@ func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error)
 	// Use proper command configuration based on command type
 	switch use {
 	case "create":
-		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), Run: run}
+		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), RunE: run}
 	case "edit":
-		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), Run: run}
+		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), RunE: run}
 	case "view":
-		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), Run: run}
+		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), RunE: run}
 	case "archive":
-		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), Run: run}
+		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), RunE: run}
 	case "search":
-		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), Run: run}
+		testCmd = &cobra.Command{Use: use, Args: cobra.ExactArgs(1), RunE: run}
 	default:
-		testCmd = &cobra.Command{Use: use, Run: run}
+		testCmd = &cobra.Command{Use: use, RunE: run}
 	}
 
 	setRootPersistentFlags(testRootCmd)
 	testRootCmd.AddCommand(testCmd)
 	switch use {
 	case "create":
-		// Create command flags are set in init() function via setCreateFlags()
-		// We need to manually set them here for testing
-		testCmd.Flags().StringVarP(&description, "description", "d", "", "Description of the task")
-		testCmd.Flags().StringVarP(&parent, "parent", "p", "", "Parent task ID")
-		testCmd.Flags().StringVar(&priority, "priority", "medium", "Priority of the task (low, medium, high, critical)")
-		testCmd.Flags().StringSliceVarP(&assigned, "assigned", "a", []string{}, "Assignee for the task (can be specified multiple times)")
-		testCmd.Flags().StringSliceVarP(&labels, "labels", "l", []string{}, "Comma-separated labels for the task")
-		testCmd.Flags().StringSliceVar(&dependencies, "deps", []string{}, "Add a dependency (can be used multiple times)")
-		testCmd.Flags().StringSliceVar(&ac, "ac", []string{}, "Acceptance criterion (can be specified multiple times)")
-		testCmd.Flags().StringVar(&plan, "plan", "", "Implementation plan for the task")
-		testCmd.Flags().StringVar(&notes, "notes", "", "Additional notes for the task")
+		setCreateFlags(testCmd)
 	case "list":
 		setListFlags(testCmd)
 	case "search":
@@ -82,6 +72,7 @@ func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error)
 		t.Fatalf("no command called %s", use)
 	}
 	args = slices.Insert(args, 0, use)
+	args = append([]string{"--log-level", "error"}, args...)
 	buf := new(bytes.Buffer)
 	testRootCmd.SetOut(buf)
 	testRootCmd.SetErr(buf)
@@ -89,16 +80,6 @@ func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error)
 
 	err := testRootCmd.Execute()
 	return bytes.TrimSpace(buf.Bytes()), err
-}
-
-func execE(t *testing.T, use string, run runEFunc, args ...string) ([]byte, error) {
-	// Wrap the runEFunc to match runFunc signature
-	wrappedRun := func(cmd *cobra.Command, args []string) {
-		if err := run(cmd, args); err != nil {
-			cmd.PrintErrln("Error:", err)
-		}
-	}
-	return exec(t, use, wrappedRun, args...)
 }
 
 func createTestTasks(t *testing.T, store TaskStore) {

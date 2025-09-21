@@ -13,62 +13,73 @@ backlog create <title> [flags]
 ### Examples
 
 ```
+# Basic Task Creation
 
-# Create tasks using the "backlog create" command with its different flags.
-# Here are some examples of how to use this command effectively:
-# 1. Basic Task Creation
 # This is the simplest way to create a task, providing only a title.
 backlog create "Fix the login button styling"
 
-# 2. Task with a Description. Use the -d or --description flag to add more detailed information about the task.
-backlog create "Implement password reset" -d "Users should be able to request a password reset link via their email. This involves creating a new API endpoint and a front-end form."
+# Task with Description
 
-# 3. Assigning a Task. You can assign a task to one or more team members using the -a or --assigned flag. 
-# Assign to a single person: 
-backlog create "Design the new dashboard" -a "alex"
-# Assign to multiple people: 
-backlog create "Code review for the payment gateway" -a "jordan" -a "casey"
+# Use the -d or --description flag to add more detailed information about the task.
+backlog create "Implement password reset" --description "Users should be able to request a password reset link via their email. This involves creating a new API endpoint and a front-end form."
 
-# 4. Adding Labels. Use the -l or --labels flag to categorize the task with comma-separated labels.
-backlog create "Update third-party dependencies" -l "bug,backend,security"
+# Assigning to Single Person
 
-# 5. Setting a Priority
+# You can assign a task to one or more team members using the -a or --assigned flag.
+backlog create "Design the new dashboard" --assigned "alex"
+
+# Assigning to Multiple People
+
+backlog create "Code review for the payment gateway" --assigned "jordan,casey"
+
+# Adding Labels
+
+# Use the -l or --labels flag to categorize the task with comma-separated labels.
+backlog create "Update third-party dependencies" --labels "bug,backend,security"
+
+# Setting High Priority
+
 # Specify the task's priority with the --priority flag. The default is "medium".
 backlog create "Hotfix: Production database is down" --priority "high"
+
+# Setting Low Priority
+
 backlog create "Refactor the old user model" --priority "low"
 
-# 6. Defining Acceptance Criteria
+# Defining Acceptance Criteria
+
 # Use the --ac flag multiple times to list the conditions that must be met for the task to be considered complete.
-backlog create "Develop user profile page" \
-  --ac "Users can view their own profile information." \
-  --ac "Users can upload a new profile picture." \
-  --ac "The page is responsive on mobile devices."
+backlog create "Develop user profile page" --ac "Users can view their own profile information.,Users can upload a new profile picture.,The page is responsive on mobile devices."
 
-# 7. Creating a Sub-task. Link a new task to a parent task using the -p or --parent flag. This is useful for breaking down larger tasks.
-# First, create the parent task
-backlog create "Implement User Authentication"
-# Now, create a sub-task (assuming the parent task ID is 15)
-backlog create "Add Google OAuth login" -p "15"
+# Creating a Sub-task
 
-# 8. Setting Task Dependencies
+# Link a new task to a parent task using the -p or --parent flag. This is useful for breaking down larger tasks.
+backlog create "Add Google OAuth login" --parent "15"
+
+# Setting Single Dependency
+
 # Use the --deps flag to specify that this task depends on other tasks being completed first.
-# Single dependency:
 backlog create "Deploy user authentication" --deps "T15"
-# Multiple dependencies:
-backlog create "Integration testing" --deps "T15" --deps "T18" --deps "T20"
-# This means the task cannot be started until tasks T15, T18, and T20 are completed.
 
-# 9. Complex Example (Combining Multiple Flags). Here is a comprehensive example that uses several flags at once to create a very detailed task.
-backlog create "Build the new reporting feature" \
-  -d "Create a new section in the app that allows users to generate and export monthly performance reports in PDF format." \
-  -a "drew" \
-  -l "feature,frontend,backend" \
-  --priority "high" \
-  --ac "Report generation logic is accurate." \
-  --ac "Users can select a date range for the report." \
-  --ac "The exported PDF has the correct branding and layout." \
-  -p "23"	
-	
+# Setting Multiple Dependencies
+
+# This means the task cannot be started until tasks T15, T18, and T20 are completed.
+backlog create "Integration testing" --deps "T15,T18,T20"
+
+# Task with Implementation Notes
+
+# Use the --notes flag to add implementation notes to help with development.
+backlog create "Optimize database queries" --notes "Focus on the user lookup queries in the authentication module. Consider adding indexes on email and username fields."
+
+# Task with Implementation Plan
+
+# Use the --plan flag to add a structured implementation plan.
+backlog create "Implement user registration flow" --plan "1. Design registration form UI\n2. Create user validation logic\n3. Set up email verification\n4. Add password strength requirements\n5. Write integration tests"
+
+# Complex Example with Multiple Flags
+
+# Here is a comprehensive example that uses several flags at once to create a very detailed task.
+backlog create "Build the new reporting feature" --priority "high" --ac "Report generation logic is accurate.,Users can select a date range for the report.,The exported PDF has the correct branding and layout." --parent "23" --description "Create a new section in the app that allows users to generate and export monthly performance reports in PDF format." --assigned "drew" --labels "feature,frontend,backend"
 ```
 
 ### Options
@@ -89,7 +100,7 @@ backlog create "Build the new reporting feature" \
 ### Options inherited from parent commands
 
 ```
-      --auto-commit         Auto-committing changes to git repository (default true)
+      --auto-commit         Auto-committing changes to git repository
       --folder string       Directory for backlog tasks (default ".backlog")
       --log-file string     Log file path (defaults to stderr)
       --log-format string   Log format (json, text) (default "text")
@@ -100,5 +111,5 @@ backlog create "Build the new reporting feature" \
 
 ### SEE ALSO
 
-* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+* [backlog](backlog.md)	 - backlog is a git-native, markdown-based task manager
 

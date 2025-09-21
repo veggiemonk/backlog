@@ -13,36 +13,52 @@ backlog search <query> [flags]
 ### Examples
 
 ```
+# Basic Search
 
 # Search for tasks containing "login" in any field
-backlog search "login"
+backlog backlog search "login"
 
-# Search for tasks containing "bug" 
-backlog search "bug"
+# Search by Bug
+
+# Search for tasks containing "bug"
+backlog backlog search "bug"
+
+# Search Assigned Tasks
 
 # Search for tasks assigned to a specific person
-backlog search "@john"
+backlog backlog search "@john"
+
+# Search with Label
 
 # Search for tasks with specific labels
-backlog search "frontend"
+backlog backlog search "frontend"
+
+# Search in Acceptance Criteria
 
 # Search in acceptance criteria
-backlog search "validation"
+backlog backlog search "validation"
 
-# Search with markdown output
-backlog search "api" --markdown
+# Search with Markdown Output
 
-# Search with JSON output
-backlog search "api" --json
+backlog backlog search "api" --markdown
 
-# Search with additional columns displayed
-backlog search "user" --labels --priority --assigned
+# Search with JSON Output
 
-# Search with pagination
-backlog search "api" --limit 5                  # Show first 5 search results
-backlog search "bug" --limit 3 --offset 5       # Show 3 results starting from 6th match
-backlog search "feature" --status "todo" --limit 10  # Show first 10 "todo" feature results
-	
+backlog backlog search "api" --json
+
+# Search with Status Filter
+
+backlog backlog search "user" --status "todo"
+
+# Search with Pagination
+
+# Show first 5 search results
+backlog backlog search "api" --limit "5"
+
+# Search with Offset
+
+# Show 3 results starting from 6th match
+backlog backlog search "bug" --limit "3" --offset "5"
 ```
 
 ### Options
@@ -68,7 +84,7 @@ backlog search "feature" --status "todo" --limit 10  # Show first 10 "todo" feat
 ### Options inherited from parent commands
 
 ```
-      --auto-commit         Auto-committing changes to git repository (default true)
+      --auto-commit         Auto-committing changes to git repository
       --folder string       Directory for backlog tasks (default ".backlog")
       --log-file string     Log file path (defaults to stderr)
       --log-format string   Log format (json, text) (default "text")
@@ -79,5 +95,5 @@ backlog search "feature" --status "todo" --limit 10  # Show first 10 "todo" feat
 
 ### SEE ALSO
 
-* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+* [backlog](backlog.md)	 - backlog is a git-native, markdown-based task manager
 

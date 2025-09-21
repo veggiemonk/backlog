@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
@@ -12,15 +11,14 @@ import (
 	"github.com/olekukonko/tablewriter/tw"
 	"github.com/spf13/cobra"
 	"github.com/veggiemonk/backlog/internal/core"
-	"github.com/veggiemonk/backlog/internal/logging"
 )
 
 var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List all tasks",
-	Long:  `Lists all tasks in the backlog except archived tasks.`,
-	Example: ListExamples.GenerateExampleText(),
-	Run: runList,
+	Use:     "list",
+	Short:   "List all tasks",
+	Long:    `Lists all tasks in the backlog except archived tasks.`,
+	Example: generateExampleText(ListExamples),
+	RunE:    runList,
 }
 
 var (
@@ -73,9 +71,9 @@ func setListFlags(cmd *cobra.Command) {
 	cmd.Flags().IntVar(&offsetFlag, "offset", 0, "Number of tasks to skip from the beginning")
 }
 
-func runList(cmd *cobra.Command, args []string) {
+func runList(cmd *cobra.Command, args []string) error {
 	sortFieldsSlice := parseSortFields(sortFields)
-	
+
 	var limit, offset *int
 	if limitFlag > 0 {
 		limit = &limitFlag
@@ -83,10 +81,10 @@ func runList(cmd *cobra.Command, args []string) {
 	if offsetFlag > 0 {
 		offset = &offsetFlag
 	}
-	
+
 	// Apply configuration defaults and limits
 	limit, offset = ApplyDefaultPagination(limit, offset)
-	
+
 	params := core.ListTasksParams{
 		Parent:        &filterParent,
 		Priority:      &filterPriority,
@@ -103,25 +101,23 @@ func runList(cmd *cobra.Command, args []string) {
 	}
 
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
-	
+
 	// Get total count without pagination for metadata
 	totalParams := params
 	totalParams.Limit = nil
 	totalParams.Offset = nil
 	allTasks, err := store.List(totalParams)
 	if err != nil {
-		logging.Error("failed to list tasks", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("list tasks: %v", err)
 	}
 	totalCount := len(allTasks)
-	
+
 	// Get paginated results
 	tasks, err := store.List(params)
 	if err != nil {
-		logging.Error("failed to list tasks", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("list tasks: %v", err)
 	}
-	
+
 	// Create pagination info
 	var paginationInfo *core.PaginationInfo
 	if limit != nil || offset != nil {
@@ -134,20 +130,20 @@ func runList(cmd *cobra.Command, args []string) {
 			limitVal = *limit
 		}
 		hasMore := (offsetVal + len(tasks)) < totalCount
-		
+
 		paginationInfo = &core.PaginationInfo{
-			TotalResults:    totalCount,
+			TotalResults:     totalCount,
 			DisplayedResults: len(tasks),
-			Offset:          offsetVal,
-			Limit:           limitVal,
-			HasMore:         hasMore,
+			Offset:           offsetVal,
+			Limit:            limitVal,
+			HasMore:          hasMore,
 		}
 	}
-	
+
 	if err := renderTaskResultsWithPagination(cmd.OutOrStdout(), tasks, jsonOutput, markdownOutput, hideExtraFields, "", paginationInfo); err != nil {
-		logging.Error("failed to render task results", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("render task results: %v", err)
 	}
+	return nil
 }
 
 // parseSortFields parses a comma-separated string of sort fields
@@ -179,18 +175,18 @@ func renderTaskResultsWithPagination(w io.Writer, tasks []*core.Task, jsonOutput
 	// Add pagination info to message prefix if not JSON output
 	if paginationInfo != nil && !jsonOutput {
 		if messagePrefix == "" {
-			messagePrefix = fmt.Sprintf("Showing %d-%d of %d tasks", 
-				paginationInfo.Offset+1, 
-				paginationInfo.Offset+paginationInfo.DisplayedResults, 
+			messagePrefix = fmt.Sprintf("Showing %d-%d of %d tasks",
+				paginationInfo.Offset+1,
+				paginationInfo.Offset+paginationInfo.DisplayedResults,
 				paginationInfo.TotalResults)
 			if paginationInfo.HasMore {
-				messagePrefix += fmt.Sprintf(" (use --offset %d for more)", 
+				messagePrefix += fmt.Sprintf(" (use --offset %d for more)",
 					paginationInfo.Offset+paginationInfo.DisplayedResults)
 			}
 		} else {
-			messagePrefix += fmt.Sprintf(" [%d-%d of %d total]", 
-				paginationInfo.Offset+1, 
-				paginationInfo.Offset+paginationInfo.DisplayedResults, 
+			messagePrefix += fmt.Sprintf(" [%d-%d of %d total]",
+				paginationInfo.Offset+1,
+				paginationInfo.Offset+paginationInfo.DisplayedResults,
 				paginationInfo.TotalResults)
 		}
 	}

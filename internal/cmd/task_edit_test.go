@@ -189,21 +189,20 @@ func Test_runEdit(t *testing.T) {
 
 // Test generated examples
 func Test_EditExamples(t *testing.T) {
-	testableExamples := EditTestableExamples()
-
-	for _, example := range testableExamples {
-		t.Run("example_"+example.TestName, func(t *testing.T) {
+	for _, ex := range EditExamples.Examples {
+		t.Run("example_"+generateTestName(ex.Description), func(t *testing.T) {
 			// Create a test task first for edit examples
 			_, err := exec(t, "create", runCreate, "Test Task for Edit Example")
 			if err != nil {
 				t.Fatalf("Failed to create test task: %v", err)
 			}
 
-			args := example.GenerateArgsSlice()
+			args := generateArgsSlice(ex)
 			output, err := exec(t, "edit", runEdit, args...)
 
 			// Use the custom validator for this example
-			example.OutputValidator(t, output, err)
+			ex.OutputValidator(t, output, err)
 		})
 	}
 }
+

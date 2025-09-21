@@ -14,7 +14,7 @@ var mcpCmd = &cobra.Command{
 	Use:     "mcp",
 	Short:   "Start the MCP server",
 	Long:    `Starts an MCP server to provide programmatic access to backlog tasks.`,
-	Example: MCPExamples.GenerateExampleText(),
+	Example: generateExampleText(MCPExamples),
 	RunE:    runMcpServer,
 }
 

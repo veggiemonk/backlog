@@ -1,6 +1,6 @@
 ## backlog
 
-Backlog is a git-native, markdown-based task manager
+backlog is a git-native, markdown-based task manager
 
 ### Synopsis
 
@@ -14,7 +14,7 @@ backlog [flags]
 ### Options
 
 ```
-      --auto-commit         Auto-committing changes to git repository (default true)
+      --auto-commit         Auto-committing changes to git repository
       --folder string       Directory for backlog tasks (default ".backlog")
   -h, --help                help for backlog
       --log-file string     Log file path (defaults to stderr)

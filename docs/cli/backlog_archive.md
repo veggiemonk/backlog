@@ -10,6 +10,20 @@ Archives a task, moving it to the archived directory.
 backlog archive <task-id> [flags]
 ```
 
+### Examples
+
+```
+# Archive a Task
+
+# Archive task T01, moving it to the archived directory
+backlog backlog archive "T01"
+
+# Archive by Partial ID
+
+# Archive task using partial ID
+backlog backlog archive "1"
+```
+
 ### Options
 
 ```
@@ -19,7 +33,7 @@ backlog archive <task-id> [flags]
 ### Options inherited from parent commands
 
 ```
-      --auto-commit         Auto-committing changes to git repository (default true)
+      --auto-commit         Auto-committing changes to git repository
       --folder string       Directory for backlog tasks (default ".backlog")
       --log-file string     Log file path (defaults to stderr)
       --log-format string   Log format (json, text) (default "text")
@@ -30,5 +44,5 @@ backlog archive <task-id> [flags]
 
 ### SEE ALSO
 
-* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+* [backlog](backlog.md)	 - backlog is a git-native, markdown-based task manager
 
