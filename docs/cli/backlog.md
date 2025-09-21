@@ -27,6 +27,7 @@ backlog [flags]
 ### SEE ALSO
 
 * [backlog archive](backlog_archive.md)	 - Archive a task
+* [backlog conflicts](backlog_conflicts.md)	 - Manage task ID conflicts
 * [backlog create](backlog_create.md)	 - Create a new task
 * [backlog edit](backlog_edit.md)	 - Edit an existing task
 * [backlog instructions](backlog_instructions.md)	 - instructions for agents to learn to use backlog

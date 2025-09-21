@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -172,11 +173,11 @@ func (t TaskID) IsZero() bool {
 
 // ConflictSummary provides a summary of detected conflicts
 type ConflictSummary struct {
-	TotalConflicts    int
-	DuplicateIDs      int
-	OrphanedChildren  int
-	InvalidHierarchy  int
-	ConflictsByType   map[ConflictType][]IDConflict
+	TotalConflicts   int
+	DuplicateIDs     int
+	OrphanedChildren int
+	InvalidHierarchy int
+	ConflictsByType  map[ConflictType][]IDConflict
 }
 
 // SummarizeConflicts creates a summary of the provided conflicts
@@ -213,20 +214,20 @@ const (
 
 // ResolutionAction represents an action to resolve a conflict
 type ResolutionAction struct {
-	Type        string            // "renumber", "update_parent", "delete"
+	Type        string // "renumber", "update_parent", "delete"
 	OriginalID  TaskID
 	NewID       TaskID
 	FilePath    string
 	Description string
-	Metadata    map[string]any    // Additional metadata for the action
+	Metadata    map[string]any // Additional metadata for the action
 }
 
 // ResolutionPlan contains all actions needed to resolve conflicts
 type ResolutionPlan struct {
-	Actions     []ResolutionAction
-	Summary     string
-	Strategy    ResolutionStrategy
-	CreatedAt   time.Time
+	Actions   []ResolutionAction
+	Summary   string
+	Strategy  ResolutionStrategy
+	CreatedAt time.Time
 }
 
 // ConflictResolver handles resolution of ID conflicts
@@ -294,9 +295,9 @@ func (cr *ConflictResolver) createChronologicalPlan(conflicts []IDConflict, plan
 					FilePath:    conflict.Files[i],
 					Description: fmt.Sprintf("Renumber task %s to %s (chronological resolution)", tasks[i].ID.String(), newID.String()),
 					Metadata: map[string]any{
-						"reason":      "duplicate_id_chronological",
-						"created_at":  tasks[i].CreatedAt,
-						"older_task":  tasks[0].ID.String(),
+						"reason":     "duplicate_id_chronological",
+						"created_at": tasks[i].CreatedAt,
+						"older_task": tasks[0].ID.String(),
 					},
 				})
 			}
@@ -343,8 +344,8 @@ func (cr *ConflictResolver) createAutoRenumberPlan(conflicts []IDConflict, plan 
 				FilePath:    conflict.Files[0],
 				Description: fmt.Sprintf("Remove invalid parent reference from task %s", conflict.ConflictID.String()),
 				Metadata: map[string]any{
-					"reason":           "orphaned_child",
-					"original_parent":  conflict.Tasks[0].Parent.String(),
+					"reason":          "orphaned_child",
+					"original_parent": conflict.Tasks[0].Parent.String(),
 				},
 			})
 
@@ -359,9 +360,9 @@ func (cr *ConflictResolver) createAutoRenumberPlan(conflicts []IDConflict, plan 
 					FilePath:    conflict.Files[0],
 					Description: fmt.Sprintf("Fix parent reference for task %s to %s", conflict.ConflictID.String(), expectedParent.String()),
 					Metadata: map[string]any{
-						"reason":           "invalid_hierarchy",
-						"original_parent":  conflict.Tasks[0].Parent.String(),
-						"expected_parent":  expectedParent.String(),
+						"reason":          "invalid_hierarchy",
+						"original_parent": conflict.Tasks[0].Parent.String(),
+						"expected_parent": expectedParent.String(),
 					},
 				})
 			}
@@ -522,7 +523,7 @@ func NewReferenceUpdater(detector *ConflictDetector, store *FileTaskStore) *Refe
 }
 
 // UpdateReferences updates all references to changed task IDs
-func (ru *ReferenceUpdater) UpdateReferences(idChanges map[TaskID]TaskID) error {
+func (ru *ReferenceUpdater) UpdateReferences(idChanges map[string]TaskID) error {
 	if len(idChanges) == 0 {
 		return nil
 	}
@@ -548,7 +549,7 @@ func (ru *ReferenceUpdater) UpdateReferences(idChanges map[TaskID]TaskID) error 
 		updated := false
 
 		// Update parent references
-		if newParentID, exists := idChanges[task.Parent]; exists {
+		if newParentID, exists := idChanges[task.Parent.String()]; exists {
 			oldParent := task.Parent
 			task.Parent = newParentID
 			RecordParentChange(task, oldParent, newParentID, "ID change cascade")
@@ -567,7 +568,7 @@ func (ru *ReferenceUpdater) UpdateReferences(idChanges map[TaskID]TaskID) error 
 					continue
 				}
 
-				if newDepID, exists := idChanges[depID]; exists {
+				if newDepID, exists := idChanges[depID.String()]; exists {
 					newDeps = append(newDeps, newDepID.String())
 					depsUpdated = true
 				} else {
@@ -578,7 +579,7 @@ func (ru *ReferenceUpdater) UpdateReferences(idChanges map[TaskID]TaskID) error 
 			if depsUpdated {
 				// Update dependencies array
 				task.Dependencies = MaybeStringArrayFromSlice(newDeps)
-				RecordChange(task, fmt.Sprintf("Updated dependencies due to ID changes"))
+				RecordChange(task, fmt.Sprintf("Updated dependencies due to ID changes in task %q: %v", task.ID.String(), newDeps))
 				updated = true
 			}
 		}
@@ -629,11 +630,8 @@ func (ru *ReferenceUpdater) FindTaskReferences(targetID TaskID) ([]*Task, error)
 		}
 
 		// Check dependencies
-		for _, dep := range task.Dependencies.ToSlice() {
-			if dep == targetIDStr {
-				referencingTasks = append(referencingTasks, task)
-				break
-			}
+		if slices.Contains(task.Dependencies.ToSlice(), targetIDStr) {
+			referencingTasks = append(referencingTasks, task)
 		}
 	}
 
@@ -652,7 +650,7 @@ func MaybeStringArrayFromSlice(slice []string) MaybeStringArray {
 // ExecuteResolutionPlanWithReferences executes a resolution plan and updates all references
 func (cr *ConflictResolver) ExecuteResolutionPlanWithReferences(plan *ResolutionPlan, dryRun bool) ([]string, error) {
 	var results []string
-	idChanges := make(map[TaskID]TaskID)
+	idChanges := make(map[string]TaskID)
 
 	if dryRun {
 		results = append(results, "DRY RUN MODE - No changes will be made")
@@ -668,7 +666,7 @@ func (cr *ConflictResolver) ExecuteResolutionPlanWithReferences(plan *Resolution
 
 		// Collect ID changes for reference updating
 		if action.Type == "renumber" && !dryRun {
-			idChanges[action.OriginalID] = action.NewID
+			idChanges[action.OriginalID.String()] = action.NewID
 		}
 	}
 
@@ -684,3 +682,4 @@ func (cr *ConflictResolver) ExecuteResolutionPlanWithReferences(plan *Resolution
 
 	return results, nil
 }
+
