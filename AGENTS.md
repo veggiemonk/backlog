@@ -6,7 +6,7 @@ This document provides a comprehensive and unified set of instructions for AI ag
 
 - **Project Name**: `backlog`
 - **Description**: A Go-based, offline-first, portable task management CLI that stores tasks as Markdown files within a Git repository.
-- **Key Feature**: Designed for seamless integration with AI agents via the Model Context Protocol (MCP).
+- **Key Feature**: Designed for seamless integration with AI agents via CLI commands.
 
 ---
 
@@ -69,7 +69,7 @@ You MUST use the `gopls` tools for code intelligence.
 
 **Non-negotiable rules for interacting with the task system:**
 
-1.  **NEVER EDIT TASK FILES DIRECTLY**: Do not write to, modify, or delete any file in the `.backlog/` directory. All task manipulations MUST go through the `backlog` CLI commands or the provided MCP tools (`task_create`, `task_edit`, etc.). Direct edits will corrupt metadata and break the system.
+1.  **NEVER EDIT TASK FILES DIRECTLY**: Do not write to, modify, or delete any file in the `.backlog/` directory. All task manipulations MUST go through the `backlog` CLI commands. Direct edits will corrupt metadata and break the system.
 2.  **DO NOT DELETE TASK FILES**: Never delete task markdown files. Use the `backlog archive` command instead.
 3.  **USE THE `backlog` TOOL**: For any operation related to task management (create, list, view, edit, search, archive), you MUST use the `backlog` CLI tool.
 
@@ -77,7 +77,7 @@ You MUST use the `gopls` tools for code intelligence.
 
 ## 5. Planning and Task Management (`backlog`)
 
-FULLY READ THE INSTRUCTIONS FOR BACKLOG MCP [prompt.md](./internal/mcp/prompt.md)
+FULLY READ THE INSTRUCTIONS FOR BACKLOG CLI [prompt.md](./internal/mcp/prompt.md)
 
 ---
 
@@ -91,15 +91,9 @@ FULLY READ THE INSTRUCTIONS FOR BACKLOG MCP [prompt.md](./internal/mcp/prompt.md
 
 ---
 
-## 7. AI Agent & MCP Integration
+## 7. AI Agent 
 
-### 7.1. MCP Server
-
-- The MCP server exposes the core task functionality as tools for AI agents.
-- **Available Tools**: `task_create`, `task_list`, `task_view`, `task_edit`, `task_search`, `task_archive`.
-- **Transports**: The server can be started over HTTP (`--http`) or stdio.
-
-### 7.2. Specialist Agents
+### 7.1. Specialist Agents
 
 - **`go-task-manager-reviewer`**: An expert agent for reviewing Go code related to this project.
 - **When to use**: Use this agent when you need an expert review of new features, architectural changes, or refactoring, especially concerning task management logic, storage, or CLI commands.

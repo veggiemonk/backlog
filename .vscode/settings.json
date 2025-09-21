@@ -1,14 +1,3 @@
 {
-    "makefile.configureOnOpen": false,
-    "amp.mcpServers": {
-        "backlog": {
-            "command": "go",
-            "args": ["run", ".", "mcp"],
-            // IF YOU ARE USING (NOT DEVELOPING): 
-            // use HTTP, uncomment the following lines
-            // "args": ["run", ".", "mcp", "--http"],
-            // "url": "http://localhost:8106",
-
-        },
-    }
+  "makefile.configureOnOpen": false
 }

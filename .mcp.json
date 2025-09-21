@@ -1,15 +1,5 @@
 {
   "mcpServers": {
-    "backlog": {
-      "type": "stdio",
-      "command": "go",
-      "args": [
-        "run",
-        ".",
-        "mcp"
-      ],
-      "env": {}
-    },
     "gopls": {
       "type": "stdio",
       "command": "gopls",
