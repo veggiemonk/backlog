@@ -3,16 +3,18 @@ package cmd
 import (
 	"fmt"
 	"strings"
+	"testing"
 )
 
 // CommandExample represents a single example for a command
 type CommandExample struct {
-	Description string            // Human readable description
-	Command     string            // The base command (e.g., "backlog create")
-	Args        []string          // Positional arguments
-	Flags       map[string]string // Flag name to value mapping
-	Comment     string            // Optional comment to explain the example
-	Expected    string            // Optional expected output or behavior description
+	Description string             // Human readable description
+	Command     string             // The base command (e.g., "backlog create")
+	Args        []string           // Positional arguments
+	Flags       map[string]string  // Flag name to value mapping
+	Comment     string             // Optional comment to explain the example
+	Expected    string             // Optional expected output or behavior description
+	Bla         func(t *testing.T) // Optional expected output or behavior description
 }
 
 // CommandExamples holds all examples for a command
@@ -59,294 +61,24 @@ func (ces CommandExamples) GenerateExampleText() string {
 	if len(ces.Examples) == 0 {
 		return ""
 	}
-
 	var examples []string
 	for _, example := range ces.Examples {
 		examples = append(examples, example.FormatExample())
 	}
-
 	return strings.Join(examples, "\n\n")
 }
 
-// CreateExamples contains all examples for the create command
-var CreateExamples = CommandExamples{
-	Examples: []CommandExample{
-		{
-			Description: "Basic Task Creation",
-			Command:     "backlog create",
-			Args:        []string{"Fix the login button styling"},
-			Comment:     "This is the simplest way to create a task, providing only a title.",
-		},
-		{
-			Description: "Task with Description",
-			Command:     "backlog create",
-			Args:        []string{"Implement password reset"},
-			Flags: map[string]string{
-				"description": "Users should be able to request a password reset link via their email. This involves creating a new API endpoint and a front-end form.",
-			},
-			Comment: "Use the -d or --description flag to add more detailed information about the task.",
-		},
-		{
-			Description: "Assigning to Single Person",
-			Command:     "backlog create",
-			Args:        []string{"Design the new dashboard"},
-			Flags: map[string]string{
-				"assigned": "alex",
-			},
-			Comment: "You can assign a task to one or more team members using the -a or --assigned flag.",
-		},
-		{
-			Description: "Assigning to Multiple People",
-			Command:     "backlog create",
-			Args:        []string{"Code review for the payment gateway"},
-			Flags: map[string]string{
-				"assigned": "jordan,casey",
-			},
-		},
-		{
-			Description: "Adding Labels",
-			Command:     "backlog create",
-			Args:        []string{"Update third-party dependencies"},
-			Flags: map[string]string{
-				"labels": "bug,backend,security",
-			},
-			Comment: "Use the -l or --labels flag to categorize the task with comma-separated labels.",
-		},
-		{
-			Description: "Setting High Priority",
-			Command:     "backlog create",
-			Args:        []string{"Hotfix: Production database is down"},
-			Flags: map[string]string{
-				"priority": "high",
-			},
-			Comment: "Specify the task's priority with the --priority flag. The default is \"medium\".",
-		},
-		{
-			Description: "Setting Low Priority",
-			Command:     "backlog create",
-			Args:        []string{"Refactor the old user model"},
-			Flags: map[string]string{
-				"priority": "low",
-			},
-		},
-		{
-			Description: "Defining Acceptance Criteria",
-			Command:     "backlog create",
-			Args:        []string{"Develop user profile page"},
-			Flags: map[string]string{
-				"ac": "Users can view their own profile information.,Users can upload a new profile picture.,The page is responsive on mobile devices.",
-			},
-			Comment: "Use the --ac flag multiple times to list the conditions that must be met for the task to be considered complete.",
-		},
-		{
-			Description: "Creating a Sub-task",
-			Command:     "backlog create",
-			Args:        []string{"Add Google OAuth login"},
-			Flags: map[string]string{
-				"parent": "15",
-			},
-			Comment: "Link a new task to a parent task using the -p or --parent flag. This is useful for breaking down larger tasks.",
-		},
-		{
-			Description: "Setting Single Dependency",
-			Command:     "backlog create",
-			Args:        []string{"Deploy user authentication"},
-			Flags: map[string]string{
-				"deps": "T15",
-			},
-			Comment: "Use the --deps flag to specify that this task depends on other tasks being completed first.",
-		},
-		{
-			Description: "Setting Multiple Dependencies",
-			Command:     "backlog create",
-			Args:        []string{"Integration testing"},
-			Flags: map[string]string{
-				"deps": "T15,T18,T20",
-			},
-			Comment: "This means the task cannot be started until tasks T15, T18, and T20 are completed.",
-		},
-		{
-			Description: "Task with Implementation Notes",
-			Command:     "backlog create",
-			Args:        []string{"Optimize database queries"},
-			Flags: map[string]string{
-				"notes": "Focus on the user lookup queries in the authentication module. Consider adding indexes on email and username fields.",
-			},
-			Comment: "Use the --notes flag to add implementation notes to help with development.",
-		},
-		{
-			Description: "Task with Implementation Plan",
-			Command:     "backlog create",
-			Args:        []string{"Implement user registration flow"},
-			Flags: map[string]string{
-				"plan": "1. Design registration form UI\n2. Create user validation logic\n3. Set up email verification\n4. Add password strength requirements\n5. Write integration tests",
-			},
-			Comment: "Use the --plan flag to add a structured implementation plan.",
-		},
-		{
-			Description: "Complex Example with Multiple Flags",
-			Command:     "backlog create",
-			Args:        []string{"Build the new reporting feature"},
-			Flags: map[string]string{
-				"description": "Create a new section in the app that allows users to generate and export monthly performance reports in PDF format.",
-				"assigned":    "drew",
-				"labels":      "feature,frontend,backend",
-				"priority":    "high",
-				"ac":          "Report generation logic is accurate.,Users can select a date range for the report.,The exported PDF has the correct branding and layout.",
-				"parent":      "23",
-			},
-			Comment: "Here is a comprehensive example that uses several flags at once to create a very detailed task.",
-		},
-	},
-}
-
-// ListExamples contains all examples for the list command
-var ListExamples = CommandExamples{
-	Examples: []CommandExample{
-		{
-			Description: "List All Tasks",
-			Command:     "backlog list",
-			Comment:     "List all tasks with all columns",
-		},
-		{
-			Description: "Filter by Status",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"status": "todo",
-			},
-			Comment: "List tasks with status \"todo\"",
-		},
-		{
-			Description: "Filter by Multiple Statuses",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"status": "todo,in-progress",
-			},
-			Comment: "List tasks with status \"todo\" or \"in-progress\"",
-		},
-		{
-			Description: "Filter by Parent",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"parent": "12345",
-			},
-			Comment: "List tasks that are sub-tasks of the task with ID \"12345\"",
-		},
-		{
-			Description: "Filter by Assigned User",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"assigned": "alice",
-			},
-			Comment: "List tasks assigned to alice",
-		},
-		{
-			Description: "Filter Unassigned Tasks",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"unassigned": "",
-			},
-			Comment: "List tasks that have no one assigned",
-		},
-		{
-			Description: "Filter by Labels",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"labels": "bug,feature",
-			},
-			Comment: "List tasks containing either \"bug\" or \"feature\" labels",
-		},
-		{
-			Description: "Filter by Priority",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"priority": "high",
-			},
-			Comment: "List all high priority tasks",
-		},
-		{
-			Description: "Filter Tasks with Dependencies",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"has-dependency": "",
-			},
-			Comment: "List tasks that have at least one dependency",
-		},
-		{
-			Description: "Filter Blocking Tasks",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"depended-on": "",
-				"status":      "todo",
-			},
-			Comment: "List all the blocking tasks.",
-		},
-		{
-			Description: "Hide Extra Fields",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"hide-extra": "",
-			},
-			Comment: "Hide extra fields (labels, priority, assigned)",
-		},
-		{
-			Description: "Sort by Priority",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"sort": "priority",
-			},
-			Comment: "Sort tasks by priority",
-		},
-		{
-			Description: "Multiple Sort Fields",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"sort": "updated,priority",
-			},
-			Comment: "Sort tasks by updated date, then priority",
-		},
-		{
-			Description: "Reverse Order",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"reverse": "",
-			},
-			Comment: "Reverse the order of tasks",
-		},
-		{
-			Description: "Markdown Output",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"markdown": "",
-			},
-			Comment: "List tasks in markdown format",
-		},
-		{
-			Description: "JSON Output",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"json": "",
-			},
-			Comment: "List tasks in JSON format",
-		},
-		{
-			Description: "Pagination - Limit",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"limit": "10",
-			},
-			Comment: "List first 10 tasks",
-		},
-		{
-			Description: "Pagination - Limit and Offset",
-			Command:     "backlog list",
-			Flags: map[string]string{
-				"limit":  "5",
-				"offset": "10",
-			},
-			Comment: "List 5 tasks starting from 11th task",
-		},
-	},
+// These functions should exist in the package
+var expectedTestFunctions = []string{
+	"CreateTestableExamples",
+	"ListTestableExamples",
+	"SearchTestableExamples",
+	"EditTestableExamples",
+	"ViewTestableExamples",
+	"ArchiveTestableExamples",
+	"VersionTestableExamples",
+	"InstructionsTestableExamples",
+	"MCPTestableExamples",
 }
 
 // SearchExamples contains all examples for the search command
@@ -693,3 +425,4 @@ var MCPExamples = CommandExamples{
 		},
 	},
 }
+

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -15,15 +16,15 @@ func TestExamplesSyncWithTests(t *testing.T) {
 		is := is.New(t)
 
 		// Check that each command has non-empty examples
-		is.True(len(CreateExamples.Examples) > 0)   // Create command should have examples
-		is.True(len(ListExamples.Examples) > 0)     // List command should have examples
-		is.True(len(SearchExamples.Examples) > 0)   // Search command should have examples
-		is.True(len(EditExamples.Examples) > 0)     // Edit command should have examples
-		is.True(len(ViewExamples.Examples) > 0)     // View command should have examples
-		is.True(len(ArchiveExamples.Examples) > 0)  // Archive command should have examples
-		is.True(len(VersionExamples.Examples) > 0)  // Version command should have examples
+		is.True(len(CreateExamples.Examples) > 0)       // Create command should have examples
+		is.True(len(ListExamples.Examples) > 0)         // List command should have examples
+		is.True(len(SearchExamples.Examples) > 0)       // Search command should have examples
+		is.True(len(EditExamples.Examples) > 0)         // Edit command should have examples
+		is.True(len(ViewExamples.Examples) > 0)         // View command should have examples
+		is.True(len(ArchiveExamples.Examples) > 0)      // Archive command should have examples
+		is.True(len(VersionExamples.Examples) > 0)      // Version command should have examples
 		is.True(len(InstructionsExamples.Examples) > 0) // Instructions command should have examples
-		is.True(len(MCPExamples.Examples) > 0)      // MCP command should have examples
+		is.True(len(MCPExamples.Examples) > 0)          // MCP command should have examples
 	})
 
 	t.Run("all examples can generate test names", func(t *testing.T) {
@@ -37,16 +38,15 @@ func TestExamplesSyncWithTests(t *testing.T) {
 		for _, cmdExamples := range allExamples {
 			for _, example := range cmdExamples.Examples {
 				testName := example.GenerateTestName()
-				is.True(len(testName) > 0)                    // Test name should not be empty
-				is.True(!strings.Contains(testName, " "))     // Test name should not contain spaces
-				is.True(!strings.Contains(testName, "-"))     // Test name should not contain dashes
+				is.True(len(testName) > 0)                     // Test name should not be empty
+				is.True(!strings.Contains(testName, " "))      // Test name should not contain spaces
+				is.True(!strings.Contains(testName, "-"))      // Test name should not contain dashes
 				is.True(strings.ToLower(testName) == testName) // Test name should be lowercase
 			}
 		}
 	})
 
 	t.Run("all examples can generate argument slices", func(t *testing.T) {
-
 		allExamples := []CommandExamples{
 			CreateExamples, ListExamples, SearchExamples, EditExamples,
 			ViewExamples, ArchiveExamples, VersionExamples, InstructionsExamples, MCPExamples,
@@ -69,31 +69,31 @@ func TestExamplesSyncWithTests(t *testing.T) {
 		for _, example := range CreateExamples.Examples {
 			createTestNames = append(createTestNames, example.GenerateTestName())
 		}
-		is.True(containsPattern(createTestNames, "basic"))     // Should have basic creation
+		is.True(containsPattern(createTestNames, "basic"))       // Should have basic creation
 		is.True(containsPattern(createTestNames, "description")) // Should show description usage
-		is.True(containsPattern(createTestNames, "assign"))    // Should show assignment
-		is.True(containsPattern(createTestNames, "label"))     // Should show labels
-		is.True(containsPattern(createTestNames, "priority"))  // Should show priority
-		is.True(containsPattern(createTestNames, "criteria"))  // Should show AC
+		is.True(containsPattern(createTestNames, "assign"))      // Should show assignment
+		is.True(containsPattern(createTestNames, "label"))       // Should show labels
+		is.True(containsPattern(createTestNames, "priority"))    // Should show priority
+		is.True(containsPattern(createTestNames, "criteria"))    // Should show AC
 
 		// List examples should cover filtering and output options
 		listTestNames := make([]string, 0)
 		for _, example := range ListExamples.Examples {
 			listTestNames = append(listTestNames, example.GenerateTestName())
 		}
-		is.True(containsPattern(listTestNames, "status"))      // Should show status filtering
-		is.True(containsPattern(listTestNames, "json"))        // Should show JSON output
-		is.True(containsPattern(listTestNames, "markdown"))    // Should show markdown output
-		is.True(containsPattern(listTestNames, "sort"))        // Should show sorting
+		is.True(containsPattern(listTestNames, "status"))   // Should show status filtering
+		is.True(containsPattern(listTestNames, "json"))     // Should show JSON output
+		is.True(containsPattern(listTestNames, "markdown")) // Should show markdown output
+		is.True(containsPattern(listTestNames, "sort"))     // Should show sorting
 
 		// Search examples should cover search patterns
 		searchTestNames := make([]string, 0)
 		for _, example := range SearchExamples.Examples {
 			searchTestNames = append(searchTestNames, example.GenerateTestName())
 		}
-		is.True(containsPattern(searchTestNames, "basic"))     // Should have basic search
-		is.True(containsPattern(searchTestNames, "json"))      // Should show JSON output
-		is.True(containsPattern(searchTestNames, "markdown"))  // Should show markdown output
+		is.True(containsPattern(searchTestNames, "basic"))    // Should have basic search
+		is.True(containsPattern(searchTestNames, "json"))     // Should show JSON output
+		is.True(containsPattern(searchTestNames, "markdown")) // Should show markdown output
 	})
 
 	t.Run("examples have consistent command structure", func(t *testing.T) {
@@ -161,10 +161,10 @@ func TestExamplesSyncWithTests(t *testing.T) {
 
 		for _, cmdExamples := range allExamples {
 			exampleText := cmdExamples.GenerateExampleText()
-			is.True(len(exampleText) > 0)                         // Should generate non-empty text
-			is.True(strings.Contains(exampleText, "backlog"))     // Should contain command name
-			is.True(!strings.Contains(exampleText, "undefined"))  // Should not contain undefined values
-			is.True(!strings.Contains(exampleText, "null"))       // Should not contain null values
+			is.True(len(exampleText) > 0)                        // Should generate non-empty text
+			is.True(strings.Contains(exampleText, "backlog"))    // Should contain command name
+			is.True(!strings.Contains(exampleText, "undefined")) // Should not contain undefined values
+			is.True(!strings.Contains(exampleText, "null"))      // Should not contain null values
 		}
 	})
 }
@@ -180,18 +180,18 @@ func TestExampleTestGeneration(t *testing.T) {
 			Args:        []string{"arg1", "arg2"},
 			Flags: map[string]string{
 				"flag1": "value1",
-				"flag2": "",  // boolean flag
+				"flag2": "", // boolean flag
 			},
 			Comment: "This is a test",
 		}
 
 		formatted := example.FormatExample()
-		is.True(strings.Contains(formatted, "# This is a test"))     // Should contain comment
-		is.True(strings.Contains(formatted, "backlog test"))         // Should contain command
-		is.True(strings.Contains(formatted, "\"arg1\""))            // Should contain quoted args
-		is.True(strings.Contains(formatted, "\"arg2\""))            // Should contain quoted args
-		is.True(strings.Contains(formatted, "--flag1 \"value1\""))  // Should contain flag with value
-		is.True(strings.Contains(formatted, "--flag2"))             // Should contain boolean flag
+		is.True(strings.Contains(formatted, "# This is a test"))   // Should contain comment
+		is.True(strings.Contains(formatted, "backlog test"))       // Should contain command
+		is.True(strings.Contains(formatted, "\"arg1\""))           // Should contain quoted args
+		is.True(strings.Contains(formatted, "\"arg2\""))           // Should contain quoted args
+		is.True(strings.Contains(formatted, "--flag1 \"value1\"")) // Should contain flag with value
+		is.True(strings.Contains(formatted, "--flag2"))            // Should contain boolean flag
 	})
 
 	t.Run("testable examples generate proper argument arrays", func(t *testing.T) {
@@ -209,10 +209,10 @@ func TestExampleTestGeneration(t *testing.T) {
 		testable := example.ToTestableExample()
 		args := testable.GenerateArgsSlice()
 
-		is.True(contains(args, "arg1"))         // Should contain positional arg
-		is.True(contains(args, "--flag1"))      // Should contain flag name
-		is.True(contains(args, "value1"))       // Should contain flag value
-		is.True(contains(args, "--flag2"))      // Should contain boolean flag
+		is.True(slices.Contains(args, "arg1"))    // Should contain positional arg
+		is.True(slices.Contains(args, "--flag1")) // Should contain flag name
+		is.True(slices.Contains(args, "value1"))  // Should contain flag value
+		is.True(slices.Contains(args, "--flag2")) // Should contain boolean flag
 	})
 }
 
@@ -282,32 +282,10 @@ func containsPattern(slice []string, pattern string) bool {
 	return false
 }
 
-func contains(slice []string, item string) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
-		}
-	}
-	return false
-}
-
 // TestReflectionBasedSync validates that the example definitions match the test functions
 func TestReflectionBasedSync(t *testing.T) {
 	t.Run("test functions exist for example generators", func(t *testing.T) {
 		is := is.New(t)
-
-		// These functions should exist in the package
-		expectedTestFunctions := []string{
-			"CreateTestableExamples",
-			"ListTestableExamples",
-			"SearchTestableExamples",
-			"EditTestableExamples",
-			"ViewTestableExamples",
-			"ArchiveTestableExamples",
-			"VersionTestableExamples",
-			"InstructionsTestableExamples",
-			"MCPTestableExamples",
-		}
 
 		// Use reflection to check if these functions exist
 		packageVal := reflect.ValueOf(CreateExamples)
@@ -343,3 +321,4 @@ func TestReflectionBasedSync(t *testing.T) {
 		is.True(hasFlags) // CommandExample should have Flags field
 	})
 }
+
