@@ -10,7 +10,12 @@
       "name": "Debug list command",
       "mode": "debug",
       "program": "${workspaceFolder}",
-      "args": ["edit", "14", "-s", "done"]
+      "args": [
+        "edit",
+        "14",
+        "-s",
+        "done"
+      ]
     }
   ]
 }

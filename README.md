@@ -3,18 +3,23 @@
 > Manage the backlog of your project with just markdown in git.
 > The goal is to provide a frictionless collaboration between AI agents and developers
 
-Backlog is a zero-configuration task manager written in Go where tasks live inside a Git repository. It leverages plain Markdown files for task storage and a comprehensive command-line interface (CLI) for interaction. This design makes it exceptionally well-suited for AI agents thanks to its MCP (Model Context Protocol) integration.
+Backlog is a zero-configuration task manager written in Go where tasks live inside a Git repository. It leverages plain Markdown files for task storage and a comprehensive command-line interface (CLI) for interaction. This design makes it exceptionally well-suited for AI agents thanks to its CLI and MCP (Model Context Protocol) integration.
 
 The system is designed to be offline-first and completely portable, as the entire project state is contained within the Git repository.
 
 <!--toc:start-->
+
 - [Introduction](#introduction)
 - [Features](#features)
 - [Quick Start](#quick-start)
   - [Installation](#installation)
+    - [Using the Container](#using-the-container)
   - [Initialize Your Project](#initialize-your-project)
   - [Task Directory Resolution](#task-directory-resolution)
 - [Configuration](#configuration)
+  - [Available Configuration Options](#available-configuration-options)
+  - [Configuration Examples](#configuration-examples)
+  - [Configuration Notes](#configuration-notes)
 - [AI Agent Integration](#ai-agent-integration)
   - [Available Tools](#available-tools)
   - [Usage with AI Agents](#usage-with-ai-agents)
@@ -96,21 +101,51 @@ docker pull ghcr.io/veggiemonk/backlog:latest
 
 You can also download the binary from the [release page](https://github.com/veggiemonk/backlog/releases).
 
+#### Using the Container
+
+The backlog container is designed to work with your local project directory. Here are common usage patterns:
+
+```bash
+# Basic usage - mount current directory and set backlog folder
+docker run --rm -it -v $(pwd):/data -e BACKLOG_FOLDER=/data/.backlog ghcr.io/veggiemonk/backlog list
+
+# Create a task
+docker run --rm -it -v $(pwd):/data -e BACKLOG_FOLDER=/data/.backlog ghcr.io/veggiemonk/backlog create "Fix bug in authentication"
+
+# View a specific task
+docker run --rm -it -v $(pwd):/data -e BACKLOG_FOLDER=/data/.backlog ghcr.io/veggiemonk/backlog view T01
+
+# Edit a task
+docker run --rm -it -v $(pwd):/data -e BACKLOG_FOLDER=/data/.backlog ghcr.io/veggiemonk/backlog edit T01 --status "in-progress"
+
+# Start MCP server (for AI integration)
+docker run --rm -it -v $(pwd):/data -e BACKLOG_FOLDER=/data/.backlog -p 8106:8106 ghcr.io/veggiemonk/backlog mcp --http --port 8106
+```
+
+**Container Tips:**
+
+- Mount your project directory to `/data` for file persistence
+- Set `BACKLOG_FOLDER=/data/.backlog` to store tasks in your project
+- Use `-p 8106:8106` when running the MCP server to expose the port
+- The `--rm` flag removes the container after execution
+- All CLI commands work the same way in the container
+
 ### Initialize Your Project
 
 No initialization is needed.
-
 
 ### Task Directory Resolution
 
 Backlog stores tasks in a directory referred to as the "tasks folder". By default this is `.backlog`, but you can override it.
 
 - How to set the folder
+
   - CLI flag: `--folder <path>` (relative or absolute)
   - Environment variable: `BACKLOG_FOLDER` (used when set)
   - Default: `.backlog`
 
 - Resolution rules (applied to the chosen value)
+
   - Absolute path: used as-is.
   - Relative path: resolved with this precedence:
     - If `<CWD>/<path>` exists, use it.
@@ -128,15 +163,15 @@ Backlog supports configuration through command-line flags and environment variab
 
 ### Available Configuration Options
 
-| Configuration | Flag | Environment Variable | Default | Description |
-|--------------|------|---------------------|---------|-------------|
-| **Tasks Directory** | `--folder` | `BACKLOG_FOLDER` | `.backlog` | Directory for backlog tasks |
-| **Auto Commit** | `--auto-commit` | `BACKLOG_AUTO_COMMIT` | `true` | Auto-committing changes to git repository |
-| **Page Size** | `--page-size` | `BACKLOG_PAGE_SIZE` | `25` | Default page size for pagination |
-| **Max Limit** | `--max-limit` | `BACKLOG_MAX_LIMIT` | `1000` | Maximum limit for pagination |
-| **Log Level** | `--log-level` | `BACKLOG_LOG_LEVEL` | `info` | Log level (debug, info, warn, error) |
-| **Log Format** | `--log-format` | `BACKLOG_LOG_FORMAT` | `text` | Log format (json, text) |
-| **Log File** | `--log-file` | `BACKLOG_LOG_FILE` | `""` | Log file path (defaults to stderr) |
+| Configuration       | Flag            | Environment Variable  | Default    | Description                               |
+| ------------------- | --------------- | --------------------- | ---------- | ----------------------------------------- |
+| **Tasks Directory** | `--folder`      | `BACKLOG_FOLDER`      | `.backlog` | Directory for backlog tasks               |
+| **Auto Commit**     | `--auto-commit` | `BACKLOG_AUTO_COMMIT` | `true`     | Auto-committing changes to git repository |
+| **Page Size**       | `--page-size`   | `BACKLOG_PAGE_SIZE`   | `25`       | Default page size for pagination          |
+| **Max Limit**       | `--max-limit`   | `BACKLOG_MAX_LIMIT`   | `1000`     | Maximum limit for pagination              |
+| **Log Level**       | `--log-level`   | `BACKLOG_LOG_LEVEL`   | `info`     | Log level (debug, info, warn, error)      |
+| **Log Format**      | `--log-format`  | `BACKLOG_LOG_FORMAT`  | `text`     | Log format (json, text)                   |
+| **Log File**        | `--log-file`    | `BACKLOG_LOG_FILE`    | `""`       | Log file path (defaults to stderr)        |
 
 ### Configuration Examples
 

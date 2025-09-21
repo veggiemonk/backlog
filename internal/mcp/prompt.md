@@ -1,45 +1,44 @@
-# Instructions for the usage of Backlog MCP Tools
+# Instructions for the usage of Backlog CLI
 
-
-## Backlog.md: Comprehensive Project Management via MCP Tools
+## Backlog.md: Comprehensive Project Management via CLI Commands
 
 ### Assistant Objective
 
-Efficiently manage all project tasks, status, and documentation using the Backlog MCP (Model-Controlled Process) tools, ensuring all project metadata remains fully synchronized and up-to-date.
+Efficiently manage all project tasks, status, and documentation using the Backlog CLI commands, ensuring all project metadata remains fully synchronized and up-to-date.
 
 ### Core Capabilities
 
 - ✅ **Task Management**: Create, edit, assign, prioritize, and track tasks with full metadata
-- ✅ **Acceptance Criteria**: Granular control with add/remove/check/uncheck by index
+- ✅ **Acceptance Criteria**: Granular control with add/remove/check/uncheck operations
 - ✅ **Git Integration**: Automatic tracking of task states across branches
 - ✅ **Dependencies**: Task relationships and subtask hierarchies
-- ✅ **AI-Optimized**: Tools return structured data perfect for AI processing
+- ✅ **CLI-Optimized**: Commands return structured output perfect for AI processing
 
 ### Why This Matters to You (AI Agent)
 
-1.  **Comprehensive system** - Full project management capabilities through MCP tools.
-2.  **The tools are the interface** - All operations go through `task_*` tool calls.
-3.  **Unified interaction model** - You can use tools for both reading (`task_view`) and writing (`task_edit`).
-4.  **Metadata stays synchronized** - The tools handle all the complex relationships.
+1.  **Comprehensive system** - Full project management capabilities through CLI commands.
+2.  **The CLI is the interface** - All operations go through `backlog` commands.
+3.  **Unified interaction model** - You can use commands for both reading (`view`) and writing (`edit`).
+4.  **Metadata stays synchronized** - The CLI handles all the complex relationships.
 
 ### Key Understanding
 
 - **Tasks** live in `.backlog/` as markdown files.
-- **You interact via MCP tools only**: `task_create`, `task_edit`, etc.
-- **Never bypass the tools** - They handle Git, metadata, file naming, and relationships.
+- **You interact via CLI only**: `backlog create`, `backlog edit`, etc.
+- **Never bypass the CLI** - It handles Git, metadata, file naming, and relationships.
 
 ---
 
-# ⚠️ CRITICAL: NEVER EDIT OR DELETE TASK FILES DIRECTLY. Edit Only via MCP Tools
+# ⚠️ CRITICAL: NEVER EDIT OR DELETE TASK FILES DIRECTLY. Edit Only via CLI Commands
 
-**ALL task operations MUST use the Backlog MCP tool calls.**
+**ALL task operations MUST use the Backlog CLI commands.**
 
-- ✅ **DO**: Use `task_edit` and other `task_*` tools.
-- ✅ **DO**: Use `task_create` to create new tasks.
-- ✅ **DO**: Use `task_edit(id=..., check_ac=[1])` to mark acceptance criteria.
+- ✅ **DO**: Use `backlog edit` and other CLI commands.
+- ✅ **DO**: Use `backlog create` to create new tasks.
+- ✅ **DO**: Use `backlog edit --check-ac 1` to mark acceptance criteria.
 - ❌ **DON'T**: Edit markdown files directly.
 - ❌ **DON'T**: Manually change checkboxes in files.
-- ❌ **DON'T**: Add or modify text in task files without using the tools.
+- ❌ **DON'T**: Add or modify text in task files without using the CLI.
 
 **Why?** Direct file editing breaks metadata synchronization, Git tracking, and task relationships.
 
@@ -55,9 +54,9 @@ Efficiently manage all project tasks, status, and documentation using the Backlo
 
 ### 🔧 **ACTING** (How to change things)
 
-- **All task operations MUST use the `task_*` MCP tools.**
+- **All task operations MUST use the `backlog` CLI commands.**
 - This ensures metadata is correctly updated and the project stays in sync.
-- The tools return structured data, so you don't need to parse files.
+- The CLI returns structured output, so you don't need to parse files.
 
 ---
 
@@ -65,7 +64,7 @@ Efficiently manage all project tasks, status, and documentation using the Backlo
 
 ### ❌ **WRONG: Direct File Editing**
 
-```python
+```bash
 # DON'T DO THIS:
 
 # 1. Read .backlog/T07-feature.md
@@ -73,38 +72,19 @@ Efficiently manage all project tasks, status, and documentation using the Backlo
 # 3. Write the modified content back to the file
 ```
 
-### ✅ **CORRECT: Using MCP Tools**
+### ✅ **CORRECT: Using CLI Commands**
 
-```json
-// DO THIS INSTEAD:
+```bash
+# DO THIS INSTEAD:
 
-// Mark AC #1 as complete
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "7",
-    "check_ac": [1]
-  }
-}
+# Mark AC #1 as complete
+backlog edit 7 --check-ac 1
 
-// Add notes
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "7",
-    "new_notes": "Implementation complete"
-  }
-}
+# Add notes
+backlog edit 7 --notes "Implementation complete"
 
-// Multiple changes: change status and assign the task
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "7",
-    "new_status": "in-progress",
-    "new_assigned": ["@agent-k"]
-  }
-}
+# Multiple changes: change status and assign the task
+backlog edit 7 --status "in-progress" --assign "@agent-k"
 ```
 
 ---
@@ -112,7 +92,7 @@ Efficiently manage all project tasks, status, and documentation using the Backlo
 ## 3. Understanding Task Format (Read-Only Reference)
 
 ⚠️ **FORMAT REFERENCE ONLY** - The following shows the structure of the underlying data.
-**Never edit files directly! Use MCP tools to make changes.**
+**Never edit files directly! Use CLI commands to make changes.**
 
 ### Task Structure
 
@@ -139,21 +119,21 @@ Brief explanation of the task purpose.
 
 ### How to Modify Each Section
 
-| What You Want to Change | MCP Tool Call Arguments                                   |
-| ----------------------- | ---------------------------------------------------------- |
-| Title                   | `{"id": "42", "new_title": "New Title"}`                |
-| Status                  | `{"id": "42", "new_status": "in-progress"}`             |
-| Assigned                | `{"id": "42", "new_assigned": ["@sara"]}`               |
-| Labels                  | `{"id": "42", "new_labels": ["backend", "api"]}`        |
-| Description             | `{"id": "42", "new_description": "New description"}`    |
-| Add AC                  | `{"id": "42", "add_ac": ["New criterion"]}`             |
-| Check AC #1             | `{"id": "42", "check_ac": [1]}`                          |
-| Uncheck AC #2           | `{"id": "42", "uncheck_ac": [2]}`                        |
-| Remove AC #1            | `{"id": "42", "remove_ac": [1]}`                         |
-| Add Plan                | `{"id": "42", "new_plan": "1. Step one \n2. Step two"}`  |
-| Add Notes               | `{"id": "42", "new_notes": "What I did"}`               |
-| Remove Assigned User    | `{"id": "42", "remove_assigned": ["@sara"]}`             |
-| Remove Labels           | `{"id": "42", "remove_labels": ["backend", "api"]}`     |
+| What You Want to Change | CLI Command                                              |
+| ----------------------- | -------------------------------------------------------- |
+| Title                   | `backlog edit 42 --title "New Title"`             |
+| Status                  | `backlog edit 42 --status "in-progress"`          |
+| Assigned                | `backlog edit 42 --assign "@sara"`                |
+| Labels                  | `backlog edit 42 --labels "backend,api"`          |
+| Description             | `backlog edit 42 --description "New description"` |
+| Add AC                  | `backlog edit 42 --add-ac "New criterion"`        |
+| Check AC #1             | `backlog edit 42 --check-ac 1`                    |
+| Uncheck AC #2           | `backlog edit 42 --uncheck-ac 2`                  |
+| Remove AC #1            | `backlog edit 42 --remove-ac 1`                   |
+| Add Plan                | `backlog edit 42 --plan "1. Step one\n2. Step two"` |
+| Add Notes               | `backlog edit 42 --notes "What I did"`            |
+| Remove Assigned User    | `backlog edit 42 --unassign "@sara"`              |
+| Remove Labels           | `backlog edit 42 --remove-labels "backend,api"`   |
 
 ---
 
@@ -161,79 +141,46 @@ Brief explanation of the task purpose.
 
 ### Creating New Tasks
 
-**Always use the `task_create` tool:**
+**Always use the `backlog create` command:**
 
-```json
-// Example
-{
-  "name": "task_create",
-  "arguments": {
-    "title": "Task title",
-    "description": "Description of the task.",
-    "ac": ["First criterion", "Second criterion"]
-  }
-}
+```bash
+# Example
+backlog create "Task title" \
+  --description "Description of the task." \
+  --ac "First criterion" \
+  --ac "Second criterion"
 ```
 
 ### Acceptance Criteria (The "what")
 
-**Managing Acceptance Criteria via Tools:**
+**Managing Acceptance Criteria via CLI:**
 
-- **Adding criteria (`add_ac`)** takes a list of strings.
-- **Checking/unchecking/removing (`check_ac`, `uncheck_ac`, `remove_ac`)** take a list of 1-based indices.
-- You can perform multiple operations in a single call.
+- **Adding criteria** uses `--add-ac` flag with criterion text.
+- **Checking/unchecking/removing** use `--check-ac`, `--uncheck-ac`, `--remove-ac` flags with 1-based indices.
+- You can perform multiple operations by using flags multiple times.
 
-```json
-// Examples
+```bash
+# Examples
 
-// Add new criteria
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "add_ac": ["User can login", "Session persists"]
-  }
-}
+# Add new criteria
+backlog edit 42 --add-ac "User can login" --add-ac "Session persists"
 
-// Check multiple criteria by index
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "check_ac": [1, 2, 3]
-  }
-}
+# Check multiple criteria by index
+backlog edit 42 --check-ac 1 --check-ac 2 --check-ac 3
 
-// Uncheck a criterion
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "uncheck_ac": [2]
-  }
-}
+# Uncheck a criterion
+backlog edit 42 --uncheck-ac 2
 
-// Remove multiple criteria
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "remove_ac": [2, 4]
-  }
-}
-// Note: Indices are processed high-to-low
+# Remove multiple criteria
+backlog edit 42 --remove-ac 2 --remove-ac 4
+# Note: Indices are processed high-to-low
 
-// Mixed operations in a single command
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "check_ac": [1],
-    "uncheck_ac": [2],
-    "remove_ac": [3],
-    "add_ac": ["New criterion"]
-  }
-}
+# Mixed operations in a single command
+backlog edit 42 \
+  --check-ac 1 \
+  --uncheck-ac 2 \
+  --remove-ac 3 \
+  --add-ac "New criterion"
 ```
 
 ---
@@ -244,119 +191,74 @@ Brief explanation of the task purpose.
 
 The very first things you must do when you take over a task are to set the task to "In Progress" and assign it to yourself.
 
-```json
-// Example
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "new_status": "in-progress",
-    "new_assigned": ["@{myself}"]
-  }
-}
+```bash
+# Example
+backlog edit 42 --status "in-progress" --assign "@{myself}"
 ```
 
 ### 5.2. Create an Implementation Plan (The "how")
 
 Once you are familiar with the task, create a plan on **HOW** to tackle it. Write it down in the task so that you can refer to it later.
 
-```json
-// Example
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "new_plan": "1. Research codebase for references\n2. Research on internet for similar cases\n3. Implement\n4. Test"
-  }
-}
+```bash
+# Example
+backlog edit 42 --plan "1. Research codebase for references
+2. Research on internet for similar cases
+3. Implement
+4. Test"
 ```
 
 ### 5.3. Implementation Notes (PR description)
 
 When you are done implementing a task, write a clean description in the task notes, as if it were a PR description.
 
-```json
-// Example
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "new_notes": "Implemented using pattern X because of Reason Y. Modified files Z and W."
-  }
-}
+```bash
+# Example
+backlog edit 42 --notes "Implemented using pattern X because of Reason Y. Modified files Z and W."
 ```
 
 ---
 
 ## 6. Typical Workflow
 
-```json
-// 1. Identify work
-{"name": "task_list", "arguments": {"status": "todo"}}
-{"name": "task_list", "arguments": {"status": "todo,in-progress"}}  // Multiple statuses
-{"name": "task_list", "arguments": {"unassigned": true}}  // Find tasks needing assignment
-{"name": "task_list", "arguments": {"assigned": "alice"}}  // Tasks assigned to specific person
-{"name": "task_list", "arguments": {"assigned": "alice,bob"}}  // Tasks assigned to alice OR bob
-{"name": "task_list", "arguments": {"has_dependency": true}}  // Tasks waiting on dependencies
-{"name": "task_list", "arguments": {"depended_on": true, "status": "todo"}}  // Blocking tasks
-{"name": "task_list", "arguments": {"labels": "bug,critical"}}  // Tasks with specific labels
-{"name": "task_list", "arguments": {"status": "todo", "sort": ["priority"], "reverse": true}}  // High priority first
+```bash
+# 1. Identify work
+backlog list --status todo
+backlog list --status todo,in-progress  # Multiple statuses
+backlog list --unassigned  # Find tasks needing assignment
+backlog list --assigned alice  # Tasks assigned to specific person
+backlog list --assigned alice,bob  # Tasks assigned to alice OR bob
+backlog list --has-dependency  # Tasks waiting on dependencies
+backlog list --depended-on --status todo  # Blocking tasks
+backlog list --labels bug,critical  # Tasks with specific labels
+backlog list --status todo --sort priority --reverse  # High priority first
 
-// Pagination examples
-{"name": "task_list", "arguments": {"limit": 5}}  // Get first 5 tasks
-{"name": "task_list", "arguments": {"status": "todo", "limit": 10}}  // First 10 todo tasks
-{"name": "task_search", "arguments": {"query": "feature", "filters": {"limit": 3}}}  // First 3 feature matches
+# Pagination examples
+backlog list --limit 5  # Get first 5 tasks
+backlog list --status todo --limit 10  # First 10 todo tasks
+backlog search "feature" --limit 3  # First 3 feature matches
 
-// 2. Read task details
-{"name": "task_view", "arguments": {"id": "42"}}
+# 2. Read task details
+backlog view 42
 
-// 3. Start work: assign yourself & change status
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "new_status": "in-progress",
-    "new_assigned": ["@myself"]
-  }
-}
+# 3. Start work: assign yourself & change status
+backlog edit 42 --status "in-progress" --assign "@myself"
 
-// 4. Add implementation plan
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "new_plan": "1. Analyze\n2. Refactor\n3. Test"
-  }
-}
+# 4. Add implementation plan
+backlog edit 42 --plan "1. Analyze
+2. Refactor
+3. Test"
 
-// 5. Work on the task (write code, test, etc.)
+# 5. Work on the task (write code, test, etc.)
 
-// 6. Mark acceptance criteria as complete
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "check_ac": [1, 2, 3]
-  }
-}  // Check all at once
+# 6. Mark acceptance criteria as complete
+backlog edit 42 --check-ac 1 --check-ac 2 --check-ac 3  # Check all at once
 
-// 7. Add implementation notes (PR Description)
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "new_notes": "Refactored using strategy pattern, updated tests."
-  }
-}
+# 7. Add implementation notes (PR Description)
+backlog edit 42 --notes "Refactored using strategy pattern, updated tests."
 
-// 8. Mark task as done
-{
-  "name": "task_edit",
-  "arguments": {
-    "id": "42",
-    "new_status": "done"
-  }
-}
+# 8. Mark task as done
+backlog edit 42 --status "done"
 ```
 
 ---
@@ -365,11 +267,11 @@ When you are done implementing a task, write a clean description in the task not
 
 A task is **Done** only when **ALL** of the following are complete:
 
-### ✅ Via MCP Tools:
+### ✅ Via CLI Commands:
 
-1.  **All acceptance criteria checked**: Use MCP tool with `{"id": "...", "check_ac": [...]}`.
-2.  **Implementation notes added**: Use MCP tool with `{"id": "...", "new_notes": "..."}`.
-3.  **Status set to Done**: Use MCP tool with `{"id": "...", "new_status": "done"}`.
+1.  **All acceptance criteria checked**: Use `backlog edit ID --check-ac N` for each criterion.
+2.  **Implementation notes added**: Use `backlog edit ID --notes "..."`.
+3.  **Status set to Done**: Use `backlog edit ID --status "done"`.
 
 ### ✅ Via Code/Testing:
 
@@ -388,107 +290,118 @@ A task is **Done** only when **ALL** of the following are complete:
 
 | Task       | ✅ DO                                          | ❌ DON'T                         |
 | ---------- | ---------------------------------------------- | -------------------------------- |
-| View task  | Use `task_view` tool with `{"id": "42"}`       | Open and read .md file directly  |
-| List tasks | Use `task_list` tool with `{"status": "todo"}` | Browse the `.backlog` folder     |
-| List Tasks | Use `task_list` tool with `{"unassigned": true}` | Browse the `.backlog` folder     |
-| List Tasks | Use `task_list` tool with `{"assigned": "alice"}` | Browse the `.backlog` folder     |
+| View task  | Use `backlog view 42`                   | Open and read .md file directly  |
+| List tasks | Use `backlog list --status todo`        | Browse the `.backlog` folder     |
+| List Tasks | Use `backlog list --unassigned`         | Browse the `.backlog` folder     |
+| List Tasks | Use `backlog list --assigned alice`     | Browse the `.backlog` folder     |
 
 ### Modifying Tasks
 
 | Task          | ✅ DO                                          | ❌ DON'T                           |
 | ------------- | ---------------------------------------------- | ---------------------------------- |
-| Check AC      | Use `task_edit` tool with `{"id": "42", "check_ac": [1]}` | Change `- [ ]` to `- [x]` in file  |
-| Add notes     | Use `task_edit` tool with `{"id": "42", "new_notes": "..."}` | Type notes into .md file           |
-| Change status | Use `task_edit` tool with `{"id": "42", "new_status": "done"}` | Edit status in frontmatter         |
-| Add AC        | Use `task_edit` tool with `{"id": "42", "add_ac": ["New criterion"]}` | Add `- [ ] New` to file            |
-| Archive task  | Use `task_archive` tool with `{"id": "42"}` | Manually move files to archive folder |
+| Check AC      | Use `backlog edit 42 --check-ac 1`      | Change `- [ ]` to `- [x]` in file  |
+| Add notes     | Use `backlog edit 42 --notes "..."`     | Type notes into .md file           |
+| Change status | Use `backlog edit 42 --status "done"`   | Edit status in frontmatter         |
+| Add AC        | Use `backlog edit 42 --add-ac "New"`    | Add `- [ ] New` to file            |
+| Archive task  | Use `backlog archive 42`                | Manually move files to archive folder |
 
 ---
 
-## 9. Complete MCP Tool Reference
+## 9. Complete CLI Command Reference
 
-### `task_create`
+### `backlog create`
 
-Creates a new task. All the fields should be filled.
+Creates a new task.
 
-| Parameter     | Type          | Description                               |
-| ------------- | ------------- | ----------------------------------------- |
-| `title`       | `string`      | **Required.** The title of the task.      |
-| `description` | `string`      | A detailed description of the task.       |
-| `parent`      | `string`      | The ID of the parent task.                |
-| `ac`          | `list[string]`| A list of acceptance criteria.            |
-| `assigned`    | `list[string]`| A list of assigned users.                 |
-| `labels`      | `list[string]`| A list of labels.                         |
-| `priority`    | `string`      | The priority of the task.                 |
-| `dependencies`| `list[string]`| A list of task IDs that this task depends on. |
+```bash
+backlog create "TITLE" [flags]
+```
 
-### `task_edit`
+| Flag            | Type     | Description                               |
+| --------------- | -------- | ----------------------------------------- |
+| `--description` | `string` | A detailed description of the task        |
+| `--parent`      | `string` | The ID of the parent task                 |
+| `--ac`          | `string` | Acceptance criteria (can be used multiple times) |
+| `--assign`      | `string` | Assigned users (can be used multiple times) |
+| `--labels`      | `string` | Comma-separated labels                    |
+| `--priority`    | `string` | The priority of the task                  |
+| `--depends`     | `string` | Task dependencies (can be used multiple times) |
+
+### `backlog edit`
 
 Edits an existing task.
 
-| Parameter         | Type          | Description                                       |
-| ----------------- | ------------- | ------------------------------------------------- |
-| `id`              | `string`      | **Required.** The ID of the task to edit.         |
-| `new_title`       | `string`      | A new title for the task.                         |
-| `new_description` | `string`      | A new description for the task.                   |
-| `new_status`      | `string`      | A new status (e.g., "in-progress", "done").       |
-| `new_dependencies`| `list[string]`| A new list of dependencies (replaces the old list). |
-| `new_parent`      | `string`      | A new parent task ID.                             |
-| `new_assigned`    | `list[string]`| A new list of assigned users (replaces the old list). |
-| `new_labels`      | `list[string]`| A new list of labels (replaces the old list).     |
-| `new_priority`    | `string`      | A new priority.                                   |
-| `remove_assigned` | `list[string]`| A list of assigned users to remove.               |
-| `remove_labels`   | `list[string]`| A list of labels to remove.                       |
-| `add_ac`          | `list[string]`| A list of new acceptance criteria to add.         |
-| `remove_ac`       | `list[int]`   | A list of 1-based indices of AC to remove.        |
-| `check_ac`        | `list[int]`   | A list of 1-based indices of AC to check.         |
-| `uncheck_ac`      | `list[int]`   | A list of 1-based indices of AC to uncheck.       |
-| `new_plan`        | `string`      | A new implementation plan.                        |
-| `new_notes`       | `string`      | New implementation notes.                         |
+```bash
+backlog edit ID [flags]
+```
 
-### `task_list`
+| Flag             | Type     | Description                                       |
+| ---------------- | -------- | ------------------------------------------------- |
+| `--title`        | `string` | A new title for the task                          |
+| `--description`  | `string` | A new description for the task                    |
+| `--status`       | `string` | A new status (e.g., "in-progress", "done")       |
+| `--depends`      | `string` | Set dependencies (replaces existing, comma-separated) |
+| `--parent`       | `string` | A new parent task ID                              |
+| `--assign`       | `string` | Assign users (can be used multiple times)        |
+| `--unassign`     | `string` | Remove assigned users (can be used multiple times) |
+| `--labels`       | `string` | Set labels (replaces existing, comma-separated)  |
+| `--remove-labels`| `string` | Remove labels (comma-separated)                   |
+| `--priority`     | `string` | A new priority                                    |
+| `--add-ac`       | `string` | Add acceptance criteria (can be used multiple times) |
+| `--remove-ac`    | `int`    | Remove AC by 1-based index (can be used multiple times) |
+| `--check-ac`     | `int`    | Check AC by 1-based index (can be used multiple times) |
+| `--uncheck-ac`   | `int`    | Uncheck AC by 1-based index (can be used multiple times) |
+| `--plan`         | `string` | Set implementation plan                           |
+| `--notes`        | `string` | Set implementation notes                          |
 
-Lists tasks with optional filtering, sorting, and pagination. When pagination is used, returns structured results with pagination metadata.
+### `backlog list`
 
-| Parameter        | Type          | Description                                           |
-| ---------------- | ------------- | ----------------------------------------------------- |
-| `status`         | `string`      | Filter tasks by status (comma-separated for multiple). |
-| `parent`         | `string`      | Filter tasks by a parent task ID.                     |
-| `assigned`       | `string`      | Filter tasks by assigned user (comma-separated for multiple). |
-| `unassigned`     | `bool`        | Filter tasks that have no assigned users.             |
-| `labels`         | `string`      | Filter tasks by labels (comma-separated for multiple). |
-| `has_dependency` | `bool`        | Filter tasks that have dependencies.                  |
-| `depended_on`    | `bool`        | Filter tasks that are depended on by other tasks.     |
-| `hide_extra`     | `bool`        | Hide extra fields (labels, priority, assigned).       |
-| `sort`           | `list[string]`| Fields to sort by (id, title, status, priority, created, updated). |
-| `reverse`        | `bool`        | Reverse the sort order.                               |
-| `limit`          | `int`         | Maximum number of tasks to return (0 means no limit). |
-| `offset`         | `int`         | Number of tasks to skip from the beginning.          |
+Lists tasks with optional filtering, sorting, and pagination.
 
-### `task_view`
+```bash
+backlog list [flags]
+```
+
+| Flag             | Type     | Description                                           |
+| ---------------- | -------- | ----------------------------------------------------- |
+| `--status`       | `string` | Filter by status (comma-separated for multiple)      |
+| `--parent`       | `string` | Filter by parent task ID                              |
+| `--assigned`     | `string` | Filter by assigned user (comma-separated for multiple) |
+| `--unassigned`   | `bool`   | Filter tasks that have no assigned users             |
+| `--labels`       | `string` | Filter by labels (comma-separated for multiple)      |
+| `--has-dependency`| `bool`  | Filter tasks that have dependencies                  |
+| `--depended-on`  | `bool`   | Filter tasks that are depended on by other tasks     |
+| `--hide-extra`   | `bool`   | Hide extra fields (labels, priority, assigned)       |
+| `--sort`         | `string` | Sort by field (id, title, status, priority, created, updated) |
+| `--reverse`      | `bool`   | Reverse the sort order                               |
+| `--limit`        | `int`    | Maximum number of tasks to return (0 means no limit) |
+| `--offset`       | `int`    | Number of tasks to skip from the beginning          |
+
+### `backlog view`
 
 Retrieves and displays the details of a single task.
 
-| Parameter | Type     | Description                       |
-| --------- | -------- | --------------------------------- |
-| `id`      | `string` | **Required.** The ID of the task. |
+```bash
+backlog view ID
+```
 
-### `task_search`
+### `backlog search`
 
-Searches tasks by content with optional filtering and pagination. When pagination is used, returns structured results with pagination metadata.
+Searches tasks by content with optional filtering and pagination.
 
-| Parameter | Type     | Description                       |
-| --------- | -------- | --------------------------------- |
-| `query`   | `string` | **Required.** The search query.   |
-| `filters` | `object` | Optional filters (same as task_list parameters including limit/offset). |
+```bash
+backlog search "QUERY" [flags]
+```
 
-### `task_archive`
+Supports all the same flags as `list` command for filtering and pagination.
+
+### `backlog archive`
 
 Archives a task by moving it to the archived directory and setting status to archived.
 
-| Parameter | Type     | Description                       |
-| --------- | -------- | --------------------------------- |
-| `id`      | `string` | **Required.** The ID of the task to archive. |
+```bash
+backlog archive ID
+```
 
 ---
 
@@ -504,65 +417,57 @@ Use pagination when:
 
 ### Pagination Parameters
 
-Both `task_list` and `task_search` support pagination:
+Both `backlog list` and `backlog search` support pagination:
 
-- **`limit`**: Maximum number of results to return (0 = no limit)
-- **`offset`**: Number of results to skip from the beginning
+- **`--limit`**: Maximum number of results to return (0 = no limit)
+- **`--offset`**: Number of results to skip from the beginning
 
 ### Pagination Examples
 
-```json
-// Get first 10 tasks
-{"name": "task_list", "arguments": {"limit": 10}}
+```bash
+# Get first 10 tasks
+backlog list --limit 10
 
-// Get next 10 tasks (pagination)
-{"name": "task_list", "arguments": {"limit": 10, "offset": 10}}
+# Get next 10 tasks (pagination)
+backlog list --limit 10 --offset 10
 
-// Get first 5 high-priority tasks
-{"name": "task_list", "arguments": {"status": "todo", "sort": ["priority"], "reverse": true, "limit": 5}}
+# Get first 5 high-priority tasks
+backlog list --status todo --sort priority --reverse --limit 5
 
-// Search with pagination
-{"name": "task_search", "arguments": {"query": "api", "filters": {"limit": 3}}}
+# Search with pagination
+backlog search "api" --limit 3
 
-// Search second page
-{"name": "task_search", "arguments": {"query": "api", "filters": {"limit": 3, "offset": 3}}}
+# Search second page
+backlog search "api" --limit 3 --offset 3
 ```
 
 ### Pagination Response Format
 
-When pagination is used, responses include metadata:
+When pagination is used, CLI output includes metadata showing:
 
-```json
-{
-  "tasks": [...],
-  "pagination": {
-    "total_results": 45,
-    "displayed_results": 10,
-    "offset": 0,
-    "limit": 10,
-    "has_more": true
-  }
-}
+```
+Tasks: 10 of 45 total (showing 1-10)
+Page: 1 of 5
 ```
 
 ### Best Practices
 
-1. **Start with small limits**: Use `limit: 10` to get an overview
-2. **Check `has_more`**: Use pagination metadata to determine if more results exist
-3. **Progressive exploration**: Increase offset to see more results
-4. **Combine with filtering**: Use pagination with status/priority filters for focused results
+1. **Start with small limits**: Use `--limit 10` to get an overview
+2. **Check output metadata**: Look at the pagination info to determine if more results exist
+3. **Progressive exploration**: Increase `--offset` to see more results
+4. **Combine with filtering**: Use pagination with `--status`/`--priority` filters for focused results
 
 ### Configuration
 
 Users can configure pagination defaults:
 - **Environment variables**: `BACKLOG_PAGE_SIZE`, `BACKLOG_MAX_LIMIT`
-- **CLI flags**: `--page-size 25`, `--max-limit 1000`
+- **Configuration file**: Set default pagination limits
 
 ---
 
 ## 11. Advanced Workflows: Batch Task Creation
 
-When a user asks you to perform a multi-step operation like creating a full project plan, your goal is to gather all necessary information from the initial prompt and execute the steps in logical order, using parallel tool calls to be efficient.
+When a user asks you to perform a multi-step operation like creating a full project plan, your goal is to gather all necessary information from the initial prompt and execute the steps in logical order, using efficient CLI commands.
 
 ### Example High-Level Prompt
 
@@ -582,21 +487,30 @@ A user might provide a comprehensive request like this:
     *   **Metadata**: Assignee (`agent-cli`), Priority (`high`), and instructions for Labels.
 
 2.  **Formulate a Multi-Step Execution Plan**:
-    1.  First, create all the tasks and sub-tasks as defined in the plan. This is necessary to obtain the `id` for each new task.
-    2.  Once all tasks are created, execute a second set of **parallel** `task_edit` calls to update the metadata (assignee, priority, labels) for every task you just created.
+    1.  Create all the tasks and sub-tasks as defined in the plan with all necessary metadata in single commands.
+    2.  Use the task IDs returned by create commands to establish parent-child relationships.
 
 3.  **Execute Efficiently**:
 
-    ```json
-    // Step 1: Create all tasks from the plan to get their IDs
-    {"name": "task_create", "arguments": {"title": "Parent Task for Refactoring", ...}}
-    {"name": "task_create", "arguments": {"title": "Sub-task 1: Update CLI command", "parent": "T21", ...}}
-    {"name": "task_create", "arguments": {"title": "Sub-task 2: Update Documentation", "parent": "T21", ...}}
+    ```bash
+    # Step 1: Create parent task with all metadata
+    backlog create "Parent Task for Refactoring" \
+      --assign "agent-cli" \
+      --priority "high" \
+      --labels "refactoring,cli"
 
-    // Step 2: In parallel, update metadata for all newly created tasks
-    {"name": "task_edit", "arguments": {"id": "T21", "new_assignee": ["agent-cli"], "new_priority": "high", "new_labels": ["refactoring", "cli"]}}
-    {"name": "task_edit", "arguments": {"id": "T21.01", "new_assignee": ["agent-cli"], "new_priority": "high", "new_labels": ["refactoring", "cli"]}}
-    {"name": "task_edit", "arguments": {"id": "T21.02", "new_assignee": ["agent-cli"], "new_priority": "high", "new_labels": ["documentation"]}}
+    # Step 2: Create sub-tasks with parent relationships
+    backlog create "Update CLI command" \
+      --parent "T21" \
+      --assign "agent-cli" \
+      --priority "high" \
+      --labels "refactoring,cli"
+
+    backlog create "Update Documentation" \
+      --parent "T21" \
+      --assign "agent-cli" \
+      --priority "high" \
+      --labels "refactoring,documentation"
     ```
 
 ### Handling Missing Information
@@ -611,7 +525,7 @@ If the user's initial prompt is missing key information (like `assignee` or `pri
 
 ## Remember: The Golden Rule
 
-**🎯 If you want to change ANYTHING in a task, use the `task_edit` tool.**
-**📖 Use `task_view` and `task_list` to read tasks. Never write to files directly.**
+**🎯 If you want to change ANYTHING in a task, use the `backlog edit` command.**
+**📖 Use `backlog view` and `backlog list` to read tasks. Never write to files directly.**
 
 ---

@@ -1,8 +1,7 @@
 {
   "mcp": {
     "allowed": [
-      "gopls",
-      "backlog"
+      "gopls"
     ]
   },
   "general": {
@@ -13,7 +12,7 @@
   "context": {
     "fileName": [
       "AGENTS.md",
-      "GEMINI.md"
+      "CONTRIBUTING.md"
     ]
   },
   "ui": {
@@ -27,23 +26,6 @@
         "mcp"
       ],
       "timeout": 30000,
-      "trust": true
-    },
-    "backlog": {
-      "_FOR_HUMAN_": "Use this config in your repo to run the MCP server for Backlog.",
-      "_command_": "backlog",
-      "_args_": [
-        "mcp"
-      ],
-      "_COMMENT_": "Run the MCP server from the current directory",
-      "command": "go",
-      "args": [
-        "run",
-        ".",
-        "mcp"
-      ],
-      "cwd": "$PWD",
-      "timeout": 10000,
       "trust": true
     }
   },
