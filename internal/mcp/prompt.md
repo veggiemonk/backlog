@@ -356,12 +356,12 @@ backlog create "TITLE" [flags]
 | Flag            | Type     | Description                               |
 | --------------- | -------- | ----------------------------------------- |
 | `--description` | `string` | A detailed description of the task        |
-| `--parent`      | `string` | The ID of the parent task                 |
+| `--parent`      | `string` | The ID of the parent task (task must exists!)   |
 | `--ac`          | `string` | Acceptance criteria (can be used multiple times) |
 | `--assigned`    | `string` | Assigned users (can be used multiple times) |
 | `--labels`      | `string` | Comma-separated labels                    |
 | `--priority`    | `string` | The priority of the task                  |
-| `--depends`     | `string` | Task dependencies (can be used multiple times) |
+| `--deps`        | `string` | Task dependencies (can be used multiple times) |
 
 ### `backlog edit`
 
@@ -376,7 +376,7 @@ backlog edit ID [flags]
 | `--title`        | `string` | A new title for the task                          |
 | `--description`  | `string` | A new description for the task                    |
 | `--status`       | `string` | A new status (e.g., "in-progress", "done")       |
-| `--depends`      | `string` | Set dependencies (replaces existing, comma-separated) |
+| `--deps`      | `string` | Set dependencies (replaces existing, comma-separated) |
 | `--parent`       | `string` | A new parent task ID                              |
 | `--assigned`     | `string` | Assign users (can be used multiple times)        |
 | `--unassign`     | `string` | Remove assigned users (can be used multiple times) |
