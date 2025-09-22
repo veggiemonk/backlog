@@ -12,7 +12,7 @@ import (
 	"github.com/veggiemonk/backlog/internal/core"
 )
 
-type runFunc func(cmd *cobra.Command, args []string)
+type runFunc func(cmd *cobra.Command, args []string) error
 
 func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error) {
 	t.Helper()
@@ -28,7 +28,7 @@ func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error)
 	testRootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
 		cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
 	}
-	testCmd := &cobra.Command{Use: use, Run: run}
+	testCmd := &cobra.Command{Use: use, RunE: run}
 
 	setRootPersistentFlags(testRootCmd)
 	testRootCmd.AddCommand(testCmd)

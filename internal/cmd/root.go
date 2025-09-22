@@ -3,6 +3,7 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/spf13/afero"
@@ -40,12 +41,12 @@ var rootCmd = &cobra.Command{
 	Short: "Backlog is a git-native, markdown-based task manager",
 	Long: `A Git-native, Markdown-based task manager for developers and AI agents.
 Backlog helps you manage tasks within your git repository.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		// Default action when no subcommand is provided
 		if err := cmd.Help(); err != nil {
-			logging.Error("failed to display help", "error", err)
-			os.Exit(1)
+			return fmt.Errorf("failed to display help: %w", err)
 		}
+		return nil
 	},
 }
 

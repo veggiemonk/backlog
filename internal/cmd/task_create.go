@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -72,7 +71,7 @@ backlog create "Build the new reporting feature" \
   --ac "The exported PDF has the correct branding and layout." \
   -p "23"	
 	`,
-	Run: runCreate,
+	RunE: runCreate,
 }
 
 var (
@@ -101,7 +100,7 @@ func init() {
 	createCmd.Flags().StringVar(&notes, "notes", "", "Additional notes for the task")
 }
 
-func runCreate(cmd *cobra.Command, args []string) {
+func runCreate(cmd *cobra.Command, args []string) error {
 	params := core.CreateTaskParams{
 		Title:        args[0],
 		Description:  description,
@@ -118,14 +117,13 @@ func runCreate(cmd *cobra.Command, args []string) {
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
 	newTask, err := store.Create(params)
 	if err != nil {
-		logging.Error("failed to create task", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to create task: %w", err)
 	}
 
 	logging.Info("task created successfully", "task_id", newTask.ID)
 
 	if !viper.GetBool(configAutoCommit) {
-		return // Auto-commit is disabled
+		return nil // Auto-commit is disabled
 	}
 	// Auto-commit the change if enabled
 	filePath := store.Path(newTask)
@@ -133,4 +131,5 @@ func runCreate(cmd *cobra.Command, args []string) {
 	if err := commit.Add(filePath, "", commitMsg); err != nil {
 		logging.Warn("auto-commit failed", "task_id", newTask.ID, "error", err)
 	}
+	return nil
 }

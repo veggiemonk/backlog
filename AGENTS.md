@@ -84,6 +84,7 @@ FULLY READ THE INSTRUCTIONS FOR BACKLOG CLI [prompt.md](./internal/mcp/prompt.md
 ## 6. Code Style & Architectural Patterns
 
 - **Error Handling**: Wrap errors with context using `fmt.Errorf("context: %w", err)`.
+- **CLI Output**: In CLI command functions, use `logging.Info(msg, "key", "value", ...)` which has the same interface as `slog.Info`.
 - **Dependency Injection**: Business logic is implemented as methods on the `FileTaskStore`. The `FileTaskStore` is created with an `afero.Fs` instance, allowing for dependency injection.
 - **TaskID Parsing**: Always use `core.ParseTaskID()` to handle user-provided task IDs, as it supports flexible formats (e.g., "T1.2", "1.2").
 - **Testing**: Use `afero.NewMemMapFs()` to create an in-memory filesystem for tests.

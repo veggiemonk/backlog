@@ -3,10 +3,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/veggiemonk/backlog/internal/logging"
 )
 
 var viewJSON bool
@@ -22,25 +20,24 @@ Examples:
   backlog view T01 --json    # View task T01 in JSON format
   backlog view T01 -j        # View task T01 in JSON format (short flag)`,
 	Args: cobra.ExactArgs(1),
-	Run:  view,
+	RunE:  view,
 }
 
-func view(cmd *cobra.Command, args []string) {
+func view(cmd *cobra.Command, args []string) error {
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
 	t, err := store.Get(args[0])
 	if err != nil {
-		logging.Error("failed to view task", "task_id", args[0], "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to view task %q: %w", args[0], err)
 	}
 
 	if viewJSON {
 		if err := json.NewEncoder(cmd.OutOrStdout()).Encode(t); err != nil {
-			logging.Error("failed to encode JSON", "task_id", args[0], "error", err)
-			os.Exit(1)
+			return fmt.Errorf("failed to encode JSON for task %q: %w", args[0], err)
 		}
 	} else {
 		fmt.Printf("%s\n", string(t.Bytes()))
 	}
+	return nil
 }
 
 func setViewFlags(cmd *cobra.Command) {
