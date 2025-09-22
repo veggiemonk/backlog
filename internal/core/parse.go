@@ -12,14 +12,14 @@ import (
 
 var errWrongIDFormat = errors.New("wrong id format")
 
-func parseTask(content []byte) (*Task, error) {
+func parseTask(content []byte) (task Task, err error) {
 	matter, err := parseFrontMatter(content)
 	if err != nil {
-		return nil, fmt.Errorf("could not parse frontmatter: %w", err)
+		return task, fmt.Errorf("could not parse frontmatter: %w", err)
 	}
 	id, err := parseTaskID(matter.ID)
 	if err != nil {
-		return nil, fmt.Errorf("task ID %q: %w", matter.ID, err)
+		return task, fmt.Errorf("task ID %q: %w", matter.ID, err)
 	}
 
 	// Convert parent ID string to TaskID if present
@@ -27,14 +27,14 @@ func parseTask(content []byte) (*Task, error) {
 	if matter.Parent != "" {
 		pid, err = parseTaskID(matter.Parent)
 		if err != nil && matter.Parent != "" {
-			return nil, fmt.Errorf("parent task ID %q: %w", matter.Parent, err)
+			return task, fmt.Errorf("parent task ID %q: %w", matter.Parent, err)
 		}
 	}
 	var status Status
 	if matter.Status != "" {
 		status, err = ParseStatus(matter.Status)
 		if err != nil {
-			return nil, fmt.Errorf("status %q: %w", matter.Status, err)
+			return task, fmt.Errorf("status %q: %w", matter.Status, err)
 		}
 	}
 
@@ -42,11 +42,11 @@ func parseTask(content []byte) (*Task, error) {
 	if matter.Priority != "" {
 		priority, err = ParsePriority(matter.Priority)
 		if err != nil {
-			return nil, fmt.Errorf("priority %q: %w", matter.Priority, err)
+			return task, fmt.Errorf("priority %q: %w", matter.Priority, err)
 		}
 	}
 
-	task := &Task{
+	task = Task{
 		ID:           id,
 		Title:        matter.Title,
 		Status:       status,
@@ -60,7 +60,7 @@ func parseTask(content []byte) (*Task, error) {
 		History:      matter.History,
 	}
 
-	parseMarkdownBody(task, content)
+	parseMarkdownBody(&task, content)
 	return task, nil
 }
 

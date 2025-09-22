@@ -11,16 +11,15 @@ func (f *FileTaskStore) Archive(id TaskID) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("get task %q: %w", id, err)
 	}
-	_, err = f.Update(task, EditTaskParams{
+	if err = f.Update(&task, EditTaskParams{
 		NewStatus: ptr(string(StatusArchived)),
-	})
-	if err != nil {
+	}); err != nil {
 		return "", fmt.Errorf("set status archived task %q: %w", id, err)
 	}
 
 	// Move the file to the archived directory.
 	archivedDir := filepath.Join(f.tasksDir, "archived")
-	if err := f.fs.MkdirAll(archivedDir, 0750); err != nil {
+	if err := f.fs.MkdirAll(archivedDir, 0o750); err != nil {
 		return "", fmt.Errorf("create archived directory: %w", err)
 	}
 	oldPath := f.Path(task)

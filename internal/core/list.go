@@ -12,11 +12,11 @@ import (
 
 // PaginationInfo contains metadata about pagination results
 type PaginationInfo struct {
-	TotalResults    int `json:"total_results"`
-	DisplayedResults int `json:"displayed_results"`
-	Offset          int `json:"offset"`
-	Limit           int `json:"limit"`
-	HasMore         bool `json:"has_more"`
+	TotalResults     int  `json:"total_results"`
+	DisplayedResults int  `json:"displayed_results"`
+	Offset           int  `json:"offset"`
+	Limit            int  `json:"limit"`
+	HasMore          bool `json:"has_more"`
 }
 
 // ListResult contains the tasks and pagination metadata
@@ -27,7 +27,6 @@ type ListResult struct {
 
 // ListTasksParams holds the parameters for listing tasks.
 type ListTasksParams struct {
-	// TODO: rangeID
 	Parent        *string  `json:"parent,omitempty" jsonschema:"Filter tasks by a parent task ID."`
 	Status        []string `json:"status,omitempty" jsonschema:"Filter tasks by status."`
 	Assigned      []string `json:"assigned,omitempty" jsonschema:"Filter tasks by assignee."`
@@ -44,7 +43,7 @@ type ListTasksParams struct {
 }
 
 // List implements TaskStore.
-func (f *FileTaskStore) List(params ListTasksParams) ([]*Task, error) {
+func (f *FileTaskStore) List(params ListTasksParams) ([]Task, error) {
 	// Load all tasks from filesystem
 	tasks, err := f.loadAll()
 	if err != nil {
@@ -60,16 +59,16 @@ func (f *FileTaskStore) List(params ListTasksParams) ([]*Task, error) {
 }
 
 // LoadAll loads all tasks from the tasks directory.
-func (f *FileTaskStore) loadAll() ([]*Task, error) {
+func (f *FileTaskStore) loadAll() ([]Task, error) {
 	exists, err := afero.DirExists(f.fs, f.tasksDir)
 	if err != nil {
 		return nil, err
 	}
 	if !exists {
-		return []*Task{}, nil
+		return []Task{}, nil
 	}
 
-	var tasks []*Task
+	var tasks []Task
 	walkErr := afero.Walk(f.fs, f.tasksDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -97,7 +96,7 @@ func (f *FileTaskStore) loadAll() ([]*Task, error) {
 }
 
 // FilterTasks applies filtering logic to a slice of tasks
-func FilterTasks(tasks []*Task, params ListTasksParams) ([]*Task, error) {
+func FilterTasks(tasks []Task, params ListTasksParams) ([]Task, error) {
 	var parentID TaskID
 	var statuses []Status
 	var assigned []string
@@ -143,7 +142,7 @@ func FilterTasks(tasks []*Task, params ListTasksParams) ([]*Task, error) {
 		// Replace the tasks with tasks who are depended on.
 		tasks = dependentGraph(tasks)
 	}
-	filteredTasks := make([]*Task, 0, len(tasks))
+	filteredTasks := make([]Task, 0, len(tasks))
 	for _, t := range tasks {
 		if isParentSet && !t.Parent.Equals(parentID) {
 			continue
@@ -172,14 +171,14 @@ func FilterTasks(tasks []*Task, params ListTasksParams) ([]*Task, error) {
 	return filteredTasks, nil
 }
 
-func dependentGraph(tasks []*Task) []*Task {
-	dependents := []*Task{}
+func dependentGraph(tasks []Task) []Task {
+	dependents := []Task{}
 	// for the dependency graph
 	taskIndex := map[string]*Task{}                             // map[taskID]*Task
 	taskDependencyIndex := make(map[string]map[string]struct{}) // map[X]map[Y]struct{} where X depends on Y
 	for _, t := range tasks {
 		// keep index for filling the tree of dependency
-		taskIndex[t.ID.Name()] = t
+		taskIndex[t.ID.Name()] = &t
 		// initialize the map
 		taskDependencyIndex[t.ID.Name()] = make(map[string]struct{})
 		// build the graph ie. X -> Y where X depends on Y
@@ -197,7 +196,7 @@ func dependentGraph(tasks []*Task) []*Task {
 			visited[id] = struct{}{}
 			if taskIndex[id] != nil {
 				// add the task only once
-				dependents = append(dependents, taskIndex[id])
+				dependents = append(dependents, *taskIndex[id])
 			}
 		}
 	}
@@ -218,7 +217,7 @@ func atLeastOneIntersect[S ~[]E, E comparable](got, want S) bool {
 
 // SortTasks sorts the tasks slice based on the provided sort fields.
 // Supported sort fields: id, title, status, priority, created, updated
-func SortTasks(tasks []*Task, sortFields []string, reverse bool) {
+func SortTasks(tasks []Task, sortFields []string, reverse bool) {
 	if len(sortFields) == 0 {
 		// No sorting requested, but still apply reverse if requested
 		if reverse {
@@ -292,7 +291,7 @@ func SortTasks(tasks []*Task, sortFields []string, reverse bool) {
 // PaginateTasks applies pagination to a slice of tasks.
 // If limit is nil or 0, returns all tasks.
 // If offset is nil, defaults to 0.
-func PaginateTasks(tasks []*Task, limit *int, offset *int) []*Task {
+func PaginateTasks(tasks []Task, limit *int, offset *int) []Task {
 	if len(tasks) == 0 {
 		return tasks
 	}
@@ -305,7 +304,7 @@ func PaginateTasks(tasks []*Task, limit *int, offset *int) []*Task {
 
 	// If offset is beyond the total number of tasks, return empty slice
 	if startIndex >= len(tasks) {
-		return []*Task{}
+		return []Task{}
 	}
 
 	// If no limit specified or limit is 0, return from offset to end

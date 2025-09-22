@@ -22,8 +22,8 @@ func TestEditTask(t *testing.T) {
 		AddAssigned: []string{"test-user"},
 	}
 
-	updatedTask, err := store.Update(createdTask, params)
-	is.NoErr(err)
+	is.NoErr(store.Update(&createdTask, params))
+	updatedTask := createdTask
 	is.Equal("Updated Title", updatedTask.Title)
 
 	// Verify by reading the file again
@@ -42,10 +42,8 @@ func TestEditTaskHistory(t *testing.T) {
 	newTitle := "Updated Title"
 	params := core.EditTaskParams{ID: createdTask.ID.String(), NewTitle: &newTitle}
 
-	updatedTask, err := store.Update(createdTask, params)
-	is.NoErr(err)
-
-	is.Equal("Updated Title", updatedTask.Title)
+	is.NoErr(store.Update(&createdTask, params))
+	is.Equal("Updated Title", createdTask.Title)
 
 	// Verify by reading the file again
 	rereadTask, err := store.Get(createdTask.ID.String())
@@ -60,8 +58,7 @@ func TestEditTaskHistory(t *testing.T) {
 	newTitle2 := "Final Title"
 	params2 := core.EditTaskParams{ID: createdTask.ID.String(), NewTitle: &newTitle2}
 
-	_, err = store.Update(createdTask, params2)
-	is.NoErr(err)
+	is.NoErr(store.Update(&createdTask, params2))
 	rereadTask2, err := store.Get(createdTask.ID.String())
 	is.NoErr(err)
 	is.Equal("Final Title", rereadTask2.Title)
@@ -118,8 +115,8 @@ func TestUpdateTaskFields(t *testing.T) {
 			NewDependencies: newDeps,
 		}
 
-		updatedTask, err := store.Update(task, params)
-		is.NoErr(err)
+		is.NoErr(store.Update(&task, params))
+		updatedTask := task
 
 		slices.Sort(updatedTask.Assigned)
 		// Verify fields are updated
@@ -146,7 +143,7 @@ func TestUpdateTaskFields(t *testing.T) {
 	t.Run("invalid status update", func(t *testing.T) {
 		task, _ := store.Create(core.CreateTaskParams{Title: "Status Task"})
 		invalidStatus := "invalid-status"
-		_, err := store.Update(task, core.EditTaskParams{
+		err := store.Update(&task, core.EditTaskParams{
 			ID:        task.ID.String(),
 			NewStatus: &invalidStatus,
 		})
@@ -156,7 +153,7 @@ func TestUpdateTaskFields(t *testing.T) {
 	t.Run("invalid priority update", func(t *testing.T) {
 		task, _ := store.Create(core.CreateTaskParams{Title: "Priority Task"})
 		invalidPriority := "invalid-priority"
-		_, err := store.Update(task, core.EditTaskParams{
+		err := store.Update(&task, core.EditTaskParams{
 			ID:          task.ID.String(),
 			NewPriority: &invalidPriority,
 		})
@@ -166,7 +163,7 @@ func TestUpdateTaskFields(t *testing.T) {
 	t.Run("invalid parent update", func(t *testing.T) {
 		task, _ := store.Create(core.CreateTaskParams{Title: "Parent Task"})
 		invalidParent := "invalid-parent"
-		_, err := store.Update(task, core.EditTaskParams{
+		err := store.Update(&task, core.EditTaskParams{
 			ID:        task.ID.String(),
 			NewParent: &invalidParent,
 		})
@@ -176,7 +173,7 @@ func TestUpdateTaskFields(t *testing.T) {
 	t.Run("invalid priority update", func(t *testing.T) {
 		task, _ := store.Create(core.CreateTaskParams{Title: "Dependency Task"})
 		invalidDeps := []string{"T@#"}
-		_, err := store.Update(task, core.EditTaskParams{
+		err := store.Update(&task, core.EditTaskParams{
 			ID:              task.ID.String(),
 			NewDependencies: invalidDeps,
 		})

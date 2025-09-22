@@ -58,12 +58,11 @@ func TestParseTaskWithDependencies(t *testing.T) {
 			NewDependencies: dependencies,
 		}
 
-		updatedTaskB, err := store.Update(taskB, editParams)
-		is.NoErr(err)
+		is.NoErr(store.Update(&taskB, editParams))
 
 		// Verify that task B now depends on task A
-		is.Equal(len(updatedTaskB.Dependencies), 1)
-		is.Equal(updatedTaskB.Dependencies[0], taskA.ID.Name())
+		is.Equal(len(taskB.Dependencies), 1)
+		is.Equal(taskB.Dependencies[0], taskA.ID.Name())
 
 		// Verify the dependency is persisted to file
 		taskBFromFile, err := store.Get(taskB.ID.String())
@@ -90,13 +89,12 @@ func TestParseTaskWithDependencies(t *testing.T) {
 			NewDependencies: dependencies,
 		}
 
-		updatedTaskC, err := store.Update(taskC, editParams)
-		is.NoErr(err)
+		is.NoErr(store.Update(&taskC, editParams))
 
 		// Verify that task C now depends on both task A and task B
-		is.Equal(len(updatedTaskC.Dependencies), 2)
-		is.True(slices.Contains(updatedTaskC.Dependencies.ToSlice(), taskA.ID.Name()))
-		is.True(slices.Contains(updatedTaskC.Dependencies.ToSlice(), taskB.ID.Name()))
+		is.Equal(len(taskC.Dependencies), 2)
+		is.True(slices.Contains(taskC.Dependencies.ToSlice(), taskA.ID.Name()))
+		is.True(slices.Contains(taskC.Dependencies.ToSlice(), taskB.ID.Name()))
 
 		// Verify the dependencies are persisted to file
 		taskCFromFile, err := store.Get(taskC.ID.String())

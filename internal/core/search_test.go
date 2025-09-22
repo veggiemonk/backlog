@@ -33,17 +33,15 @@ func TestSearchTasks(t *testing.T) {
 	})
 
 	// Update tasks with implementation plan and notes
-	_, err := store.Update(task2, core.EditTaskParams{
+	is.NoErr(store.Update(&task2, core.EditTaskParams{
 		ID:      task2.ID.String(),
 		NewPlan: ptr("Investigate the logs and fix the issue."),
-	})
-	is.NoErr(err)
+	}))
 
-	_, err = store.Update(task3, core.EditTaskParams{
+	is.NoErr(store.Update(&task3, core.EditTaskParams{
 		ID:       task3.ID.String(),
 		NewNotes: ptr("Remember to backup the database before applying changes."),
-	})
-	is.NoErr(err)
+	}))
 
 	tests := []struct {
 		name           string

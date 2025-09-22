@@ -38,7 +38,7 @@ type IDConflict struct {
 	Type        ConflictType
 	ConflictID  TaskID
 	Files       []string
-	Tasks       []*Task
+	Tasks       []Task
 	Description string
 	DetectedAt  time.Time
 }
@@ -69,8 +69,8 @@ func (cd *ConflictDetector) DetectConflicts() ([]IDConflict, error) {
 
 	// Parse all tasks and build ID map
 	idToFiles := make(map[string][]string)
-	idToTasks := make(map[string][]*Task)
-	allTasks := make([]*Task, 0)
+	idToTasks := make(map[string][]Task)
+	allTasks := make([]Task, 0, len(files))
 
 	for _, file := range files {
 		if file.IsDir() || !strings.HasPrefix(file.Name(), TaskIDPrefix) || !strings.HasSuffix(file.Name(), ".md") {
@@ -114,7 +114,7 @@ func (cd *ConflictDetector) DetectConflicts() ([]IDConflict, error) {
 					Type:       ConflictTypeOrphanedChild,
 					ConflictID: task.ID,
 					Files:      []string{cd.getTaskFilePath(task.ID)},
-					Tasks:      []*Task{task},
+					Tasks:      []Task{task},
 					Description: fmt.Sprintf("Task %s references non-existent parent %s",
 						task.ID.String(), parentStr),
 					DetectedAt: time.Now(),
@@ -132,7 +132,7 @@ func (cd *ConflictDetector) DetectConflicts() ([]IDConflict, error) {
 					Type:       ConflictTypeInvalidHierarchy,
 					ConflictID: task.ID,
 					Files:      []string{cd.getTaskFilePath(task.ID)},
-					Tasks:      []*Task{task},
+					Tasks:      []Task{task},
 					Description: fmt.Sprintf("Task %s has incorrect parent %s, expected %s based on ID structure",
 						task.ID.String(), task.Parent.String(), expectedParent.String()),
 					DetectedAt: time.Now(),
@@ -145,15 +145,15 @@ func (cd *ConflictDetector) DetectConflicts() ([]IDConflict, error) {
 }
 
 // parseTaskFromFile reads and parses a task from a file
-func (cd *ConflictDetector) parseTaskFromFile(filePath string) (*Task, error) {
+func (cd *ConflictDetector) parseTaskFromFile(filePath string) (task Task, err error) {
 	content, err := afero.ReadFile(cd.fs, filePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read file %s: %w", filePath, err)
+		return task, fmt.Errorf("failed to read file %s: %w", filePath, err)
 	}
 
-	task, err := parseTask(content)
+	task, err = parseTask(content)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse task from %s: %w", filePath, err)
+		return task, fmt.Errorf("failed to parse task from %s: %w", filePath, err)
 	}
 
 	return task, nil
@@ -269,7 +269,7 @@ func (cr *ConflictResolver) createChronologicalPlan(conflicts []IDConflict, plan
 	for _, conflict := range conflicts {
 		if conflict.Type == ConflictTypeDuplicateID {
 			// Sort tasks by creation date
-			tasks := make([]*Task, len(conflict.Tasks))
+			tasks := make([]Task, len(conflict.Tasks))
 			copy(tasks, conflict.Tasks)
 
 			// Sort by creation date (oldest first)
@@ -494,7 +494,7 @@ func (cr *ConflictResolver) executeUpdateParentAction(action ResolutionAction, d
 	task.Parent = action.NewID
 
 	// Record the change in history using enhanced tracking
-	RecordParentChange(task, oldParent, action.NewID, "conflict resolution")
+	RecordParentChange(&task, oldParent, action.NewID, "conflict resolution")
 	task.UpdatedAt = time.Now()
 
 	// Write the updated task
@@ -534,7 +534,7 @@ func (ru *ReferenceUpdater) UpdateReferences(idChanges map[string]TaskID) error 
 		return fmt.Errorf("failed to read tasks directory: %w", err)
 	}
 
-	var updatedTasks []*Task
+	var updatedTasks []Task
 	for _, file := range files {
 		if file.IsDir() || !strings.HasPrefix(file.Name(), TaskIDPrefix) || !strings.HasSuffix(file.Name(), ".md") {
 			continue
@@ -552,7 +552,7 @@ func (ru *ReferenceUpdater) UpdateReferences(idChanges map[string]TaskID) error 
 		if newParentID, exists := idChanges[task.Parent.String()]; exists {
 			oldParent := task.Parent
 			task.Parent = newParentID
-			RecordParentChange(task, oldParent, newParentID, "ID change cascade")
+			RecordParentChange(&task, oldParent, newParentID, "ID change cascade")
 			updated = true
 		}
 
@@ -579,7 +579,7 @@ func (ru *ReferenceUpdater) UpdateReferences(idChanges map[string]TaskID) error 
 			if depsUpdated {
 				// Update dependencies array
 				task.Dependencies = MaybeStringArrayFromSlice(newDeps)
-				RecordChange(task, fmt.Sprintf("Updated dependencies due to ID changes in task %q: %v", task.ID.String(), newDeps))
+				RecordChange(&task, fmt.Sprintf("Updated dependencies due to ID changes in task %q: %v", task.ID.String(), newDeps))
 				updated = true
 			}
 		}
@@ -601,8 +601,8 @@ func (ru *ReferenceUpdater) UpdateReferences(idChanges map[string]TaskID) error 
 }
 
 // FindTaskReferences finds all tasks that reference the given task ID
-func (ru *ReferenceUpdater) FindTaskReferences(targetID TaskID) ([]*Task, error) {
-	var referencingTasks []*Task
+func (ru *ReferenceUpdater) FindTaskReferences(targetID TaskID) ([]Task, error) {
+	var referencingTasks []Task
 
 	// Get all task files
 	files, err := afero.ReadDir(ru.detector.fs, ru.detector.tasksDir)
@@ -684,4 +684,3 @@ func (cr *ConflictResolver) ExecuteResolutionPlanWithReferences(plan *Resolution
 
 	return results, nil
 }
-

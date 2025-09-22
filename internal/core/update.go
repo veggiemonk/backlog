@@ -28,12 +28,12 @@ type EditTaskParams struct {
 }
 
 // Update updates an existing task based on the provided parameters.
-func (f *FileTaskStore) Update(task *Task, params EditTaskParams) (*Task, error) {
+func (f *FileTaskStore) Update(task *Task, params EditTaskParams) error {
 	var oldFilePath string
 
 	// Update fields based on params
 	if params.NewTitle != nil && task.Title != *params.NewTitle {
-		oldFilePath = f.Path(task) // To use when moving the file
+		oldFilePath = f.Path(*task) // To use when moving the file
 		RecordChange(task, fmt.Sprintf("Title changed from %q to %q", task.Title, *params.NewTitle))
 		task.Title = *params.NewTitle
 	}
@@ -46,7 +46,7 @@ func (f *FileTaskStore) Update(task *Task, params EditTaskParams) (*Task, error)
 	if params.NewStatus != nil {
 		newStatus, err := ParseStatus(*params.NewStatus)
 		if err != nil {
-			return nil, fmt.Errorf("invalid status %q: %w", *params.NewStatus, err)
+			return fmt.Errorf("invalid status %q: %w", *params.NewStatus, err)
 		}
 		if task.Status != newStatus {
 			RecordChange(task, fmt.Sprintf("Status changed from %q to %q", task.Status, newStatus))
@@ -76,7 +76,7 @@ func (f *FileTaskStore) Update(task *Task, params EditTaskParams) (*Task, error)
 	if params.NewPriority != nil {
 		newPriority, err := ParsePriority(*params.NewPriority)
 		if err != nil {
-			return nil, fmt.Errorf("invalid priority %q: %w", *params.NewPriority, err)
+			return fmt.Errorf("invalid priority %q: %w", *params.NewPriority, err)
 		}
 		if task.Priority != newPriority {
 			RecordChange(task, fmt.Sprintf("Priority changed from %q to %q", task.Priority, newPriority))
@@ -87,7 +87,7 @@ func (f *FileTaskStore) Update(task *Task, params EditTaskParams) (*Task, error)
 	if params.NewParent != nil {
 		newParent, err := parseTaskID(*params.NewParent)
 		if err != nil {
-			return nil, fmt.Errorf("invalid new parent task ID '%s': %w", *params.NewParent, err)
+			return fmt.Errorf("invalid new parent task ID '%s': %w", *params.NewParent, err)
 		}
 		if !task.Parent.Equals(newParent) {
 			RecordChange(task, fmt.Sprintf("Parent changed from %q to %q", task.Parent.String(), newParent.String()))
@@ -111,11 +111,11 @@ func (f *FileTaskStore) Update(task *Task, params EditTaskParams) (*Task, error)
 		for _, depIDStr := range params.NewDependencies {
 			depID, err := parseTaskID(depIDStr)
 			if err != nil {
-				return nil, fmt.Errorf("invalid dependency task ID '%s': %w", depIDStr, err)
+				return fmt.Errorf("invalid dependency task ID '%s': %w", depIDStr, err)
 			}
 			_, err = f.Get(depID.String())
 			if err != nil {
-				return nil, fmt.Errorf("dependency task ID '%s' does not exist: %w", depIDStr, err)
+				return fmt.Errorf("dependency task ID '%s' does not exist: %w", depIDStr, err)
 			}
 			deps = append(deps, depID.Name())
 		}
@@ -130,15 +130,15 @@ func (f *FileTaskStore) Update(task *Task, params EditTaskParams) (*Task, error)
 
 	task.UpdatedAt = time.Now().UTC()
 
-	if err := f.write(task); err != nil {
-		return task, fmt.Errorf("could not write updated task file: %w", err)
+	if err := f.write(*task); err != nil {
+		return fmt.Errorf("could not write updated task file: %w", err)
 	}
 	if oldFilePath != "" {
 		if err := f.fs.Remove(oldFilePath); err != nil {
-			return task, fmt.Errorf("could not remove old file: %w", err)
+			return fmt.Errorf("could not remove old file: %w", err)
 		}
 	}
-	return task, nil
+	return nil
 }
 
 func batchRemoveAdd(orig []string, toRemove []string, toAdd []string) []string {

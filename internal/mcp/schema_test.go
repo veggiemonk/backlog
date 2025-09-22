@@ -1,8 +1,8 @@
 package mcp
 
 import (
-	"context"
 	"encoding/json"
+	"reflect"
 	"testing"
 
 	"github.com/google/jsonschema-go/jsonschema"
@@ -37,7 +37,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 
 	t.Run("task_view schema compliance", func(t *testing.T) {
 		// Call the tool
-		result, _, err := server.handler.view(context.Background(), &mcp.CallToolRequest{}, ViewParams{
+		result, _, err := server.handler.view(t.Context(), &mcp.CallToolRequest{}, ViewParams{
 			ID: task.ID.String(),
 		})
 		is.NoErr(err)
@@ -45,13 +45,23 @@ func TestOutputSchemaCompliance(t *testing.T) {
 		is.True(result.StructuredContent != nil)
 
 		// Validate the StructuredContent against the expected schema
-		expectedSchema := wrappedTaskJSONSchema()
-		validateStructuredContent(t, expectedSchema, result.StructuredContent)
+		// expectedSchema := wrappedTaskJSONSchema()
+		schema, err := jsonschema.For[core.Task](&jsonschema.ForOptions{
+			TypeSchemas: map[reflect.Type]*jsonschema.Schema{
+				reflect.TypeFor[core.TaskID](): {
+					// ID:   "id",
+					Type: "string",
+				},
+			},
+		})
+		is.NoErr(err)
+
+		validateStructuredContent(t, schema, result.StructuredContent)
 	})
 
 	t.Run("task_create schema compliance", func(t *testing.T) {
 		// Call the tool
-		result, _, err := server.handler.create(context.Background(), &mcp.CallToolRequest{}, core.CreateTaskParams{
+		result, _, err := server.handler.create(t.Context(), &mcp.CallToolRequest{}, core.CreateTaskParams{
 			Title:       "New Test Task",
 			Description: "Another test task",
 			Priority:    "medium",
@@ -67,7 +77,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 
 	t.Run("task_edit schema compliance", func(t *testing.T) {
 		// Call the tool
-		result, _, err := server.handler.edit(context.Background(), &mcp.CallToolRequest{}, core.EditTaskParams{
+		result, _, err := server.handler.edit(t.Context(), &mcp.CallToolRequest{}, core.EditTaskParams{
 			ID:       task.ID.String(),
 			NewTitle: ptr("Updated Test Task"),
 		})
@@ -139,7 +149,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 
 	t.Run("task_list schema compliance", func(t *testing.T) {
 		// Call the tool
-		result, _, err := server.handler.list(context.Background(), &mcp.CallToolRequest{}, core.ListTasksParams{})
+		result, _, err := server.handler.list(t.Context(), &mcp.CallToolRequest{}, core.ListTasksParams{})
 		is.NoErr(err)
 		is.True(result != nil)
 		is.True(result.StructuredContent != nil)
@@ -151,7 +161,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 
 	t.Run("task_search schema compliance", func(t *testing.T) {
 		// Call the tool
-		result, _, err := server.handler.search(context.Background(), &mcp.CallToolRequest{}, SearchParams{
+		result, _, err := server.handler.search(t.Context(), &mcp.CallToolRequest{}, SearchParams{
 			Query: "test",
 		})
 		is.NoErr(err)
@@ -166,7 +176,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 
 	t.Run("task_batch_create schema compliance", func(t *testing.T) {
 		// Call the tool
-		result, _, err := server.handler.batchCreate(context.Background(), &mcp.CallToolRequest{}, ListCreateParams{
+		result, _, err := server.handler.batchCreate(t.Context(), &mcp.CallToolRequest{}, ListCreateParams{
 			Tasks: []core.CreateTaskParams{
 				{
 					Title:       "Batch Task 1",
@@ -192,7 +202,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 
 // validateStructuredContent validates that the given data conforms to the JSON schema
 func validateStructuredContent(t *testing.T, schema *jsonschema.Schema, data any) {
-	t.Helper()
+	// t.Helper()
 	is := is.New(t)
 
 	// Marshal and unmarshal to ensure we have proper JSON-compatible data
@@ -207,9 +217,12 @@ func validateStructuredContent(t *testing.T, schema *jsonschema.Schema, data any
 	resolved, err := schema.Resolve(nil)
 	is.NoErr(err)
 
+	j, err := schema.MarshalJSON()
+	is.NoErr(err)
+
 	// Validate the data against the schema
 	err = resolved.Validate(genericData)
 	if err != nil {
-		t.Errorf("Schema validation failed: %v\nData: %s\nSchema: %+v", err, string(jsonData), schema)
+		t.Errorf("Schema validation failed: %v\nData: %s\nSchema: %+v", err, string(jsonData), string(j))
 	}
 }

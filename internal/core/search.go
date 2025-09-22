@@ -3,14 +3,14 @@ package core
 import "strings"
 
 // Search searches for tasks containing the query string in various fields.
-func (f *FileTaskStore) Search(query string, listParams ListTasksParams) ([]*Task, error) {
+func (f *FileTaskStore) Search(query string, listParams ListTasksParams) ([]Task, error) {
 	// Get all tasks and search in memory
 	tasks, err := f.List(ListTasksParams{})
 	if err != nil {
 		return nil, err
 	}
 
-	matches := []*Task{}
+	matches := []Task{}
 	queryLower := strings.ToLower(query)
 
 	for _, task := range tasks {

@@ -7,24 +7,24 @@ import (
 )
 
 // Get implements TaskStore.
-func (f *FileTaskStore) Get(id string) (*Task, error) {
+func (f *FileTaskStore) Get(id string) (task Task, err error) {
 	taskID, err := parseTaskID(id)
 	if err != nil {
-		return nil, fmt.Errorf("invalid task ID '%s': %w", id, err)
+		return task, fmt.Errorf("invalid task ID '%s': %w", id, err)
 	}
 
 	filePath, err := f.findTaskFileByID(taskID)
 	if err != nil {
-		return nil, fmt.Errorf("find task file: %w", err)
+		return task, fmt.Errorf("find task file: %w", err)
 	}
 	b, err := afero.ReadFile(f.fs, filePath)
 	if err != nil {
-		return nil, err
+		return task, err
 	}
 
-	task, err := parseTask(b)
+	task, err = parseTask(b)
 	if err != nil {
-		return nil, fmt.Errorf("parse task %s: %v", filePath, err)
+		return task, fmt.Errorf("parse task %s: %v", filePath, err)
 	}
 
 	return task, nil

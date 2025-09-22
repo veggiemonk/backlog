@@ -23,12 +23,12 @@ const (
 
 // TaskStore interface matches the one expected by the MCP handlers
 type TaskStore interface {
-	Get(id string) (*core.Task, error)
-	Create(params core.CreateTaskParams) (*core.Task, error)
-	Update(task *core.Task, params core.EditTaskParams) (*core.Task, error)
-	List(params core.ListTasksParams) ([]*core.Task, error)
-	Search(query string, listParams core.ListTasksParams) ([]*core.Task, error)
-	Path(t *core.Task) string
+	Get(id string) (core.Task, error)
+	Create(params core.CreateTaskParams) (core.Task, error)
+	Update(task core.Task, params core.EditTaskParams) (core.Task, error)
+	List(params core.ListTasksParams) ([]core.Task, error)
+	Search(query string, listParams core.ListTasksParams) ([]core.Task, error)
+	Path(t core.Task) string
 	Archive(id core.TaskID) (string, error)
 }
 

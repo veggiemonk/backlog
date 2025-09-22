@@ -324,12 +324,12 @@ func TestConflictResolver_CreateResolutionPlan_ChronologicalStrategy(t *testing.
 
 	// Create tasks with timestamps to test chronological ordering
 	baseTime := time.Date(2024, 1, 1, 10, 0, 0, 0, time.UTC)
-	task1 := &Task{
+	task1 := Task{
 		ID:        mustParseTaskID("01"),
 		Title:     "First Task",
 		CreatedAt: baseTime,
 	}
-	task2 := &Task{
+	task2 := Task{
 		ID:        mustParseTaskID("01"),
 		Title:     "Second Task",
 		CreatedAt: baseTime.Add(time.Hour), // Created later
@@ -339,7 +339,7 @@ func TestConflictResolver_CreateResolutionPlan_ChronologicalStrategy(t *testing.
 		{
 			Type:       ConflictTypeDuplicateID,
 			ConflictID: mustParseTaskID("01"),
-			Tasks:      []*Task{task1, task2},
+			Tasks:      []Task{task1, task2},
 			Files:      []string{".backlog/T01-first.md", ".backlog/T01-second.md"},
 		},
 	}
@@ -366,20 +366,20 @@ func TestConflictResolver_CreateResolutionPlan_AutoRenumberStrategy(t *testing.T
 	_, err = store.Create(CreateTaskParams{Title: "Existing Task", Description: "test", AC: []string{"test"}})
 	is.NoErr(err)
 
-	task1 := &Task{ID: mustParseTaskID("01"), Title: "First Task"}
-	task2 := &Task{ID: mustParseTaskID("01"), Title: "Second Task"}
+	task1 := Task{ID: mustParseTaskID("01"), Title: "First Task"}
+	task2 := Task{ID: mustParseTaskID("01"), Title: "Second Task"}
 
 	conflicts := []IDConflict{
 		{
 			Type:       ConflictTypeDuplicateID,
 			ConflictID: mustParseTaskID("01"),
-			Tasks:      []*Task{task1, task2},
+			Tasks:      []Task{task1, task2},
 			Files:      []string{".backlog/T01-first.md", ".backlog/T01-second.md"},
 		},
 		{
 			Type:       ConflictTypeOrphanedChild,
 			ConflictID: mustParseTaskID("02.01"),
-			Tasks:      []*Task{{ID: mustParseTaskID("02.01"), Parent: mustParseTaskID("02")}},
+			Tasks:      []Task{{ID: mustParseTaskID("02.01"), Parent: mustParseTaskID("02")}},
 			Files:      []string{".backlog/T02.01-orphan.md"},
 		},
 	}
@@ -522,8 +522,7 @@ func TestReferenceUpdater_FindTaskReferences(t *testing.T) {
 		ID:              depTask.ID.String(),
 		NewDependencies: []string{parent.ID.String()},
 	}
-	_, err = store.Update(depTask, editParams)
-	is.NoErr(err)
+	is.NoErr(store.Update(&depTask, editParams))
 
 	detector := NewConflictDetector(fs, ".backlog")
 	updater := NewReferenceUpdater(detector, store)
@@ -640,4 +639,3 @@ func mustParseTaskID(id string) TaskID {
 	}
 	return taskID
 }
-
