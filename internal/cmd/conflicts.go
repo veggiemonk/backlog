@@ -14,57 +14,48 @@ import (
 )
 
 var (
-	conflictsJSON     bool
-	conflictsStrategy string
-	conflictsDryRun   bool
+	doctorJSON     bool
+	doctorStrategy string
+	doctorDryRun   bool
+	doctorFix      bool
 )
 
-// conflictsCmd represents the conflicts command
-var conflictsCmd = &cobra.Command{
-	Use:   "conflicts",
-	Short: "Manage task ID conflicts",
-	Long: `Detect and resolve task ID conflicts that can occur when creating tasks
+// doctorCmd represents the doctor command
+var doctorCmd = &cobra.Command{
+	Use:   "doctor",
+	Short: "Diagnose and fix task ID conflicts",
+	Long: `Diagnose and fix task ID conflicts that can occur when creating tasks
 in separate Git branches. Conflicts arise when multiple branches generate the same task IDs.
 
 This command provides conflict detection and resolution capabilities to maintain
-task ID uniqueness and data integrity.`,
-}
+task ID uniqueness and data integrity.
 
-// conflictsDetectCmd detects conflicts
-var conflictsDetectCmd = &cobra.Command{
-	Use:   "detect",
-	Short: "Detect task ID conflicts",
-	Long: `Scan all task files and identify ID conflicts including:
+Conflict types detected:
 - Duplicate IDs (same ID in multiple files)
 - Orphaned children (tasks with non-existent parents)
 - Invalid hierarchy (parent-child ID mismatch)
 
 Examples:
-  backlog conflicts detect                 # Detect conflicts in text format
-  backlog conflicts detect --json          # Detect conflicts in JSON format`,
-	Run: detectConflicts,
+  backlog doctor                    # Detect conflicts in text format
+  backlog doctor --json             # Detect conflicts in JSON format
+  backlog doctor --fix              # Detect and automatically fix conflicts
+  backlog doctor --fix --dry-run    # Show what would be fixed without making changes
+  backlog doctor --fix --strategy=auto    # Use auto-renumbering strategy`,
+	Run: runDoctor,
 }
 
-// conflictsResolveCmd resolves conflicts
-var conflictsResolveCmd = &cobra.Command{
-	Use:   "resolve",
-	Short: "Resolve task ID conflicts",
-	Long: `Create and execute a resolution plan for detected conflicts.
 
-Resolution strategies:
-- chronological: Keep older tasks, renumber newer ones (default)
-- auto: Automatically renumber conflicting IDs
-- manual: Create plan requiring manual intervention
-
-Examples:
-  backlog conflicts resolve                            # Resolve using chronological strategy
-  backlog conflicts resolve --strategy=auto           # Resolve using auto strategy
-  backlog conflicts resolve --dry-run                 # Show what would be changed
-  backlog conflicts resolve --strategy=manual         # Create manual resolution plan`,
-	Run: resolveConflicts,
+func runDoctor(cmd *cobra.Command, args []string) {
+	if doctorFix {
+		// If --fix flag is provided, run resolve instead of detect
+		resolveConflicts(cmd, args)
+		return
+	}
+	// Otherwise, just detect conflicts
+	detectConflicts(cmd, args)
 }
 
-func detectConflicts(cmd *cobra.Command, args []string) {
+func detectConflicts(cmd *cobra.Command, _ []string) {
 	// Get tasks directory using the same approach as other commands
 	fs := afero.NewOsFs()
 	tasksDir := viper.GetString("folder")
@@ -84,7 +75,7 @@ func detectConflicts(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	if conflictsJSON {
+	if doctorJSON {
 		output := map[string]any{
 			"conflicts": conflicts,
 			"summary":   core.SummarizeConflicts(conflicts),
@@ -99,7 +90,7 @@ func detectConflicts(cmd *cobra.Command, args []string) {
 	// Text output
 	summary := core.SummarizeConflicts(conflicts)
 	if summary.TotalConflicts == 0 {
-		fmt.Fprintln(cmd.OutOrStdout(), "✅ No task ID conflicts detected")
+		_, _ = fmt.Fprintln(cmd.OutOrStdout(), "✅ No task ID conflicts detected")
 		return
 	}
 
@@ -129,7 +120,7 @@ func detectConflicts(cmd *cobra.Command, args []string) {
 		fmt.Fprintln(cmd.OutOrStdout())
 	}
 
-	fmt.Fprintln(cmd.OutOrStdout(), "Run 'backlog conflicts resolve' to fix these conflicts.")
+	fmt.Fprintln(cmd.OutOrStdout(), "Run 'backlog doctor --fix' to fix these conflicts.")
 }
 
 func resolveConflicts(cmd *cobra.Command, args []string) {
@@ -168,7 +159,7 @@ func resolveConflictsImpl(cmd *cobra.Command, _ []string) error {
 
 	// Parse strategy
 	var strategy core.ResolutionStrategy
-	switch conflictsStrategy {
+	switch doctorStrategy {
 	case "chronological":
 		strategy = core.ResolutionStrategyChronological
 	case "auto":
@@ -176,7 +167,7 @@ func resolveConflictsImpl(cmd *cobra.Command, _ []string) error {
 	case "manual":
 		strategy = core.ResolutionStrategyManual
 	default:
-		return fmt.Errorf("invalid strategy: %s", conflictsStrategy)
+		return fmt.Errorf("invalid strategy: %s", doctorStrategy)
 	}
 
 	// Create resolution plan
@@ -185,7 +176,7 @@ func resolveConflictsImpl(cmd *cobra.Command, _ []string) error {
 		return fmt.Errorf("failed to create resolution plan: %w", err)
 	}
 
-	fmt.Fprintf(cmd.OutOrStdout(), "📋 Resolution Plan (%s strategy):\n", conflictsStrategy)
+	fmt.Fprintf(cmd.OutOrStdout(), "📋 Resolution Plan (%s strategy):\n", doctorStrategy)
 	fmt.Fprintf(cmd.OutOrStdout(), "   %s\n\n", plan.Summary)
 
 	if len(plan.Actions) == 0 {
@@ -213,7 +204,7 @@ func resolveConflictsImpl(cmd *cobra.Command, _ []string) error {
 		fmt.Fprintln(cmd.OutOrStdout())
 	}
 
-	if conflictsDryRun {
+	if doctorDryRun {
 		fmt.Fprintln(cmd.OutOrStdout(), "🔍 DRY RUN - No changes were made")
 		return nil
 	}
@@ -240,24 +231,18 @@ func resolveConflictsImpl(cmd *cobra.Command, _ []string) error {
 	return nil
 }
 
-func setConflictsFlags(_ *cobra.Command) {
-	// Detect flags
-	conflictsDetectCmd.Flags().BoolVarP(&conflictsJSON, "json", "j", false, "Output in JSON format")
-
-	// Resolve flags
-	conflictsResolveCmd.Flags().StringVar(&conflictsStrategy, "strategy", "chronological", "Resolution strategy (chronological|auto|manual)")
-	conflictsResolveCmd.Flags().BoolVar(&conflictsDryRun, "dry-run", false, "Show what would be changed without making changes")
+func setDoctorFlags(_ *cobra.Command) {
+	// Doctor command flags
+	doctorCmd.Flags().BoolVarP(&doctorJSON, "json", "j", false, "Output in JSON format")
+	doctorCmd.Flags().BoolVar(&doctorFix, "fix", false, "Automatically fix detected conflicts")
+	doctorCmd.Flags().StringVar(&doctorStrategy, "strategy", "chronological", "Resolution strategy when using --fix (chronological|auto|manual)")
+	doctorCmd.Flags().BoolVar(&doctorDryRun, "dry-run", false, "Show what would be changed without making changes (use with --fix)")
 }
 
 func init() {
-	// Add subcommands
-	conflictsCmd.AddCommand(conflictsDetectCmd)
-	conflictsCmd.AddCommand(conflictsResolveCmd)
-
 	// Set flags
-	setConflictsFlags(conflictsCmd)
+	setDoctorFlags(doctorCmd)
 
 	// Add to root
-	rootCmd.AddCommand(conflictsCmd)
+	rootCmd.AddCommand(doctorCmd)
 }
-

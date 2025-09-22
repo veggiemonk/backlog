@@ -611,6 +611,7 @@ func (ru *ReferenceUpdater) FindTaskReferences(targetID TaskID) ([]*Task, error)
 	}
 
 	targetIDStr := targetID.String()
+	targetIDName := targetID.Name() // With "T" prefix
 
 	for _, file := range files {
 		if file.IsDir() || !strings.HasPrefix(file.Name(), TaskIDPrefix) || !strings.HasSuffix(file.Name(), ".md") {
@@ -629,8 +630,9 @@ func (ru *ReferenceUpdater) FindTaskReferences(targetID TaskID) ([]*Task, error)
 			continue
 		}
 
-		// Check dependencies
-		if slices.Contains(task.Dependencies.ToSlice(), targetIDStr) {
+		// Check dependencies (they can be stored with or without "T" prefix)
+		deps := task.Dependencies.ToSlice()
+		if slices.Contains(deps, targetIDStr) || slices.Contains(deps, targetIDName) {
 			referencingTasks = append(referencingTasks, task)
 		}
 	}
