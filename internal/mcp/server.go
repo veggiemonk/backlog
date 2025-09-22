@@ -25,7 +25,7 @@ const (
 type TaskStore interface {
 	Get(id string) (core.Task, error)
 	Create(params core.CreateTaskParams) (core.Task, error)
-	Update(task core.Task, params core.EditTaskParams) (core.Task, error)
+	Update(task *core.Task, params core.EditTaskParams) error
 	List(params core.ListTasksParams) ([]core.Task, error)
 	Search(query string, listParams core.ListTasksParams) ([]core.Task, error)
 	Path(t core.Task) string

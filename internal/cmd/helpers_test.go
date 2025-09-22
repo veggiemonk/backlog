@@ -112,8 +112,7 @@ func createTestTasks(t *testing.T, store TaskStore) {
 	if err != nil {
 		t.Fatalf("failed to create task: %v", err)
 	}
-	t9, err = store.Update(t9, core.EditTaskParams{NewStatus: ptr("in-progress")})
-	if err != nil {
+	if err = store.Update(&t9, core.EditTaskParams{NewStatus: ptr("in-progress")}); err != nil {
 		t.Fatalf("failed to update task: %v", err)
 	}
 }

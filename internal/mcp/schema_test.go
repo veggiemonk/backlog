@@ -49,7 +49,6 @@ func TestOutputSchemaCompliance(t *testing.T) {
 		schema, err := jsonschema.For[core.Task](&jsonschema.ForOptions{
 			TypeSchemas: map[reflect.Type]*jsonschema.Schema{
 				reflect.TypeFor[core.TaskID](): {
-					// ID:   "id",
 					Type: "string",
 				},
 			},

@@ -207,13 +207,12 @@ func runEdit(cmd *cobra.Command, args []string) error {
 	// save the old path in case of a rename
 	oldFilePath := store.Path(task)
 
-	updatedTask, err := store.Update(task, params)
-	if err != nil {
+	if err := store.Update(&task, params); err != nil {
 		return fmt.Errorf("failed to update task %q: %w", params.ID, err)
 	}
 
 	defer func() {
-		logging.Info("task updated successfully", "task_id", updatedTask.ID)
+		logging.Info("task updated successfully", "task_id", task.ID)
 		// fmt.Printf("Task %s updated successfully.\n", updatedTask.ID)
 	}()
 
@@ -222,14 +221,14 @@ func runEdit(cmd *cobra.Command, args []string) error {
 	}
 
 	// paths to commit
-	currentFilePath := store.Path(updatedTask)
+	currentFilePath := store.Path(task)
 	if oldFilePath == currentFilePath {
 		oldFilePath = ""
 	}
 	// autocommit the change if enabled
-	commitMsg := fmt.Sprintf("feat(task): edit %s - \"%s\"", updatedTask.ID, updatedTask.Title)
+	commitMsg := fmt.Sprintf("feat(task): edit %s - \"%s\"", task.ID, task.Title)
 	if err := commit.Add(currentFilePath, oldFilePath, commitMsg); err != nil {
-		logging.Warn("auto-commit failed", "task_id", updatedTask.ID, "error", err)
+		logging.Warn("auto-commit failed", "task_id", task.ID, "error", err)
 	}
 	return nil
 }

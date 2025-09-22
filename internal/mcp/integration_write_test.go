@@ -39,11 +39,11 @@ func TestMCP_Integration_Write_HTTP(t *testing.T) {
 		is.NoErr(err)
 		is.True(res != nil)
 		// Structured content comes back as generic JSON over HTTP; decode it
-		var wrapped struct{ Task *core.Task }
+		wrapped := core.Task{}
 		b, err := json.Marshal(res.StructuredContent)
 		is.NoErr(err)
 		is.NoErr(json.Unmarshal(b, &wrapped))
-		created = wrapped.Task
+		created = &wrapped
 
 		is.Equal(created.Title, "Schema Task")
 		is.Equal(created.Priority.String(), "high")
@@ -56,13 +56,13 @@ func TestMCP_Integration_Write_HTTP(t *testing.T) {
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_edit", Arguments: params})
 		is.NoErr(err)
 		// Decode structured content
-		var wrapped struct{ Task *core.Task }
+		wrapped := core.Task{}
 		b, err := json.Marshal(res.StructuredContent)
 		is.NoErr(err)
 		is.NoErr(json.Unmarshal(b, &wrapped))
 
-		is.Equal(wrapped.Task.Title, newTitle)
-		created = wrapped.Task
+		is.Equal(wrapped.Title, newTitle)
+		created = &wrapped
 	}
 
 	// 3) Batch create three tasks and assert count and types
@@ -75,18 +75,18 @@ func TestMCP_Integration_Write_HTTP(t *testing.T) {
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_batch_create", Arguments: params})
 		is.NoErr(err)
 		is.True(res != nil)
-		var wrapped struct{ Tasks []*core.Task }
+		wrapped := []core.Task{}
 		b, err := json.Marshal(res.StructuredContent)
 		is.NoErr(err)
 		is.NoErr(json.Unmarshal(b, &wrapped))
 
-		is.Equal(len(wrapped.Tasks), 3)
+		is.Equal(len(wrapped), 3)
 		// Parse structuredContent back to the same wrapper to ensure shape
 		b, err = json.Marshal(res.StructuredContent)
 		is.NoErr(err)
-		wrapped2 := struct{ Tasks []*core.Task }{}
+		wrapped2 := []core.Task{}
 		is.NoErr(json.Unmarshal(b, &wrapped2))
-		is.Equal(len(wrapped2.Tasks), 3)
+		is.Equal(len(wrapped2), 3)
 	}
 	// 4) Archive the picked task
 	{

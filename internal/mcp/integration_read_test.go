@@ -54,13 +54,13 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_list", Arguments: core.ListTasksParams{}})
 		is.NoErr(err)
 		is.True(res != nil)
-		var wrapped struct{ Tasks []*core.Task }
+		wrapped := []core.Task{}
 		b, err := json.Marshal(res.StructuredContent)
 		is.NoErr(err)
 		is.NoErr(json.Unmarshal(b, &wrapped))
 
-		is.Equal(len(wrapped.Tasks), 8)
-		picked = *wrapped.Tasks[0]
+		is.Equal(len(wrapped), 8)
+		picked = wrapped[0]
 	}
 
 	// 2) View the picked task
@@ -68,12 +68,12 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_view", Arguments: ViewParams{ID: picked.ID.String()}})
 		is.NoErr(err)
 		is.True(res != nil)
-		var wrapped struct{ Task *core.Task }
+		wrapped := core.Task{}
 		b, err := json.Marshal(res.StructuredContent)
 		is.NoErr(err)
 		is.NoErr(json.Unmarshal(b, &wrapped))
 
-		is.Equal(wrapped.Task.ID.String(), picked.ID.String())
+		is.Equal(wrapped.ID.String(), picked.ID.String())
 	}
 
 	// 3) Search for a known keyword
@@ -82,12 +82,12 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 		is.NoErr(err)
 		// Should have results thanks to setupTestData seeding "feature" labeled tasks
 		is.True(res != nil)
-		var wrapped struct{ Tasks []*core.Task }
+		wrapped := []core.Task{}
 		b, err := json.Marshal(res.StructuredContent)
 		is.NoErr(err)
 		is.NoErr(json.Unmarshal(b, &wrapped))
 
-		is.Equal(len(wrapped.Tasks), 4)
+		is.Equal(len(wrapped), 4)
 	}
 
 	// 4) Read a resource (AGENTS.md)

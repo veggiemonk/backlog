@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
-	"github.com/veggiemonk/backlog/internal/core"
 )
 
 func (s *Server) registerTaskView() error {
@@ -36,7 +35,6 @@ func (h *handler) view(ctx context.Context, req *mcp.CallToolRequest, params Vie
 		return nil, nil, fmt.Errorf("view: %v", err)
 	}
 	// Needs to be object, cause problem with pointer
-	wrapped := struct{ Task *core.Task }{Task: task}
-	res := &mcp.CallToolResult{StructuredContent: wrapped}
+	res := &mcp.CallToolResult{StructuredContent: task}
 	return res, nil, nil
 }

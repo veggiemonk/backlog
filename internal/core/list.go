@@ -21,7 +21,7 @@ type PaginationInfo struct {
 
 // ListResult contains the tasks and pagination metadata
 type ListResult struct {
-	Tasks      []*Task         `json:"tasks"`
+	Tasks      []Task          `json:"tasks"`
 	Pagination *PaginationInfo `json:"pagination,omitempty"`
 }
 
