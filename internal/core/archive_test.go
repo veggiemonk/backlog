@@ -12,7 +12,7 @@ import (
 func TestArchiveTask(t *testing.T) {
 	is := is.New(t)
 	fs := afero.NewMemMapFs()
-	store := NewFileTaskStore(fs, ".backlog")
+	store := NewFileTaskStore(fs, ".backlog", NewMockLocker())
 
 	// First, create a task to archive
 	params := CreateTaskParams{
@@ -29,7 +29,7 @@ func TestArchiveTask(t *testing.T) {
 
 	b, err := afero.ReadFile(fs, archivedTaskPath)
 	is.NoErr(err)
-	archivedTask, err := parseTask(b)
+	archivedTask, err := ParseTask(b)
 	is.NoErr(err)
 
 	is.Equal(archivedTask.Status, StatusArchived)

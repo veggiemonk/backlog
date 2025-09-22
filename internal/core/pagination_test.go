@@ -135,7 +135,7 @@ func TestListWithPagination(t *testing.T) {
 	
 	// Create a memory filesystem and task store
 	fs := afero.NewMemMapFs()
-	store := NewFileTaskStore(fs, "tasks")
+	store := NewFileTaskStore(fs, "tasks", NewMockLocker())
 	
 	// Create test tasks
 	testTasks := []CreateTaskParams{
@@ -214,7 +214,7 @@ func TestSearchWithPagination(t *testing.T) {
 	
 	// Create a memory filesystem and task store
 	fs := afero.NewMemMapFs()
-	store := NewFileTaskStore(fs, "tasks")
+	store := NewFileTaskStore(fs, "tasks", NewMockLocker())
 	
 	// Create test tasks with searchable content
 	testTasks := []CreateTaskParams{

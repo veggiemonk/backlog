@@ -12,7 +12,7 @@ import (
 
 var errWrongIDFormat = errors.New("wrong id format")
 
-func parseTask(content []byte) (*Task, error) {
+func ParseTask(content []byte) (*Task, error) {
 	matter, err := parseFrontMatter(content)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse frontmatter: %w", err)

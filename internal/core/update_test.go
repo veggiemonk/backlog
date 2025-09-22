@@ -12,7 +12,7 @@ import (
 
 func TestEditTask(t *testing.T) {
 	is := is.New(t)
-	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog")
+	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog", core.NewMockLocker())
 	createdTask, _ := store.Create(core.CreateTaskParams{Title: "Original Title"})
 
 	newTitle := "Updated Title"
@@ -35,7 +35,7 @@ func TestEditTask(t *testing.T) {
 
 func TestEditTaskHistory(t *testing.T) {
 	is := is.New(t)
-	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog")
+	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog", core.NewMockLocker())
 	createdTask, err := store.Create(core.CreateTaskParams{Title: "Original Title"})
 	is.NoErr(err)
 
@@ -72,7 +72,7 @@ func TestEditTaskHistory(t *testing.T) {
 func TestUpdateTaskFields(t *testing.T) {
 	is := is.New(t)
 	fs := afero.NewMemMapFs()
-	store := core.NewFileTaskStore(fs, ".backlog")
+	store := core.NewFileTaskStore(fs, ".backlog", core.NewMockLocker())
 
 	// Create a parent task for testing parent update
 	parentTask, _ := store.Create(core.CreateTaskParams{Title: "Parent Task"})

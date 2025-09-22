@@ -24,7 +24,7 @@ func TestGetNextTaskID(t *testing.T) {
 	}
 
 	fs := afero.NewMemMapFs()
-	store := NewFileTaskStore(fs, ".backlog")
+	store := NewFileTaskStore(fs, ".backlog", NewMockLocker())
 
 	for _, name := range filenames {
 		_, err := fs.Create(".backlog/" + name)
@@ -74,7 +74,7 @@ func TestWriteTask(t *testing.T) {
 	task.ImplementationNotes = "This is the implementation notes."
 
 	fs := afero.NewMemMapFs()
-	store := NewFileTaskStore(fs, ".backlog")
+	store := NewFileTaskStore(fs, ".backlog", NewMockLocker())
 	err = store.write(task)
 	is.NoErr(err)
 

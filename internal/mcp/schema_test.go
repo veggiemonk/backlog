@@ -17,7 +17,7 @@ import (
 func TestOutputSchemaCompliance(t *testing.T) {
 	// Setup test store
 	fs := afero.NewMemMapFs()
-	store := core.NewFileTaskStore(fs, ".backlog")
+	store := core.NewFileTaskStore(fs, ".backlog", core.NewMockLocker())
 
 	// Create a test task
 	task, err := store.Create(core.CreateTaskParams{

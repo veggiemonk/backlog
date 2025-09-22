@@ -21,7 +21,7 @@ func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error)
 	}
 	fs := afero.NewMemMapFs()
 	tasksDir := ".backlog"
-	store := core.NewFileTaskStore(fs, tasksDir)
+	store := core.NewFileTaskStore(fs, tasksDir, core.NewMockLocker())
 	createTestTasks(t, store)
 	// Create fresh command to avoid state pollution
 	testRootCmd := &cobra.Command{Use: "backlog"}

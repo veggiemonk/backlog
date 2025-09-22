@@ -15,7 +15,7 @@ func TestMCPPaginationHandlers(t *testing.T) {
 	
 	// Create a memory filesystem and setup MCP server
 	fs := afero.NewMemMapFs()
-	store := core.NewFileTaskStore(fs, "tasks")
+	store := core.NewFileTaskStore(fs, "tasks", core.NewMockLocker())
 	server, err := NewServer(store, false)
 	is.NoErr(err)
 	
@@ -224,7 +224,7 @@ func TestMCPPaginationSchemaCompliance(t *testing.T) {
 	
 	// Create a memory filesystem and setup MCP server
 	fs := afero.NewMemMapFs()
-	store := core.NewFileTaskStore(fs, "tasks")
+	store := core.NewFileTaskStore(fs, "tasks", core.NewMockLocker())
 	server, err := NewServer(store, false)
 	is.NoErr(err)
 	
@@ -282,7 +282,7 @@ func TestPaginationEdgeCases(t *testing.T) {
 	
 	// Create a memory filesystem and setup MCP server
 	fs := afero.NewMemMapFs()
-	store := core.NewFileTaskStore(fs, "tasks")
+	store := core.NewFileTaskStore(fs, "tasks", core.NewMockLocker())
 	server, err := NewServer(store, false)
 	is.NoErr(err)
 	

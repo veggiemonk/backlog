@@ -44,6 +44,8 @@ func (f *FileTaskStore) Create(params CreateTaskParams) (*Task, error) {
 			return nil, fmt.Errorf("parent task ID '%s' does not exist: %w", *params.Parent, err)
 		}
 	}
+
+
 	nextID, err := f.getNextTaskID(parentID.seg...)
 	if err != nil {
 		return nil, fmt.Errorf("could not get next task ID: %w", err)

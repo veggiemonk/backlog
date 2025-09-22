@@ -22,7 +22,7 @@ func (f *FileTaskStore) Get(id string) (*Task, error) {
 		return nil, err
 	}
 
-	task, err := parseTask(b)
+	task, err := ParseTask(b)
 	if err != nil {
 		return nil, fmt.Errorf("parse task %s: %v", filePath, err)
 	}

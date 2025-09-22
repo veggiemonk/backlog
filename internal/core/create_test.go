@@ -11,7 +11,7 @@ import (
 func TestCreateTask(t *testing.T) {
 	is := is.New(t)
 	fs := afero.NewMemMapFs()
-	store := NewFileTaskStore(fs, ".backlog")
+	store := NewFileTaskStore(fs, ".backlog", NewMockLocker())
 
 	params := CreateTaskParams{
 		Title:       "Test Task",
@@ -71,7 +71,7 @@ func TestCreateTask(t *testing.T) {
 func TestCreateTask_InvalidParent(t *testing.T) {
 	is := is.New(t)
 	fs := afero.NewMemMapFs()
-	store := NewFileTaskStore(fs, ".backlog")
+	store := NewFileTaskStore(fs, ".backlog", NewMockLocker())
 
 	t.Run("creation with invalid parent", func(t *testing.T) {
 		invalidParent := "T999"

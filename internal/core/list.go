@@ -80,7 +80,7 @@ func (f *FileTaskStore) loadAll() ([]*Task, error) {
 				return err
 			}
 
-			task, err := parseTask(b)
+			task, err := ParseTask(b)
 			if err != nil {
 				return fmt.Errorf("parse task %s: %v", path, err)
 			}

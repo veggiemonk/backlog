@@ -11,7 +11,7 @@ import (
 
 func TestSearchTasks(t *testing.T) {
 	is := is.New(t)
-	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog")
+	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog", core.NewMockLocker())
 
 	// Create tasks with diverse content for searching
 	_, _ = store.Create(core.CreateTaskParams{

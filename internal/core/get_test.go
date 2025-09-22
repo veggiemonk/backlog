@@ -10,7 +10,7 @@ import (
 
 func TestGetTask(t *testing.T) {
 	is := is.New(t)
-	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog")
+	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog", core.NewMockLocker())
 	_, _ = store.Create(core.CreateTaskParams{Title: "View Me"})
 
 	task, err := store.Get("1")

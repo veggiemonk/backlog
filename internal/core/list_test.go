@@ -10,7 +10,7 @@ import (
 
 func TestListTasks(t *testing.T) {
 	is := is.New(t)
-	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog")
+	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog", core.NewMockLocker())
 	t1Parent := "T1"
 	_, _ = store.Create(core.CreateTaskParams{Title: "Task One"})
 	taskTwo, _ := store.Create(core.CreateTaskParams{Title: "Task Two"})
@@ -49,7 +49,7 @@ func TestListTasks(t *testing.T) {
 }
 
 func TestFilterAndSortTasks(t *testing.T) {
-	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog")
+	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog", core.NewMockLocker())
 
 	is := is.New(t)
 	// Create tasks for testing filtering and sorting
@@ -158,7 +158,7 @@ func TestFilterAndSortTasks(t *testing.T) {
 
 func TestFilterUnassignedTasks(t *testing.T) {
 	is := is.New(t)
-	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog")
+	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog", core.NewMockLocker())
 
 	// Create tasks with assigned
 	_, _ = store.Create(core.CreateTaskParams{Title: "Task with Assigned", Assigned: []string{"alice"}})
@@ -191,7 +191,7 @@ func TestFilterUnassignedTasks(t *testing.T) {
 
 func TestDependents(t *testing.T) {
 	is := is.New(t)
-	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog")
+	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog", core.NewMockLocker())
 
 	// Create parent task
 	baseTask, err := store.Create(core.CreateTaskParams{Title: "Base level Task"})

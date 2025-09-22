@@ -20,17 +20,23 @@ const (
 type FileTaskStore struct {
 	fs       afero.Fs
 	tasksDir string
+	locker   Locker
 }
 
-func NewFileTaskStore(fs afero.Fs, tasksDir string) *FileTaskStore {
+func NewFileTaskStore(fs afero.Fs, tasksDir string, locker Locker) *FileTaskStore {
 	return &FileTaskStore{
 		fs:       fs,
 		tasksDir: tasksDir,
+		locker:   locker,
 	}
 }
 
 func (f *FileTaskStore) Path(t *Task) string {
 	return filepath.Join(f.tasksDir, t.FileName())
+}
+
+func (f *FileTaskStore) Fs() afero.Fs {
+	return f.fs
 }
 
 func (f *FileTaskStore) write(task *Task) error {
@@ -48,6 +54,15 @@ func (f *FileTaskStore) write(task *Task) error {
 
 // getNextTaskID finds the next available task ID in the tasks directory.
 func (f *FileTaskStore) getNextTaskID(treePath ...int) (TaskID, error) {
+	if err := f.locker.Lock(); err != nil {
+		return TaskID{}, fmt.Errorf("could not acquire lock: %w", err)
+	}
+	defer func() {
+		if err := f.locker.Unlock(); err != nil {
+			// Log the error, but don't return it as it would mask the primary error
+			fmt.Printf("could not release lock: %v\n", err)
+		}
+	}()
 	files, err := afero.ReadDir(f.fs, f.tasksDir)
 	if err != nil {
 		return TaskID{}, err

@@ -15,7 +15,7 @@ import (
 func TestServer(t *testing.T) {
 	// Setup test store
 	fs := afero.NewMemMapFs()
-	store := core.NewFileTaskStore(fs, ".backlog")
+	store := core.NewFileTaskStore(fs, ".backlog", core.NewMockLocker())
 
 	// Seed the store with test data
 	setupTestData(t, store)
@@ -34,7 +34,7 @@ func TestServer(t *testing.T) {
 
 func TestMCPHandlers(t *testing.T) {
 	fs := afero.NewMemMapFs()
-	store := core.NewFileTaskStore(fs, ".backlog")
+	store := core.NewFileTaskStore(fs, ".backlog", core.NewMockLocker())
 	setupTestData(t, store)
 
 	handler := &handler{store: store, mu: &sync.Mutex{}}

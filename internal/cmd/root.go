@@ -25,6 +25,7 @@ type TaskStore interface {
 	Search(query string, listParams core.ListTasksParams) ([]*core.Task, error)
 	Path(t *core.Task) string
 	Archive(id core.TaskID) (string, error)
+	Fs() afero.Fs
 }
 
 var _ TaskStore = (*core.FileTaskStore)(nil)
@@ -103,7 +104,12 @@ func preRun(cmd *cobra.Command, args []string) {
 		logging.Error("tasks directory", "error", err)
 	}
 	logging.Debug("resolve tasks directory", configFolder, tasksDir)
-	var store TaskStore = core.NewFileTaskStore(fs, tasksDir)
+	locker, err := core.NewFileLocker(tasksDir)
+	if err != nil {
+		logging.Error("failed to create file locker", "error", err)
+		os.Exit(1)
+	}
+	var store TaskStore = core.NewFileTaskStore(fs, tasksDir, locker)
 	cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
 }
 

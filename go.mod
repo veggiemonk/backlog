@@ -4,6 +4,7 @@ go 1.25.1
 
 require (
 	github.com/agnivade/levenshtein v1.2.1
+	github.com/alexflint/go-filemutex v1.3.0
 	github.com/go-git/go-git/v6 v6.0.0-20250917085037-6e57f9e4da1e
 	github.com/google/jsonschema-go v0.2.3
 	github.com/imjasonh/version v0.0.1

@@ -13,7 +13,7 @@ import (
 func TestMCP_Integration_Read_HTTP(t *testing.T) {
 	// Isolated in-memory store pre-seeded with tasks for search/list behavior
 	fs := afero.NewMemMapFs()
-	store := core.NewFileTaskStore(fs, ".backlog")
+	store := core.NewFileTaskStore(fs, ".backlog", core.NewMockLocker())
 	setupTestData(t, store)
 
 	// Start server (autocommit disabled to avoid git dependency in tests)

@@ -12,7 +12,7 @@ import (
 func TestParseTaskWithDependencies(t *testing.T) {
 	is := is.New(t)
 	fs := afero.NewMemMapFs()
-	store := NewFileTaskStore(fs, ".backlog")
+	store := NewFileTaskStore(fs, ".backlog", NewMockLocker())
 
 	// Create task A
 	taskAParams := CreateTaskParams{
