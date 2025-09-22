@@ -15,13 +15,14 @@ var instructionsCmd = &cobra.Command{
 backlog instructions               # outputs the instructions 
 backlog instructions >> AGENTS.md  # add instructions to agent base prompt.
 `,
-	Run: runInstructions,
+	RunE: runInstructions,
 }
 
 func init() {
 	rootCmd.AddCommand(instructionsCmd)
 }
 
-func runInstructions(cmd *cobra.Command, args []string) {
+func runInstructions(cmd *cobra.Command, args []string) error {
 	fmt.Printf("%s\n", mcp.PromptInstructions)
+	return nil
 }

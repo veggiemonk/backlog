@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
@@ -12,7 +11,6 @@ import (
 	"github.com/olekukonko/tablewriter/tw"
 	"github.com/spf13/cobra"
 	"github.com/veggiemonk/backlog/internal/core"
-	"github.com/veggiemonk/backlog/internal/logging"
 )
 
 var listCmd = &cobra.Command{
@@ -67,7 +65,7 @@ backlog list --limit 5 --offset 10              # List 5 tasks starting from 11t
 backlog list --status "todo" --limit 3          # List first 3 "todo" tasks
 backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
 	`,
-	Run: runList,
+	RunE: runList,
 }
 
 var (
@@ -120,7 +118,7 @@ func setListFlags(cmd *cobra.Command) {
 	cmd.Flags().IntVar(&offsetFlag, "offset", 0, "Number of tasks to skip from the beginning")
 }
 
-func runList(cmd *cobra.Command, args []string) {
+func runList(cmd *cobra.Command, args []string) error {
 	sortFieldsSlice := parseSortFields(sortFields)
 	
 	var limit, offset *int
@@ -157,16 +155,14 @@ func runList(cmd *cobra.Command, args []string) {
 	totalParams.Offset = nil
 	allTasks, err := store.List(totalParams)
 	if err != nil {
-		logging.Error("failed to list tasks", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to list tasks: %w", err)
 	}
 	totalCount := len(allTasks)
 	
 	// Get paginated results
 	tasks, err := store.List(params)
 	if err != nil {
-		logging.Error("failed to list tasks", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to list tasks: %w", err)
 	}
 	
 	// Create pagination info
@@ -192,9 +188,9 @@ func runList(cmd *cobra.Command, args []string) {
 	}
 	
 	if err := renderTaskResultsWithPagination(cmd.OutOrStdout(), tasks, jsonOutput, markdownOutput, hideExtraFields, "", paginationInfo); err != nil {
-		logging.Error("failed to render task results", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to render task results: %w", err)
 	}
+	return nil
 }
 
 // parseSortFields parses a comma-separated string of sort fields

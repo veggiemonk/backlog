@@ -3,7 +3,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"os"
+	"io"
+	"log/slog"
 
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
@@ -41,29 +42,26 @@ Examples:
   backlog doctor --fix              # Detect and automatically fix conflicts
   backlog doctor --fix --dry-run    # Show what would be fixed without making changes
   backlog doctor --fix --strategy=auto    # Use auto-renumbering strategy`,
-	Run: runDoctor,
+	RunE: runDoctor,
 }
 
-
-func runDoctor(cmd *cobra.Command, args []string) {
-	if doctorFix {
-		// If --fix flag is provided, run resolve instead of detect
-		resolveConflicts(cmd, args)
-		return
-	}
-	// Otherwise, just detect conflicts
-	detectConflicts(cmd, args)
-}
-
-func detectConflicts(cmd *cobra.Command, _ []string) {
-	// Get tasks directory using the same approach as other commands
+func runDoctor(cmd *cobra.Command, args []string) error {
 	fs := afero.NewOsFs()
 	tasksDir := viper.GetString("folder")
+	if doctorFix {
+		// If --fix flag is provided, run resolve instead of detect
+		return resolveConflicts(fs, tasksDir)
+	}
+	// Otherwise, just detect conflicts
+	return detectConflicts(cmd.OutOrStdout(), fs, tasksDir)
+}
+
+func detectConflicts(w io.Writer, fs afero.Fs, tasksDir string) error {
+	// Get tasks directory using the same approach as other commands
 	var err error
 	tasksDir, err = paths.ResolveTasksDir(fs, tasksDir)
 	if err != nil {
-		logging.Error("failed to resolve tasks directory", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to resolve tasks directory: %w", err)
 	}
 
 	detector := core.NewConflictDetector(fs, tasksDir)
@@ -71,8 +69,7 @@ func detectConflicts(cmd *cobra.Command, _ []string) {
 	// Detect conflicts
 	conflicts, err := detector.DetectConflicts()
 	if err != nil {
-		logging.Error("failed to detect conflicts", "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to detect conflicts: %w", err)
 	}
 
 	if doctorJSON {
@@ -80,60 +77,51 @@ func detectConflicts(cmd *cobra.Command, _ []string) {
 			"conflicts": conflicts,
 			"summary":   core.SummarizeConflicts(conflicts),
 		}
-		if err := json.NewEncoder(cmd.OutOrStdout()).Encode(output); err != nil {
-			logging.Error("failed to encode JSON", "error", err)
-			os.Exit(1)
+		if err := json.NewEncoder(w).Encode(output); err != nil {
+			return fmt.Errorf("failed to encode JSON: %w", err)
 		}
-		return
+		return nil
 	}
 
 	// Text output
 	summary := core.SummarizeConflicts(conflicts)
 	if summary.TotalConflicts == 0 {
-		_, _ = fmt.Fprintln(cmd.OutOrStdout(), "✅ No task ID conflicts detected")
-		return
+		logging.Info("no task ID conflicts detected")
+		return nil
 	}
 
-	fmt.Fprintf(cmd.OutOrStdout(), "⚠️  Found %d task ID conflicts:\n\n", summary.TotalConflicts)
+	logging.Warn("conflicts", "found", summary.TotalConflicts)
 
 	if summary.DuplicateIDs > 0 {
-		fmt.Fprintf(cmd.OutOrStdout(), "📋 Duplicate IDs: %d\n", summary.DuplicateIDs)
+		conflicts := map[string][]string{}
 		for _, conflict := range summary.ConflictsByType[core.ConflictTypeDuplicateID] {
-			fmt.Fprintf(cmd.OutOrStdout(), "  - %s appears in: %v\n", conflict.ConflictID.String(), conflict.Files)
+			conflicts[conflict.ConflictID.String()] = conflict.Files
 		}
-		fmt.Fprintln(cmd.OutOrStdout())
+		logging.Warn("duplicate IDs", slog.Int("found", summary.DuplicateIDs), slog.Any("details", conflicts))
 	}
 
 	if summary.OrphanedChildren > 0 {
-		fmt.Fprintf(cmd.OutOrStdout(), "👤 Orphaned Children: %d\n", summary.OrphanedChildren)
+		conflicts := []string{}
 		for _, conflict := range summary.ConflictsByType[core.ConflictTypeOrphanedChild] {
-			fmt.Fprintf(cmd.OutOrStdout(), "  - %s references non-existent parent\n", conflict.ConflictID.String())
+			conflicts = append(conflicts, fmt.Sprintf("- %s references non-existent parent\n", conflict.ConflictID.String()))
 		}
-		fmt.Fprintln(cmd.OutOrStdout())
+		logging.Warn("orphaned children", slog.Int("found", summary.OrphanedChildren), slog.Any("references", conflicts))
 	}
 
 	if summary.InvalidHierarchy > 0 {
-		fmt.Fprintf(cmd.OutOrStdout(), "🔗 Invalid Hierarchy: %d\n", summary.InvalidHierarchy)
+		conflicts := []string{}
 		for _, conflict := range summary.ConflictsByType[core.ConflictTypeInvalidHierarchy] {
-			fmt.Fprintf(cmd.OutOrStdout(), "  - %s has incorrect parent structure\n", conflict.ConflictID.String())
+			conflicts = append(conflicts, fmt.Sprintf("- %s has incorrect parent structure\n", conflict.ConflictID.String()))
 		}
-		fmt.Fprintln(cmd.OutOrStdout())
+		logging.Warn("invalid hierarchy", slog.Int("found", summary.InvalidHierarchy), slog.Any("references", conflicts))
 	}
 
-	fmt.Fprintln(cmd.OutOrStdout(), "Run 'backlog doctor --fix' to fix these conflicts.")
+	slog.Info("Run 'backlog doctor --fix' to fix these conflicts.")
+	return nil
 }
 
-func resolveConflicts(cmd *cobra.Command, args []string) {
-	if err := resolveConflictsImpl(cmd, args); err != nil {
-		logging.Error("failed to resolve conflicts", "error", err)
-		os.Exit(1)
-	}
-}
-
-func resolveConflictsImpl(cmd *cobra.Command, _ []string) error {
+func resolveConflicts(fs afero.Fs, tasksDir string) error {
 	// Get tasks directory using the same approach as other commands
-	fs := afero.NewOsFs()
-	tasksDir := viper.GetString("folder")
 	var err error
 	tasksDir, err = paths.ResolveTasksDir(fs, tasksDir)
 	if err != nil {
@@ -149,7 +137,7 @@ func resolveConflictsImpl(cmd *cobra.Command, _ []string) error {
 	}
 
 	if len(conflicts) == 0 {
-		fmt.Fprintln(cmd.OutOrStdout(), "✅ No conflicts to resolve")
+		slog.Info("no conflicts to resolve")
 		return nil
 	}
 
@@ -176,47 +164,44 @@ func resolveConflictsImpl(cmd *cobra.Command, _ []string) error {
 		return fmt.Errorf("failed to create resolution plan: %w", err)
 	}
 
-	fmt.Fprintf(cmd.OutOrStdout(), "📋 Resolution Plan (%s strategy):\n", doctorStrategy)
-	fmt.Fprintf(cmd.OutOrStdout(), "   %s\n\n", plan.Summary)
-
+	logging.Info("resolution plan", "strategy", doctorStrategy, "plan", plan.Summary)
 	if len(plan.Actions) == 0 {
-		fmt.Fprintln(cmd.OutOrStdout(), "No actions required")
+		logging.Info("no actions required")
 		return nil
 	}
 
 	// Show planned actions
 	for i, action := range plan.Actions {
-		fmt.Fprintf(cmd.OutOrStdout(), "%d. %s\n", i+1, action.Description)
+		logging.Info(fmt.Sprintf("%d. %s\n", i+1, action.Description))
 		if action.Type == "manual" {
-			fmt.Fprintln(cmd.OutOrStdout(), "   Type: Manual intervention required")
+			logging.Info("type: manual intervention required")
 		} else {
-			fmt.Fprintf(cmd.OutOrStdout(), "   Type: %s\n", action.Type)
+			logging.Info(fmt.Sprintf("   Type: %s\n", action.Type))
 			if !action.OriginalID.IsZero() {
-				fmt.Fprintf(cmd.OutOrStdout(), "   Original ID: %s\n", action.OriginalID.String())
+				logging.Info(fmt.Sprintf("   Original ID: %s\n", action.OriginalID.String()))
 			}
 			if !action.NewID.IsZero() {
-				fmt.Fprintf(cmd.OutOrStdout(), "   New ID: %s\n", action.NewID.String())
+				logging.Info(fmt.Sprintf("   New ID: %s\n", action.NewID.String()))
 			}
 			if action.FilePath != "" {
-				fmt.Fprintf(cmd.OutOrStdout(), "   File: %s\n", action.FilePath)
+				logging.Info(fmt.Sprintf("   File: %s\n", action.FilePath))
 			}
 		}
-		fmt.Fprintln(cmd.OutOrStdout())
 	}
 
 	if doctorDryRun {
-		fmt.Fprintln(cmd.OutOrStdout(), "🔍 DRY RUN - No changes were made")
+		logging.Info("DRY RUN - No changes were made")
 		return nil
 	}
 
 	if strategy == core.ResolutionStrategyManual {
-		fmt.Fprintln(cmd.OutOrStdout(), "⚠️  Manual resolution required - no automatic actions taken")
-		fmt.Fprintln(cmd.OutOrStdout(), "Please review the conflicts above and resolve them manually")
+		logging.Warn("manual resolution required - no automatic actions taken")
+		logging.Warn("please review the conflicts above and resolve them manually")
 		return nil
 	}
 
 	// Execute the plan with reference updates
-	fmt.Fprintf(cmd.OutOrStdout(), "🔧 Executing resolution plan...\n\n")
+	logging.Info("executing resolution plan")
 	results, err := resolver.ExecuteResolutionPlanWithReferences(plan, false)
 	if err != nil {
 		return fmt.Errorf("failed to execute resolution plan: %w", err)
@@ -224,10 +209,10 @@ func resolveConflictsImpl(cmd *cobra.Command, _ []string) error {
 
 	// Show results
 	for _, result := range results {
-		fmt.Fprintf(cmd.OutOrStdout(), "✅ %s\n", result)
+		logging.Info(result)
 	}
 
-	fmt.Fprintf(cmd.OutOrStdout(), "\n🎉 Successfully resolved %d conflicts\n", len(results))
+	logging.Info("success", slog.Int("conflicts resolved", len(results)))
 	return nil
 }
 

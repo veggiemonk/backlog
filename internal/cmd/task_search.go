@@ -2,11 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/veggiemonk/backlog/internal/core"
-	"github.com/veggiemonk/backlog/internal/logging"
 )
 
 var searchCmd = &cobra.Command{
@@ -44,7 +42,7 @@ backlog search "api" --limit 5                  # Show first 5 search results
 backlog search "bug" --limit 3 --offset 5       # Show 3 results starting from 6th match
 backlog search "feature" --status "todo" --limit 10  # Show first 10 "todo" feature results
 	`,
-	Run: runSearch,
+	RunE: runSearch,
 }
 
 var (
@@ -95,7 +93,7 @@ func setSearchFlags(cmd *cobra.Command) {
 	cmd.Flags().IntVar(&searchOffsetFlag, "offset", 0, "Number of tasks to skip from the beginning")
 }
 
-func runSearch(cmd *cobra.Command, args []string) {
+func runSearch(cmd *cobra.Command, args []string) error {
 	query := args[0]
 	sortFieldsSlice := parseSortFields(searchSortFields)
 	
@@ -131,16 +129,14 @@ func runSearch(cmd *cobra.Command, args []string) {
 	totalParams.Offset = nil
 	allTasks, err := store.Search(query, totalParams)
 	if err != nil {
-		logging.Error("failed to search tasks", "query", query, "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to search tasks for query %q: %w", query, err)
 	}
 	totalCount := len(allTasks)
 	
 	// Get paginated search results
 	tasks, err := store.Search(query, params)
 	if err != nil {
-		logging.Error("failed to search tasks", "query", query, "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to search tasks for query %q: %w", query, err)
 	}
 	
 	messagePrefix := ""
@@ -181,7 +177,7 @@ func runSearch(cmd *cobra.Command, args []string) {
 	}
 
 	if err := renderTaskResultsWithPagination(cmd.OutOrStdout(), tasks, searchJSONOutput, searchMarkdownOutput, searchHideExtraFields, messagePrefix, paginationInfo); err != nil {
-		logging.Error("failed to render task results", "query", query, "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to render task results for query %q: %w", query, err)
 	}
+	return nil
 }

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -99,7 +98,7 @@ backlog edit 42 --dep "T15"
 backlog edit 42 --dep "T15" --dep "T18" --dep "T20"
 # This makes task 42 dependent on tasks T15, T18, and T20.
 	`,
-	Run: runEdit,
+	RunE: runEdit,
 }
 
 var (
@@ -147,7 +146,7 @@ func setEditFlags(cmd *cobra.Command) {
 	cmd.Flags().IntSliceVar(&removeAC, "remove-ac", nil, "Remove an acceptance criterion by its index")
 }
 
-func runEdit(cmd *cobra.Command, args []string) {
+func runEdit(cmd *cobra.Command, args []string) error {
 	params := core.EditTaskParams{ID: args[0]}
 
 	// Set optional pointers for fields that were changed
@@ -203,16 +202,14 @@ func runEdit(cmd *cobra.Command, args []string) {
 	// current task
 	task, err := store.Get(params.ID)
 	if err != nil {
-		logging.Error("failed to retrieve task", "task_id", params.ID, "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to retrieve task %q: %w", params.ID, err)
 	}
 	// save the old path in case of a rename
 	oldFilePath := store.Path(task)
 
 	updatedTask, err := store.Update(task, params)
 	if err != nil {
-		logging.Error("failed to update task", "task_id", params.ID, "error", err)
-		os.Exit(1)
+		return fmt.Errorf("failed to update task %q: %w", params.ID, err)
 	}
 
 	defer func() {
@@ -221,7 +218,7 @@ func runEdit(cmd *cobra.Command, args []string) {
 	}()
 
 	if !viper.GetBool(configAutoCommit) {
-		return // autocommit is disabled
+		return nil // autocommit is disabled
 	}
 
 	// paths to commit
@@ -234,4 +231,5 @@ func runEdit(cmd *cobra.Command, args []string) {
 	if err := commit.Add(currentFilePath, oldFilePath, commitMsg); err != nil {
 		logging.Warn("auto-commit failed", "task_id", updatedTask.ID, "error", err)
 	}
+	return nil
 }

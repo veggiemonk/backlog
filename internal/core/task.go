@@ -126,10 +126,10 @@ type AcceptanceCriterion struct {
 
 // HistoryEntry represents a single entry in the task's history.
 type HistoryEntry struct {
-	Timestamp time.Time              `yaml:"timestamp" json:"timestamp"`
-	Change    string                 `yaml:"change" json:"change"`
-	Type      string                 `yaml:"type,omitempty" json:"type,omitempty"`         // Type of change: "field_update", "id_change", "conflict_resolution", etc.
-	Metadata  map[string]interface{} `yaml:"metadata,omitempty" json:"metadata,omitempty"` // Additional metadata about the change
+	Timestamp time.Time      `yaml:"timestamp" json:"timestamp"`
+	Change    string         `yaml:"change" json:"change"`
+	Type      string         `yaml:"type,omitempty" json:"type,omitempty"`         // Type of change: "field_update", "id_change", "conflict_resolution", etc.
+	Metadata  map[string]any `yaml:"metadata,omitempty" json:"metadata,omitempty"` // Additional metadata about the change
 }
 
 // RecordChange adds a history entry to the task for the given change
@@ -143,9 +143,9 @@ func RecordChange(task *Task, change string) {
 }
 
 // RecordIDChange adds a specialized history entry for ID changes during conflict resolution
-func RecordIDChange(task *Task, oldID, newID TaskID, reason string, metadata map[string]interface{}) {
+func RecordIDChange(task *Task, oldID, newID TaskID, reason string, metadata map[string]any) {
 	if metadata == nil {
-		metadata = make(map[string]interface{})
+		metadata = make(map[string]any)
 	}
 
 	metadata["old_id"] = oldID.String()
@@ -162,9 +162,9 @@ func RecordIDChange(task *Task, oldID, newID TaskID, reason string, metadata map
 }
 
 // RecordConflictResolution adds a history entry for conflict resolution actions
-func RecordConflictResolution(task *Task, action, description string, metadata map[string]interface{}) {
+func RecordConflictResolution(task *Task, action, description string, metadata map[string]any) {
 	if metadata == nil {
-		metadata = make(map[string]interface{})
+		metadata = make(map[string]any)
 	}
 
 	metadata["action"] = action
@@ -181,7 +181,7 @@ func RecordConflictResolution(task *Task, action, description string, metadata m
 
 // RecordParentChange adds a history entry for parent reference changes
 func RecordParentChange(task *Task, oldParent, newParent TaskID, reason string) {
-	metadata := map[string]interface{}{
+	metadata := map[string]any{
 		"old_parent": oldParent.String(),
 		"new_parent": newParent.String(),
 		"reason":     reason,
