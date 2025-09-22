@@ -13,12 +13,13 @@ func (s *Server) registerTaskView() error {
 	if err != nil {
 		return err
 	}
+
 	tool := &mcp.Tool{
 		Name:         "task_view",
 		Title:        "View a task",
 		Description:  "View a single task by its ID. Returns the task.",
 		InputSchema:  inputSchema,
-		OutputSchema: wrappedTaskJSONSchema(),
+		OutputSchema: taskJSONSchema(),
 	}
 
 	mcp.AddTool(s.mcpServer, tool, s.handler.view)
@@ -34,7 +35,7 @@ func (h *handler) view(ctx context.Context, req *mcp.CallToolRequest, params Vie
 	if err != nil {
 		return nil, nil, fmt.Errorf("view: %v", err)
 	}
-	// Needs to be object, cause problem with pointer
+	// Needs to be object wrapped in struct as expected by wrappedTaskJSONSchema
 	res := &mcp.CallToolResult{StructuredContent: task}
 	return res, nil, nil
 }

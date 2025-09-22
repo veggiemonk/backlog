@@ -23,7 +23,7 @@ Returns the updated task.`
 		Name:         "task_edit",
 		Description:  description,
 		InputSchema:  inputSchema,
-		OutputSchema: wrappedTaskJSONSchema(),
+		OutputSchema: taskJSONSchema(),
 	}
 
 	mcp.AddTool(s.mcpServer, editTool, s.handler.edit)

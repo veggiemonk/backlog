@@ -19,10 +19,10 @@ func (s *Server) registerTaskList() error {
 	Use 'limit' and 'offset' parameters for pagination.
 `
 	tool := &mcp.Tool{
-		Name:        "task_list",
-		Title:       "List tasks",
-		Description: description,
-		InputSchema: inputSchema,
+		Name:         "task_list",
+		Title:        "List tasks",
+		Description:  description,
+		InputSchema:  inputSchema,
 		OutputSchema: listResultJSONSchema(),
 	}
 	mcp.AddTool(s.mcpServer, tool, s.handler.list)
@@ -48,12 +48,12 @@ func (h *handler) list(ctx context.Context, req *mcp.CallToolRequest, params cor
 	if err != nil {
 		return nil, nil, fmt.Errorf("list: %v", err)
 	}
-	
+
 	// Create result with pagination info
 	result := &core.ListResult{
 		Tasks: tasks,
 	}
-	
+
 	// Add pagination info if pagination was requested
 	if params.Limit != nil || params.Offset != nil {
 		offsetVal := 0
@@ -65,13 +65,13 @@ func (h *handler) list(ctx context.Context, req *mcp.CallToolRequest, params cor
 			limitVal = *params.Limit
 		}
 		hasMore := (offsetVal + len(tasks)) < totalCount
-		
+
 		result.Pagination = &core.PaginationInfo{
-			TotalResults:    totalCount,
+			TotalResults:     totalCount,
 			DisplayedResults: len(tasks),
-			Offset:          offsetVal,
-			Limit:           limitVal,
-			HasMore:         hasMore,
+			Offset:           offsetVal,
+			Limit:            limitVal,
+			HasMore:          hasMore,
 		}
 	}
 

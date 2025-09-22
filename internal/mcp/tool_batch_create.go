@@ -3,7 +3,6 @@ package mcp
 import (
 	"context"
 	"fmt"
-	"reflect"
 
 	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -20,22 +19,11 @@ func (s *Server) registerTaskBatchCreate() error {
 The schema is a list of "task_create" input parameters.
 The task ID of each task is automatically generated. Returns the list of created task.
 `
-	outputSchema, err := jsonschema.For[[]core.Task](&jsonschema.ForOptions{
-		TypeSchemas: map[reflect.Type]*jsonschema.Schema{
-			reflect.TypeFor[core.TaskID](): {OneOf: []*jsonschema.Schema{
-				{Type: "string"}, {Type: "null"},
-			}},
-		},
-	})
-	if err != nil {
-		return err
-	}
 	tool := &mcp.Tool{
 		Name:         "task_batch_create",
 		Description:  description,
 		InputSchema:  inputSchema,
-		OutputSchema: outputSchema,
-		// OutputSchema: wrappedTasksJSONSchema(),
+		OutputSchema: wrappedTasksJSONSchema(),
 	}
 	mcp.AddTool(s.mcpServer, tool, s.handler.batchCreate)
 	return nil
@@ -60,7 +48,7 @@ func (h *handler) batchCreate(ctx context.Context, req *mcp.CallToolRequest, lis
 			logging.Warn("auto-commit failed for task creation", "task_id", task.ID, "error", err)
 		}
 	}
-	// Needs to be object, cannot be array
-	res := &mcp.CallToolResult{StructuredContent: tasks}
+	// Needs to be object, cannot be array - wrap in struct as expected by wrappedTasksJSONSchema
+	res := &mcp.CallToolResult{StructuredContent: struct{ Tasks []core.Task }{Tasks: tasks}}
 	return res, nil, nil
 }

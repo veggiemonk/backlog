@@ -46,7 +46,7 @@ type Task struct {
 	// --- Markdown Body Fields ---
 
 	Description         string                `json:"description"`
-	AcceptanceCriteria  []AcceptanceCriterion `json:"acceptance_criteria"`
+	AcceptanceCriteria  []AcceptanceCriterion `json:"acceptance_criteria,omitempty"`
 	ImplementationPlan  string                `json:"implementation_plan"`
 	ImplementationNotes string                `json:"implementation_notes"`
 }

@@ -2,7 +2,6 @@ package mcp
 
 import (
 	"encoding/json"
-	"reflect"
 	"testing"
 
 	"github.com/google/jsonschema-go/jsonschema"
@@ -45,17 +44,8 @@ func TestOutputSchemaCompliance(t *testing.T) {
 		is.True(result.StructuredContent != nil)
 
 		// Validate the StructuredContent against the expected schema
-		// expectedSchema := wrappedTaskJSONSchema()
-		schema, err := jsonschema.For[core.Task](&jsonschema.ForOptions{
-			TypeSchemas: map[reflect.Type]*jsonschema.Schema{
-				reflect.TypeFor[core.TaskID](): {
-					Type: "string",
-				},
-			},
-		})
-		is.NoErr(err)
-
-		validateStructuredContent(t, schema, result.StructuredContent)
+		expectedSchema := taskJSONSchema()
+		validateStructuredContent(t, expectedSchema, result.StructuredContent)
 	})
 
 	t.Run("task_create schema compliance", func(t *testing.T) {
@@ -70,7 +60,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 		is.True(result.StructuredContent != nil)
 
 		// Validate the StructuredContent against the expected schema
-		expectedSchema := wrappedTaskJSONSchema()
+		expectedSchema := taskJSONSchema()
 		validateStructuredContent(t, expectedSchema, result.StructuredContent)
 	})
 
@@ -85,7 +75,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 		is.True(result.StructuredContent != nil)
 
 		// Validate the StructuredContent against the expected schema
-		expectedSchema := wrappedTaskJSONSchema()
+		expectedSchema := taskJSONSchema()
 		validateStructuredContent(t, expectedSchema, result.StructuredContent)
 	})
 
@@ -101,7 +91,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 		}
 
 		// This should fail validation
-		expectedSchema := wrappedTaskJSONSchema()
+		expectedSchema := taskJSONSchema()
 
 		// Marshal and unmarshal to ensure we have proper JSON-compatible data
 		jsonData, err := json.Marshal(invalidData)

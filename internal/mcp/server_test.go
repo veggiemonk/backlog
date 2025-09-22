@@ -55,10 +55,10 @@ func TestMCPHandlers(t *testing.T) {
 			is.NoErr(err)
 			is.True(result != nil) // must have result
 
-			task, ok := result.StructuredContent.(struct{ Task *core.Task })
+			task, ok := result.StructuredContent.(core.Task)
 			is.True(ok)
-			is.Equal(task.Task.Title, "Test Task")
-			is.Equal(task.Task.Priority.String(), "high")
+			is.Equal(task.Title, "Test Task")
+			is.Equal(task.Priority.String(), "high")
 		})
 	})
 
@@ -100,18 +100,18 @@ func TestMCPHandlers(t *testing.T) {
 			createResult, _, err := handler.create(ctx, req, createParams)
 			is.NoErr(err)
 			is.True(createResult != nil)
-			createdTask, ok := createResult.StructuredContent.(struct{ Task *core.Task })
+			createdTask, ok := createResult.StructuredContent.(core.Task)
 			is.True(ok)
 			// Now view the task
-			viewParams := ViewParams{ID: createdTask.Task.ID.String()}
+			viewParams := ViewParams{ID: createdTask.ID.String()}
 			viewResult, _, err := handler.view(ctx, req, viewParams)
 			is.NoErr(err)
 			// Compare created task with viewed task
-			viewTask, ok := viewResult.StructuredContent.(struct{ Task *core.Task })
+			viewTask, ok := viewResult.StructuredContent.(core.Task)
 			is.True(ok)
-			is.True(viewTask.Task != nil)
-			is.Equal(viewTask.Task.ID.String(), createdTask.Task.ID.String())
-			is.Equal(viewTask.Task.Title, "View Test Task")
+			// viewTask.Task is now a value, not a pointer, so no nil check needed
+			is.Equal(viewTask.ID.String(), createdTask.ID.String())
+			is.Equal(viewTask.Title, "View Test Task")
 		})
 	})
 
@@ -159,35 +159,35 @@ func TestMCPHandlers(t *testing.T) {
 
 			// Parse the created task to get its ID
 
-			createdTask, ok := createResult.StructuredContent.(struct{ Task *core.Task })
+			createdTask, ok := createResult.StructuredContent.(core.Task)
 			is.True(ok)
-			is.True(createdTask.Task != nil)
+			// createdTask.Task is now a value, not a pointer, so no nil check needed
 
 			// Now edit the task
 			newTitle := "Updated Title"
 			editParams := core.EditTaskParams{
-				ID:       createdTask.Task.ID.String(),
+				ID:       createdTask.ID.String(),
 				NewTitle: &newTitle,
 			}
 			result, _, err := handler.edit(ctx, req, editParams)
 			is.NoErr(err)
 			is.True(result != nil)
-			task, ok := result.StructuredContent.(struct{ Task *core.Task })
+			task, ok := result.StructuredContent.(core.Task)
 			is.True(ok)
-			is.True(task.Task != nil)
+			// task.Task is now a value, not a pointer, so no nil check needed
 
-			is.Equal(task.Task.Title, "Updated Title")
+			is.Equal(task.Title, "Updated Title")
 
 			// Verify the task was updated
-			viewParams := ViewParams{ID: task.Task.ID.String()}
+			viewParams := ViewParams{ID: task.ID.String()}
 			result, _, err = handler.view(ctx, req, viewParams)
 			is.NoErr(err)
 			is.True(result != nil)
-			task, ok = result.StructuredContent.(struct{ Task *core.Task })
+			task, ok = result.StructuredContent.(core.Task)
 			is.True(ok)
-			is.True(task.Task != nil)
+			// task.Task is now a value, not a pointer, so no nil check needed
 
-			is.Equal(task.Task.Title, "Updated Title")
+			is.Equal(task.Title, "Updated Title")
 		})
 	})
 
@@ -205,12 +205,12 @@ func TestMCPHandlers(t *testing.T) {
 			is.NoErr(err)
 
 			// Parse the created task to get its ID
-			createdTask, ok := createResult.StructuredContent.(struct{ Task *core.Task })
+			createdTask, ok := createResult.StructuredContent.(core.Task)
 			is.True(ok)
-			is.True(createdTask.Task != nil)
+			// createdTask.Task is now a value, not a pointer, so no nil check needed
 
 			// Archive the task
-			archiveParams := ArchiveParams{ID: createdTask.Task.ID.String()}
+			archiveParams := ArchiveParams{ID: createdTask.ID.String()}
 			result, _, err := handler.archive(ctx, req, archiveParams)
 			is.NoErr(err)
 			is.True(result != nil)
@@ -263,7 +263,7 @@ func TestMCPHandlers(t *testing.T) {
 			is.True(result != nil)
 
 			// Verify the response content
-			st, ok := result.StructuredContent.(struct{ Tasks []*core.Task })
+			st, ok := result.StructuredContent.(struct{ Tasks []core.Task })
 			is.True(ok)
 			is.Equal(len(st.Tasks), 3)
 
@@ -289,7 +289,7 @@ func TestMCPHandlers(t *testing.T) {
 			is.True(result != nil)
 
 			// Verify empty result
-			st, ok := result.StructuredContent.(struct{ Tasks []*core.Task })
+			st, ok := result.StructuredContent.(struct{ Tasks []core.Task })
 			is.True(ok)
 			is.Equal(len(st.Tasks), 0)
 		})
