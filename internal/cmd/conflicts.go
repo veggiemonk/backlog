@@ -45,6 +45,22 @@ Examples:
 	RunE: runDoctor,
 }
 
+func setDoctorFlags(_ *cobra.Command) {
+	// Doctor command flags
+	doctorCmd.Flags().BoolVarP(&doctorJSON, "json", "j", false, "Output in JSON format")
+	doctorCmd.Flags().BoolVar(&doctorFix, "fix", false, "Automatically fix detected conflicts")
+	doctorCmd.Flags().StringVar(&doctorStrategy, "strategy", "chronological", "Resolution strategy when using --fix (chronological|auto|manual)")
+	doctorCmd.Flags().BoolVar(&doctorDryRun, "dry-run", false, "Show what would be changed without making changes (use with --fix)")
+}
+
+func init() {
+	// Set flags
+	setDoctorFlags(doctorCmd)
+
+	// Add to root
+	rootCmd.AddCommand(doctorCmd)
+}
+
 func runDoctor(cmd *cobra.Command, args []string) error {
 	fs := afero.NewOsFs()
 	tasksDir := viper.GetString("folder")
@@ -214,20 +230,4 @@ func resolveConflicts(fs afero.Fs, tasksDir string) error {
 
 	logging.Info("success", slog.Int("conflicts resolved", len(results)))
 	return nil
-}
-
-func setDoctorFlags(_ *cobra.Command) {
-	// Doctor command flags
-	doctorCmd.Flags().BoolVarP(&doctorJSON, "json", "j", false, "Output in JSON format")
-	doctorCmd.Flags().BoolVar(&doctorFix, "fix", false, "Automatically fix detected conflicts")
-	doctorCmd.Flags().StringVar(&doctorStrategy, "strategy", "chronological", "Resolution strategy when using --fix (chronological|auto|manual)")
-	doctorCmd.Flags().BoolVar(&doctorDryRun, "dry-run", false, "Show what would be changed without making changes (use with --fix)")
-}
-
-func init() {
-	// Set flags
-	setDoctorFlags(doctorCmd)
-
-	// Add to root
-	rootCmd.AddCommand(doctorCmd)
 }
