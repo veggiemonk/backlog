@@ -116,7 +116,7 @@ func detectConflicts(w io.Writer, fs afero.Fs, tasksDir string) error {
 		logging.Warn("invalid hierarchy", slog.Int("found", summary.InvalidHierarchy), slog.Any("references", conflicts))
 	}
 
-	slog.Info("Run 'backlog doctor --fix' to fix these conflicts.")
+	logging.Info("Run 'backlog doctor --fix' to fix these conflicts.")
 	return nil
 }
 
@@ -137,7 +137,7 @@ func resolveConflicts(fs afero.Fs, tasksDir string) error {
 	}
 
 	if len(conflicts) == 0 {
-		slog.Info("no conflicts to resolve")
+		logging.Info("no conflicts to resolve")
 		return nil
 	}
 
