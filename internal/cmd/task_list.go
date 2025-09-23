@@ -11,6 +11,7 @@ import (
 	"github.com/olekukonko/tablewriter/tw"
 	"github.com/spf13/cobra"
 	"github.com/veggiemonk/backlog/internal/core"
+	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
 var listCmd = &cobra.Command{
@@ -30,6 +31,9 @@ backlog list --unassigned                       # List tasks that have no one as
 backlog list --labels "bug"                     # List tasks containing the label "bug"
 backlog list --labels "bug,feature"             # List tasks containing either "bug" or "feature" labels
 backlog list --priority "high"                  # List all high priority tasks
+
+# Search
+backlog list --query "refactor"                 # Search for tasks with the word "refactor" in them
 
 # dependency filters
 backlog list --has-dependency                   # List tasks that have at least one dependency
@@ -74,6 +78,7 @@ var (
 	filterStatus     []string
 	filterAssigned   []string
 	filterLabels     []string
+	query            string
 	filterUnassigned bool
 	hasDependency    bool
 	dependedon       bool
@@ -102,6 +107,7 @@ func setListFlags(cmd *cobra.Command) {
 	cmd.Flags().StringSliceVarP(&filterStatus, "status", "s", nil, "Filter tasks by status")
 	cmd.Flags().StringSliceVarP(&filterAssigned, "assigned", "a", nil, "Filter tasks by assigned names")
 	cmd.Flags().StringSliceVarP(&filterLabels, "labels", "l", nil, "Filter tasks by labels")
+	cmd.Flags().StringVarP(&query, "query", "q", "", "Search query to filter tasks by")
 	cmd.Flags().BoolVarP(&filterUnassigned, "unassigned", "u", false, "Filter tasks that have no one assigned")
 	cmd.Flags().BoolVarP(&hasDependency, "has-dependency", "c", false, "Filter tasks that have dependencies")
 	cmd.Flags().BoolVarP(&dependedon, "depended-on", "d", false, "Filter tasks that are depended on by other tasks")
@@ -135,6 +141,7 @@ func runList(cmd *cobra.Command, args []string) error {
 		Status:        filterStatus,
 		Assigned:      filterAssigned,
 		Labels:        filterLabels,
+		Query:         &query,
 		Unassigned:    filterUnassigned,
 		HasDependency: hasDependency,
 		DependedOn:    dependedon,
@@ -144,7 +151,7 @@ func runList(cmd *cobra.Command, args []string) error {
 		Offset:        offset,
 	}
 
-	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
+	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)
 
 	listResult, err := store.List(params)
 	if err != nil {

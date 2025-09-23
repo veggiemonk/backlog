@@ -38,7 +38,7 @@ backlog mcp                    # Start the MCP server using stdio transport
 }
 
 func runMCPServer(cmd *cobra.Command, args []string) error {
-	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
+	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)
 	server, err := mcpserver.NewServer(store, viper.GetBool(configAutoCommit))
 	if err != nil {
 		return fmt.Errorf("create MCP server: %v", err)

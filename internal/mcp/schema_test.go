@@ -148,21 +148,6 @@ func TestOutputSchemaCompliance(t *testing.T) {
 		validateStructuredContent(t, expectedSchema, result.StructuredContent)
 	})
 
-	t.Run("task_search schema compliance", func(t *testing.T) {
-		// Call the tool
-		result, _, err := server.handler.search(t.Context(), &mcp.CallToolRequest{}, SearchParams{
-			Query: "test",
-		})
-		is.NoErr(err)
-		is.True(result != nil)
-
-		// Only validate if we have StructuredContent (search can return empty results with just Content)
-		if result.StructuredContent != nil {
-			expectedSchema := listResultJSONSchema()
-			validateStructuredContent(t, expectedSchema, result.StructuredContent)
-		}
-	})
-
 	t.Run("task_batch_create schema compliance", func(t *testing.T) {
 		// Call the tool
 		result, _, err := server.handler.batchCreate(t.Context(), &mcp.CallToolRequest{}, ListCreateParams{

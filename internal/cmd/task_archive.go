@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/logging"
+	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
 var archiveCmd = &cobra.Command{
@@ -22,7 +23,7 @@ func init() {
 }
 
 func runArchive(cmd *cobra.Command, args []string) error {
-	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
+	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)
 	task, err := store.Get(args[0])
 	if err != nil {
 		return fmt.Errorf("get task %q: %v", args[0], err)

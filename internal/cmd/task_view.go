@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
 var viewJSON bool
@@ -24,7 +25,7 @@ Examples:
 }
 
 func view(cmd *cobra.Command, args []string) error {
-	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
+	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)
 	t, err := store.Get(args[0])
 	if err != nil {
 		return fmt.Errorf("failed to view task %q: %w", args[0], err)

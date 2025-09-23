@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/afero"
 	"github.com/spf13/cobra"
 	"github.com/veggiemonk/backlog/internal/core"
+	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
 type runFunc func(cmd *cobra.Command, args []string) error
@@ -35,8 +36,6 @@ func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error)
 	switch use {
 	case "list":
 		setListFlags(testCmd)
-	case "search":
-		setSearchFlags(testCmd)
 	case "edit":
 		setEditFlags(testCmd)
 	case "mcp":
@@ -60,7 +59,7 @@ func execute(t *testing.T, c *cobra.Command, args ...string) ([]byte, error) {
 	return bytes.TrimSpace(buf.Bytes()), err
 }
 
-func createTestTasks(t *testing.T, store TaskStore) {
+func createTestTasks(t *testing.T, store mcpserver.TaskStore) {
 	t.Helper()
 
 	base := []string{"First", "Second", "Third", "Fourth", "Fifth"}

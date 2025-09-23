@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
+	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 	"github.com/veggiemonk/backlog/internal/paths"
 )
 
@@ -18,17 +19,7 @@ type contextKey string
 
 const ctxKeyStore = contextKey("store")
 
-type TaskStore interface {
-	Get(id string) (core.Task, error)
-	Create(params core.CreateTaskParams) (core.Task, error)
-	Update(task *core.Task, params core.EditTaskParams) error
-	List(params core.ListTasksParams) (*core.ListResult, error)
-	Search(query string, listParams core.ListTasksParams) (*core.ListResult, error)
-	Path(t core.Task) string
-	Archive(id core.TaskID) (string, error)
-}
-
-var _ TaskStore = (*core.FileTaskStore)(nil)
+var _ mcpserver.TaskStore = (*core.FileTaskStore)(nil)
 
 func init() {
 	cobra.OnInitialize(initConfig)
@@ -96,7 +87,7 @@ func preRun(cmd *cobra.Command, args []string) {
 		logging.Error("tasks directory", "error", err)
 	}
 	logging.Debug("resolve tasks directory", configFolder, tasksDir)
-	var store TaskStore = core.NewFileTaskStore(fs, tasksDir)
+	var store mcpserver.TaskStore = core.NewFileTaskStore(fs, tasksDir)
 	cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
 }
 

@@ -54,14 +54,6 @@ func Add(path, oldPath, message string) error {
 	if err != nil {
 		return fmt.Errorf("could not get worktree: %w", err)
 	}
-	status, err := worktree.Status()
-	if err != nil {
-		return fmt.Errorf("could not get status: %w", err)
-	}
-	if !status.IsClean() {
-		logging.Warn("the repository status is not clean, skip commit")
-		return nil
-	}
 	logging.Info("auto-committing changes", "path", path, "oldPath", oldPath, "message", message)
 	if path == "" {
 		logging.Info("no changes to commit")
@@ -72,6 +64,17 @@ func Add(path, oldPath, message string) error {
 	}
 	if _, err = worktree.Add(path); err != nil {
 		return fmt.Errorf("error staging file %s: %w", path, err)
+	}
+	//TODO: git status doesn't work if there are untracked files
+	//which is always the case because the task file has been created.
+	//
+	status, err := worktree.Status()
+	if err != nil {
+		return fmt.Errorf("could not get status: %w", err)
+	}
+	if !status.IsClean() {
+		logging.Warn("the repository status is not clean, skip commit", "status", status.String())
+		return nil
 	}
 	// used in case of a rename (change of title)
 	if oldPath != "" {

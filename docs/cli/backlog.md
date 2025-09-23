@@ -31,7 +31,6 @@ backlog [flags]
 * [backlog instructions](backlog_instructions.md)	 - instructions for agents to learn to use backlog
 * [backlog list](backlog_list.md)	 - List all tasks
 * [backlog mcp](backlog_mcp.md)	 - Start the MCP server
-* [backlog search](backlog_search.md)	 - Search tasks by content
 * [backlog version](backlog_version.md)	 - Print the version information
 * [backlog view](backlog_view.md)	 - View a task by providing its ID
 

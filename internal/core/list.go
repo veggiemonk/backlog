@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/afero"
 )
 
-
 // ListTasksParams holds the parameters for listing tasks.
 type ListTasksParams struct {
 	Parent        *string  `json:"parent,omitempty" jsonschema:"Filter tasks by a parent task ID."`
@@ -19,6 +18,7 @@ type ListTasksParams struct {
 	Labels        []string `json:"labels,omitempty" jsonschema:"Filter tasks by label."`
 	Sort          []string `json:"sort,omitempty" jsonschema:"Fields to sort by."`
 	Priority      *string  `json:"priority,omitempty" jsonschema:"Filter tasks by priority."`
+	Query         *string  `json:"query,omitempty" jsonschema:"Search query to filter tasks by."`
 	Unassigned    bool     `json:"unassigned,omitempty" jsonschema:"Filter tasks that have no one assigned."`
 	DependedOn    bool     `json:"depended_on,omitempty" jsonschema:"Filter tasks that other tasks depend on."`
 	HasDependency bool     `json:"has_dependency,omitempty" jsonschema:"Filter tasks that have at least one dependency."`
@@ -35,11 +35,11 @@ func (f *FileTaskStore) List(params ListTasksParams) (*ListResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	filteredTasks, err := FilterTasks(tasks, params)
+	filteredTasks, err := filterTasks(tasks, params)
 	if err != nil {
 		return nil, err
 	}
-	SortTasks(filteredTasks, params.Sort, params.Reverse)
+	sortTasks(filteredTasks, params.Sort, params.Reverse)
 	listResult := Paginate(filteredTasks, params.Limit, params.Offset)
 	return listResult, nil
 }
@@ -81,8 +81,8 @@ func (f *FileTaskStore) loadAll() ([]Task, error) {
 	return tasks, nil
 }
 
-// FilterTasks applies filtering logic to a slice of tasks
-func FilterTasks(tasks []Task, params ListTasksParams) ([]Task, error) {
+// filterTasks applies filtering logic to a slice of tasks
+func filterTasks(tasks []Task, params ListTasksParams) ([]Task, error) {
 	var parentID TaskID
 	var statuses []Status
 	var assigned []string
@@ -120,16 +120,30 @@ func FilterTasks(tasks []Task, params ListTasksParams) ([]Task, error) {
 		labels = append(labels, strings.TrimSpace(l)) // clean up to ensure string equality
 	}
 
-	if !isParentSet && !isPrioritySet && len(statuses) == 0 && len(assigned) == 0 && len(labels) == 0 && !params.Unassigned && !params.DependedOn && !params.HasDependency {
-		return tasks, nil
+	var filteredTasks []Task
+	if params.Query != nil && *params.Query != "" {
+		filteredTasks = searchTasks(tasks, *params.Query)
+	} else {
+		filteredTasks = tasks
 	}
 
 	if params.DependedOn {
 		// Replace the tasks with tasks who are depended on.
-		tasks = dependentGraph(tasks)
+		filteredTasks = dependentGraph(filteredTasks)
 	}
-	filteredTasks := make([]Task, 0, len(tasks))
-	for _, t := range tasks {
+
+	if !isParentSet &&
+		!isPrioritySet &&
+		len(statuses) == 0 &&
+		len(assigned) == 0 &&
+		len(labels) == 0 &&
+		!params.Unassigned &&
+		!params.HasDependency {
+		return filteredTasks, nil
+	}
+
+	finalFilteredTasks := make([]Task, 0, len(filteredTasks))
+	for _, t := range filteredTasks {
 		if isParentSet && !t.Parent.Equals(parentID) {
 			continue
 		}
@@ -151,10 +165,52 @@ func FilterTasks(tasks []Task, params ListTasksParams) ([]Task, error) {
 		if params.HasDependency && len(t.Dependencies) == 0 {
 			continue
 		}
-		filteredTasks = append(filteredTasks, t)
+		finalFilteredTasks = append(finalFilteredTasks, t)
 	}
 
-	return filteredTasks, nil
+	return finalFilteredTasks, nil
+}
+
+func searchTasks(tasks []Task, query string) []Task {
+	matches := []Task{}
+	queryLower := strings.ToLower(query)
+
+	for _, task := range tasks {
+		// Search in task title, description, and other text fields
+		if strings.Contains(strings.ToLower(task.Title), queryLower) ||
+			strings.Contains(strings.ToLower(task.Description), queryLower) ||
+			strings.Contains(strings.ToLower(task.ImplementationPlan), queryLower) ||
+			strings.Contains(strings.ToLower(task.ImplementationNotes), queryLower) ||
+			strings.Contains(strings.ToLower(task.Priority.String()), queryLower) {
+			matches = append(matches, task)
+			continue
+		}
+
+		// Search in acceptance criteria
+		for _, ac := range task.AcceptanceCriteria {
+			if strings.Contains(strings.ToLower(ac.Text), queryLower) {
+				matches = append(matches, task)
+				break
+			}
+		}
+
+		// Search in labels and assigned names
+		for _, label := range task.Labels {
+			if strings.Contains(strings.ToLower(label), queryLower) {
+				matches = append(matches, task)
+				break
+			}
+		}
+
+		// Search in names assigned
+		for _, assignee := range task.Assigned {
+			if strings.Contains(strings.ToLower(assignee), queryLower) {
+				matches = append(matches, task)
+				break
+			}
+		}
+	}
+	return matches
 }
 
 func dependentGraph(tasks []Task) []Task {
@@ -201,9 +257,9 @@ func atLeastOneIntersect[S ~[]E, E comparable](got, want S) bool {
 	return false
 }
 
-// SortTasks sorts the tasks slice based on the provided sort fields.
+// sortTasks sorts the tasks slice based on the provided sort fields.
 // Supported sort fields: id, title, status, priority, created, updated
-func SortTasks(tasks []Task, sortFields []string, reverse bool) {
+func sortTasks(tasks []Task, sortFields []string, reverse bool) {
 	if len(sortFields) == 0 {
 		// No sorting requested, but still apply reverse if requested
 		if reverse {
@@ -273,4 +329,3 @@ func SortTasks(tasks []Task, sortFields []string, reverse bool) {
 		slices.Reverse(tasks)
 	}
 }
-

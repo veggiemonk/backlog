@@ -8,6 +8,7 @@ import (
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
+	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
 var createCmd = &cobra.Command{
@@ -114,7 +115,7 @@ func runCreate(cmd *cobra.Command, args []string) error {
 		Notes:        &notes,
 	}
 
-	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
+	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)
 	newTask, err := store.Create(params)
 	if err != nil {
 		return fmt.Errorf("failed to create task: %w", err)

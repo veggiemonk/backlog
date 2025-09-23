@@ -115,38 +115,6 @@ func TestMCPHandlers(t *testing.T) {
 		})
 	})
 
-	t.Run("handleTaskSearch", func(t *testing.T) {
-		t.Run("search_with_results", func(t *testing.T) {
-			is := is.New(t)
-
-			params := SearchParams{Query: "feature"}
-			result, _, err := handler.search(ctx, req, params)
-			is.NoErr(err)
-			is.True(result != nil)
-
-			listResult, ok := result.StructuredContent.(*core.ListResult)
-			is.True(ok)
-			is.Equal(len(listResult.Tasks), 4)
-		})
-
-		t.Run("search_with_no_results", func(t *testing.T) {
-			is := is.New(t)
-
-			params := SearchParams{
-				Query: "nonexistent",
-			}
-			result, _, err := handler.search(ctx, req, params)
-			is.NoErr(err)
-			is.True(result != nil)
-
-			// result.Content
-			is.Equal(len(result.Content), 1)
-			b, err := result.Content[0].MarshalJSON()
-			is.NoErr(err)
-			is.Equal(string(b), `{"type":"text","text":"No matching tasks found."}`)
-		})
-	})
-
 	t.Run("handleTaskEdit", func(t *testing.T) {
 		t.Run("edit_task_title", func(t *testing.T) {
 			is := is.New(t)
