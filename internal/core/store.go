@@ -29,18 +29,18 @@ func NewFileTaskStore(fs afero.Fs, tasksDir string) *FileTaskStore {
 	}
 }
 
-func (f *FileTaskStore) Path(t *Task) string {
+func (f *FileTaskStore) Path(t Task) string {
 	return filepath.Join(f.tasksDir, t.FileName())
 }
 
-func (f *FileTaskStore) write(task *Task) error {
+func (f *FileTaskStore) write(task Task) error {
 	// Create the tasks directory if it doesn't exist
-	if err := f.fs.MkdirAll(f.tasksDir, 0755); err != nil {
+	if err := f.fs.MkdirAll(f.tasksDir, 0o755); err != nil {
 		return err
 	}
 	fullContent := task.Bytes()
 	filePath := f.Path(task)
-	if err := afero.WriteFile(f.fs, filePath, fullContent, 0644); err != nil {
+	if err := afero.WriteFile(f.fs, filePath, fullContent, 0o644); err != nil {
 		return err
 	}
 	return nil

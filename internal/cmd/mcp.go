@@ -10,18 +10,6 @@ import (
 	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
-var mcpCmd = &cobra.Command{
-	Use:   "mcp",
-	Short: "Start the MCP server",
-	Long:  `Starts an MCP server to provide programmatic access to backlog tasks.`,
-	Example: `
-backlog mcp --http             # Start the MCP server using HTTP transport on default port 8106
-backlog mcp --http --port 4321 # Start the MCP server using HTTP transport on port 4321
-backlog mcp                    # Start the MCP server using stdio transport
-`,
-	RunE: runMcpServer,
-}
-
 var (
 	mcpHTTPPort   int
 	httpTransport bool
@@ -37,7 +25,19 @@ func setMCPFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolVar(&httpTransport, "http", false, "Use HTTP transport instead of stdio")
 }
 
-func runMcpServer(cmd *cobra.Command, args []string) error {
+var mcpCmd = &cobra.Command{
+	Use:   "mcp",
+	Short: "Start the MCP server",
+	Long:  `Starts an MCP server to provide programmatic access to backlog tasks.`,
+	Example: `
+backlog mcp --http             # Start the MCP server using HTTP transport on default port 8106
+backlog mcp --http --port 4321 # Start the MCP server using HTTP transport on port 4321
+backlog mcp                    # Start the MCP server using stdio transport
+`,
+	RunE: runMCPServer,
+}
+
+func runMCPServer(cmd *cobra.Command, args []string) error {
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
 	server, err := mcpserver.NewServer(store, viper.GetBool(configAutoCommit))
 	if err != nil {

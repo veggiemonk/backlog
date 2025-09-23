@@ -22,31 +22,31 @@ type CreateTaskParams struct {
 }
 
 // Create implements TaskStore.
-func (f *FileTaskStore) Create(params CreateTaskParams) (*Task, error) {
+func (f *FileTaskStore) Create(params CreateTaskParams) (newTask Task, err error) {
 	exists, err := afero.DirExists(f.fs, f.tasksDir)
 	if err != nil {
-		return nil, fmt.Errorf("accessing %s error: %v", f.tasksDir, err)
+		return newTask, fmt.Errorf("accessing %s error: %v", f.tasksDir, err)
 	}
 	if !exists {
-		if err := f.fs.MkdirAll(f.tasksDir, 0750); err != nil {
-			return nil, fmt.Errorf("could not create tasks directory %q: %w", f.tasksDir, err)
+		if err := f.fs.MkdirAll(f.tasksDir, 0o750); err != nil {
+			return newTask, fmt.Errorf("could not create tasks directory %q: %w", f.tasksDir, err)
 		}
 	}
 	var parentID TaskID
 	if params.Parent != nil && *params.Parent != "" {
 		parentID, err = parseTaskID(*params.Parent)
 		if err != nil && *params.Parent != "" {
-			return nil, fmt.Errorf("invalid parent task ID '%s': %w", *params.Parent, err)
+			return newTask, fmt.Errorf("invalid parent task ID '%s': %w", *params.Parent, err)
 		}
 		// Check if parent task actually exists
 		_, err := f.Get(parentID.String())
 		if err != nil {
-			return nil, fmt.Errorf("parent task ID '%s' does not exist: %w", *params.Parent, err)
+			return newTask, fmt.Errorf("parent task ID '%s' does not exist: %w", *params.Parent, err)
 		}
 	}
 	nextID, err := f.getNextTaskID(parentID.seg...)
 	if err != nil {
-		return nil, fmt.Errorf("could not get next task ID: %w", err)
+		return newTask, fmt.Errorf("could not get next task ID: %w", err)
 	}
 
 	deps := make([]string, 0, len(params.Dependencies))
@@ -54,16 +54,16 @@ func (f *FileTaskStore) Create(params CreateTaskParams) (*Task, error) {
 	for _, depIDStr := range params.Dependencies {
 		depID, err := parseTaskID(depIDStr)
 		if err != nil {
-			return nil, fmt.Errorf("invalid dependency task ID '%s': %w", depIDStr, err)
+			return newTask, fmt.Errorf("invalid dependency task ID '%s': %w", depIDStr, err)
 		}
 		_, err = f.Get(depID.String())
 		if err != nil {
-			return nil, fmt.Errorf("dependency task ID '%s' does not exist: %w", depIDStr, err)
+			return newTask, fmt.Errorf("dependency task ID '%s' does not exist: %w", depIDStr, err)
 		}
 		deps = append(deps, depID.Name())
 	}
 
-	newTask := NewTask()
+	newTask = NewTask()
 	newTask.ID = nextID
 	newTask.Title = params.Title
 	newTask.Description = params.Description
@@ -73,7 +73,7 @@ func (f *FileTaskStore) Create(params CreateTaskParams) (*Task, error) {
 	newTask.Dependencies = deps
 	newTask.Priority, err = ParsePriority(params.Priority)
 	if err != nil {
-		return nil, fmt.Errorf("invalid priority %q: %w", params.Priority, err)
+		return newTask, fmt.Errorf("invalid priority %q: %w", params.Priority, err)
 	}
 	if params.Notes != nil {
 		newTask.ImplementationNotes = fmt.Sprintf("%s\n", *params.Notes)
@@ -92,7 +92,7 @@ func (f *FileTaskStore) Create(params CreateTaskParams) (*Task, error) {
 	}
 
 	if err := f.write(newTask); err != nil {
-		return nil, fmt.Errorf("could not write task file: %w", err)
+		return newTask, fmt.Errorf("could not write task file: %w", err)
 	}
 	return newTask, nil
 }

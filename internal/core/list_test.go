@@ -15,12 +15,11 @@ func TestListTasks(t *testing.T) {
 	_, _ = store.Create(core.CreateTaskParams{Title: "Task One"})
 	taskTwo, _ := store.Create(core.CreateTaskParams{Title: "Task Two"})
 	_, _ = store.Create(core.CreateTaskParams{Title: "Task Three", Parent: &t1Parent})
-	_, err := store.Update(taskTwo, core.EditTaskParams{
+	is.NoErr(store.Update(&taskTwo, core.EditTaskParams{
 		ID:        taskTwo.ID.String(),
 		NewTitle:  &taskTwo.Title,
 		NewStatus: ptr("in-progress"),
-	})
-	is.NoErr(err)
+	}))
 
 	tests := []struct {
 		name          string
@@ -58,12 +57,11 @@ func TestFilterAndSortTasks(t *testing.T) {
 	_, _ = store.Create(core.CreateTaskParams{Title: "Charlie Task", Assigned: []string{"alice", "bob"}, Priority: "low"})
 	// Update status for one task
 	taskTwo, _ := store.Get("T02")
-	_, err := store.Update(taskTwo, core.EditTaskParams{
+	is.NoErr(store.Update(&taskTwo, core.EditTaskParams{
 		ID:        taskTwo.ID.String(),
 		NewTitle:  &taskTwo.Title,
 		NewStatus: ptr("done"),
-	})
-	is.NoErr(err)
+	}))
 
 	parentID := "T01"
 	_, _ = store.Create(core.CreateTaskParams{Title: "Delta Task", Parent: &parentID, Assigned: []string{"charlie"}})
@@ -222,10 +220,10 @@ func TestDependents(t *testing.T) {
 	})
 
 	// Mark medium task as done
-	_, err = store.Update(mediumTask, core.EditTaskParams{
+	is.NoErr(store.Update(&mediumTask, core.EditTaskParams{
 		ID:        mediumTask.ID.String(),
 		NewStatus: ptr("done"),
-	})
+	}))
 	is.NoErr(err)
 
 	t.Run("list blocking tasks after medium task done", func(t *testing.T) {

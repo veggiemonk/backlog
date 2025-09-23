@@ -23,7 +23,7 @@ Returns the created task.
 		Name:         "task_create",
 		Description:  description,
 		InputSchema:  inputSchema,
-		OutputSchema: wrappedTaskJSONSchema(),
+		OutputSchema: taskJSONSchema(),
 	}
 	mcp.AddTool(s.mcpServer, tool, s.handler.create)
 	return nil
@@ -45,7 +45,6 @@ func (h *handler) create(
 		// Log the error but do not fail the creation
 		logging.Warn("auto-commit failed for task creation", "task_id", task.ID, "error", err)
 	}
-	wrapped := struct{ Task *core.Task }{Task: task}
-	res := &mcp.CallToolResult{StructuredContent: wrapped}
+	res := &mcp.CallToolResult{StructuredContent: task}
 	return res, nil, nil
 }

@@ -23,7 +23,7 @@ Returns the updated task.`
 		Name:         "task_edit",
 		Description:  description,
 		InputSchema:  inputSchema,
-		OutputSchema: wrappedTaskJSONSchema(),
+		OutputSchema: taskJSONSchema(),
 	}
 
 	mcp.AddTool(s.mcpServer, editTool, s.handler.edit)
@@ -41,23 +41,21 @@ func (h *handler) edit(
 	if err != nil {
 		return nil, nil, fmt.Errorf("edit: %v", err)
 	}
-	updatedTask, err := h.store.Update(task, params)
-	if err != nil {
+	oldPath := h.store.Path(task)
+	if err := h.store.Update(&task, params); err != nil {
 		return nil, nil, fmt.Errorf("edit: %v", err)
 	}
 	err = h.commit(
-		updatedTask.ID.Name(),
-		updatedTask.Title,
-		h.store.Path(updatedTask),
+		task.ID.Name(),
+		task.Title,
 		h.store.Path(task),
+		oldPath,
 		"edit",
 	)
 	if err != nil {
 		// Log the error but do not fail the edit
 		logging.Warn("auto-commit failed for task edit", "task_id", task.ID, "error", err)
 	}
-
-	wrapped := struct{ Task *core.Task }{Task: task}
-	res := &mcp.CallToolResult{StructuredContent: wrapped}
+	res := &mcp.CallToolResult{StructuredContent: task}
 	return res, nil, nil
 }

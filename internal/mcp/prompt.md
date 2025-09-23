@@ -376,7 +376,7 @@ backlog edit ID [flags]
 | `--title`        | `string` | A new title for the task                          |
 | `--description`  | `string` | A new description for the task                    |
 | `--status`       | `string` | A new status (e.g., "in-progress", "done")       |
-| `--deps`      | `string` | Set dependencies (replaces existing, comma-separated) |
+| `--deps`         | `string` | Set dependencies (replaces existing, comma-separated) |
 | `--parent`       | `string` | A new parent task ID                              |
 | `--assigned`     | `string` | Assign users (can be used multiple times)        |
 | `--unassign`     | `string` | Remove assigned users (can be used multiple times) |

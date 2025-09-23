@@ -16,8 +16,8 @@ import (
 var ErrInvalid = errors.New("invalid value")
 
 // NewTask creates a new Task with default values.
-func NewTask() *Task {
-	return &Task{
+func NewTask() Task {
+	return Task{
 		Status:             StatusTodo, // Default status
 		AcceptanceCriteria: make([]AcceptanceCriterion, 0),
 		History:            make([]HistoryEntry, 0),
@@ -46,7 +46,7 @@ type Task struct {
 	// --- Markdown Body Fields ---
 
 	Description         string                `json:"description"`
-	AcceptanceCriteria  []AcceptanceCriterion `json:"acceptance_criteria"`
+	AcceptanceCriteria  []AcceptanceCriterion `json:"acceptance_criteria,omitempty"`
 	ImplementationPlan  string                `json:"implementation_plan"`
 	ImplementationNotes string                `json:"implementation_notes"`
 }
@@ -143,7 +143,7 @@ func RecordChange(task *Task, change string) {
 }
 
 // RecordIDChange adds a specialized history entry for ID changes during conflict resolution
-func RecordIDChange(task *Task, oldID, newID TaskID, reason string, metadata map[string]any) {
+func RecordIDChange(task Task, oldID, newID TaskID, reason string, metadata map[string]any) {
 	if metadata == nil {
 		metadata = make(map[string]any)
 	}

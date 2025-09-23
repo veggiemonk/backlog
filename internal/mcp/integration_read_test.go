@@ -11,6 +11,7 @@ import (
 )
 
 func TestMCP_Integration_Read_HTTP(t *testing.T) {
+	t.Parallel()
 	// Isolated in-memory store pre-seeded with tasks for search/list behavior
 	fs := afero.NewMemMapFs()
 	store := core.NewFileTaskStore(fs, ".backlog")
@@ -54,13 +55,13 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_list", Arguments: core.ListTasksParams{}})
 		is.NoErr(err)
 		is.True(res != nil)
-		var wrapped struct{ Tasks []*core.Task }
+		var listResult core.ListResult
 		b, err := json.Marshal(res.StructuredContent)
 		is.NoErr(err)
-		is.NoErr(json.Unmarshal(b, &wrapped))
+		is.NoErr(json.Unmarshal(b, &listResult))
 
-		is.Equal(len(wrapped.Tasks), 8)
-		picked = *wrapped.Tasks[0]
+		is.Equal(len(listResult.Tasks), 8)
+		picked = listResult.Tasks[0]
 	}
 
 	// 2) View the picked task
@@ -68,12 +69,12 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_view", Arguments: ViewParams{ID: picked.ID.String()}})
 		is.NoErr(err)
 		is.True(res != nil)
-		var wrapped struct{ Task *core.Task }
+		wrapped := core.Task{}
 		b, err := json.Marshal(res.StructuredContent)
 		is.NoErr(err)
 		is.NoErr(json.Unmarshal(b, &wrapped))
 
-		is.Equal(wrapped.Task.ID.String(), picked.ID.String())
+		is.Equal(wrapped.ID.String(), picked.ID.String())
 	}
 
 	// 3) Search for a known keyword
@@ -82,12 +83,12 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 		is.NoErr(err)
 		// Should have results thanks to setupTestData seeding "feature" labeled tasks
 		is.True(res != nil)
-		var wrapped struct{ Tasks []*core.Task }
+		var searchResult core.ListResult
 		b, err := json.Marshal(res.StructuredContent)
 		is.NoErr(err)
-		is.NoErr(json.Unmarshal(b, &wrapped))
+		is.NoErr(json.Unmarshal(b, &searchResult))
 
-		is.Equal(len(wrapped.Tasks), 4)
+		is.Equal(len(searchResult.Tasks), 4)
 	}
 
 	// 4) Read a resource (AGENTS.md)

@@ -23,11 +23,10 @@ func setupTestData(t *testing.T, store *core.FileTaskStore) {
 
 	// Mark it as done
 	doneStatus := "done"
-	_, err = store.Update(completedTask, core.EditTaskParams{
+	is.NoErr(store.Update(&completedTask, core.EditTaskParams{
 		ID:        completedTask.ID.String(),
 		NewStatus: &doneStatus,
-	})
-	is.NoErr(err)
+	}))
 
 	// Create a high priority todo task
 	_, err = store.Create(core.CreateTaskParams{
@@ -101,9 +100,8 @@ func setupTestData(t *testing.T, store *core.FileTaskStore) {
 
 	// Mark it as in-progress
 	inProgressStatus := "in-progress"
-	_, err = store.Update(inProgressTask, core.EditTaskParams{
+	is.NoErr(store.Update(&inProgressTask, core.EditTaskParams{
 		ID:        inProgressTask.ID.String(),
 		NewStatus: &inProgressStatus,
-	})
-	is.NoErr(err)
+	}))
 }

@@ -120,7 +120,7 @@ func setListFlags(cmd *cobra.Command) {
 
 func runList(cmd *cobra.Command, args []string) error {
 	sortFieldsSlice := parseSortFields(sortFields)
-	
+
 	var limit, offset *int
 	if limitFlag > 0 {
 		limit = &limitFlag
@@ -128,10 +128,10 @@ func runList(cmd *cobra.Command, args []string) error {
 	if offsetFlag > 0 {
 		offset = &offsetFlag
 	}
-	
+
 	// Apply configuration defaults and limits
 	limit, offset = ApplyDefaultPagination(limit, offset)
-	
+
 	params := core.ListTasksParams{
 		Parent:        &filterParent,
 		Priority:      &filterPriority,
@@ -148,7 +148,7 @@ func runList(cmd *cobra.Command, args []string) error {
 	}
 
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
-	
+
 	// Get total count without pagination for metadata
 	totalParams := params
 	totalParams.Limit = nil
@@ -158,13 +158,13 @@ func runList(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to list tasks: %w", err)
 	}
 	totalCount := len(allTasks)
-	
+
 	// Get paginated results
 	tasks, err := store.List(params)
 	if err != nil {
 		return fmt.Errorf("failed to list tasks: %w", err)
 	}
-	
+
 	// Create pagination info
 	var paginationInfo *core.PaginationInfo
 	if limit != nil || offset != nil {
@@ -177,16 +177,16 @@ func runList(cmd *cobra.Command, args []string) error {
 			limitVal = *limit
 		}
 		hasMore := (offsetVal + len(tasks)) < totalCount
-		
+
 		paginationInfo = &core.PaginationInfo{
-			TotalResults:    totalCount,
+			TotalResults:     totalCount,
 			DisplayedResults: len(tasks),
-			Offset:          offsetVal,
-			Limit:           limitVal,
-			HasMore:         hasMore,
+			Offset:           offsetVal,
+			Limit:            limitVal,
+			HasMore:          hasMore,
 		}
 	}
-	
+
 	if err := renderTaskResultsWithPagination(cmd.OutOrStdout(), tasks, jsonOutput, markdownOutput, hideExtraFields, "", paginationInfo); err != nil {
 		return fmt.Errorf("failed to render task results: %w", err)
 	}
@@ -206,7 +206,7 @@ func parseSortFields(sortFields string) []string {
 }
 
 // renderTaskResultsWithPagination renders a slice of tasks with pagination info
-func renderTaskResultsWithPagination(w io.Writer, tasks []*core.Task, jsonOutput, markdownOutput, hideExtraFields bool, messagePrefix string, paginationInfo *core.PaginationInfo) error {
+func renderTaskResultsWithPagination(w io.Writer, tasks []core.Task, jsonOutput, markdownOutput, hideExtraFields bool, messagePrefix string, paginationInfo *core.PaginationInfo) error {
 	// For JSON output with pagination info
 	if jsonOutput && paginationInfo != nil {
 		result := core.ListResult{
@@ -222,18 +222,18 @@ func renderTaskResultsWithPagination(w io.Writer, tasks []*core.Task, jsonOutput
 	// Add pagination info to message prefix if not JSON output
 	if paginationInfo != nil && !jsonOutput {
 		if messagePrefix == "" {
-			messagePrefix = fmt.Sprintf("Showing %d-%d of %d tasks", 
-				paginationInfo.Offset+1, 
-				paginationInfo.Offset+paginationInfo.DisplayedResults, 
+			messagePrefix = fmt.Sprintf("Showing %d-%d of %d tasks",
+				paginationInfo.Offset+1,
+				paginationInfo.Offset+paginationInfo.DisplayedResults,
 				paginationInfo.TotalResults)
 			if paginationInfo.HasMore {
-				messagePrefix += fmt.Sprintf(" (use --offset %d for more)", 
+				messagePrefix += fmt.Sprintf(" (use --offset %d for more)",
 					paginationInfo.Offset+paginationInfo.DisplayedResults)
 			}
 		} else {
-			messagePrefix += fmt.Sprintf(" [%d-%d of %d total]", 
-				paginationInfo.Offset+1, 
-				paginationInfo.Offset+paginationInfo.DisplayedResults, 
+			messagePrefix += fmt.Sprintf(" [%d-%d of %d total]",
+				paginationInfo.Offset+1,
+				paginationInfo.Offset+paginationInfo.DisplayedResults,
 				paginationInfo.TotalResults)
 		}
 	}
@@ -242,7 +242,7 @@ func renderTaskResultsWithPagination(w io.Writer, tasks []*core.Task, jsonOutput
 }
 
 // renderTaskResults renders a slice of tasks using the specified output format
-func renderTaskResults(w io.Writer, tasks []*core.Task, jsonOutput, markdownOutput, hideExtraFields bool, messagePrefix string) error {
+func renderTaskResults(w io.Writer, tasks []core.Task, jsonOutput, markdownOutput, hideExtraFields bool, messagePrefix string) error {
 	// Handle empty task list
 	if len(tasks) == 0 {
 		switch {

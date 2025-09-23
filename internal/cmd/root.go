@@ -19,12 +19,12 @@ type contextKey string
 const ctxKeyStore = contextKey("store")
 
 type TaskStore interface {
-	Get(id string) (*core.Task, error)
-	Create(params core.CreateTaskParams) (*core.Task, error)
-	Update(task *core.Task, params core.EditTaskParams) (*core.Task, error)
-	List(params core.ListTasksParams) ([]*core.Task, error)
-	Search(query string, listParams core.ListTasksParams) ([]*core.Task, error)
-	Path(t *core.Task) string
+	Get(id string) (core.Task, error)
+	Create(params core.CreateTaskParams) (core.Task, error)
+	Update(task *core.Task, params core.EditTaskParams) error
+	List(params core.ListTasksParams) ([]core.Task, error)
+	Search(query string, listParams core.ListTasksParams) ([]core.Task, error)
+	Path(t core.Task) string
 	Archive(id core.TaskID) (string, error)
 }
 
@@ -70,10 +70,10 @@ const (
 	defaultAutoCommit = true
 
 	// pagination
-	configPageSize     = "page-size"
-	defaultPageSize    = 25
-	configMaxLimit     = "max-limit" 
-	defaultMaxLimit    = 1000
+	configPageSize  = "page-size"
+	defaultPageSize = 25
+	configMaxLimit  = "max-limit"
+	defaultMaxLimit = 1000
 
 	// logging
 	configLogLevel   = "log-level"
@@ -148,7 +148,7 @@ func ApplyDefaultPagination(limit, offset *int) (*int, *int) {
 	if offset != nil && *offset > 0 {
 		return limit, offset
 	}
-	
+
 	// Don't apply defaults if user explicitly set limit
 	if limit != nil && *limit > 0 {
 		// Enforce max limit
@@ -159,7 +159,7 @@ func ApplyDefaultPagination(limit, offset *int) (*int, *int) {
 		}
 		return limit, offset
 	}
-	
+
 	// No pagination requested by user
 	return limit, offset
 }
