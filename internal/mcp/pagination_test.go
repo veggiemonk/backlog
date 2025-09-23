@@ -108,8 +108,13 @@ func TestMCPPaginationHandlers(t *testing.T) {
 		is.True(ok)
 		is.Equal(len(listResult.Tasks), 5)
 		
-		// Should not have pagination info
-		is.True(listResult.Pagination == nil)
+		// Should have pagination info, but with default values
+		is.True(listResult.Pagination != nil)
+		is.Equal(listResult.Pagination.TotalResults, 5)
+		is.Equal(listResult.Pagination.DisplayedResults, 5)
+		is.Equal(listResult.Pagination.Offset, 0)
+		is.Equal(listResult.Pagination.Limit, 0)
+		is.True(!listResult.Pagination.HasMore)
 	})
 	
 	t.Run("mcp_search_with_pagination", func(t *testing.T) {
@@ -191,8 +196,13 @@ func TestMCPPaginationHandlers(t *testing.T) {
 		is.True(ok)
 		is.Equal(len(listResult.Tasks), 5)
 		
-		// Should not have pagination info
-		is.True(listResult.Pagination == nil)
+		// Should have pagination info, but with default values
+		is.True(listResult.Pagination != nil)
+		is.Equal(listResult.Pagination.TotalResults, 5)
+		is.Equal(listResult.Pagination.DisplayedResults, 5)
+		is.Equal(listResult.Pagination.Offset, 0)
+		is.Equal(listResult.Pagination.Limit, 0)
+		is.True(!listResult.Pagination.HasMore)
 	})
 	
 	t.Run("mcp_empty_results_with_pagination", func(t *testing.T) {

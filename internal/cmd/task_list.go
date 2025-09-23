@@ -114,7 +114,7 @@ func setListFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolVarP(&markdownOutput, "markdown", "m", false, "print markdown table")
 	cmd.Flags().BoolVarP(&jsonOutput, "json", "j", false, "Print JSON output")
 	// pagination
-	cmd.Flags().IntVar(&limitFlag, "limit", 25, "Maximum number of tasks to return (0 means no limit)")
+	cmd.Flags().IntVar(&limitFlag, "limit", 0, "Maximum number of tasks to return (0 means no limit)")
 	cmd.Flags().IntVar(&offsetFlag, "offset", 0, "Number of tasks to skip from the beginning")
 }
 
@@ -122,17 +122,12 @@ func runList(cmd *cobra.Command, args []string) error {
 	sortFieldsSlice := parseSortFields(sortFields)
 
 	var limit, offset *int
-	// Track if limit was explicitly set by user (not default)
-	limitExplicit := cmd.Flags().Changed("limit")
 	if limitFlag > 0 {
 		limit = &limitFlag
 	}
 	if offsetFlag > 0 {
 		offset = &offsetFlag
 	}
-
-	// Apply configuration defaults and limits
-	limit, offset = ApplyDefaultPagination(limit, offset)
 
 	params := core.ListTasksParams{
 		Parent:        &filterParent,
@@ -151,46 +146,12 @@ func runList(cmd *cobra.Command, args []string) error {
 
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
 
-	// Get total count without pagination for metadata
-	totalParams := params
-	totalParams.Limit = nil
-	totalParams.Offset = nil
-	allTasks, err := store.List(totalParams)
-	if err != nil {
-		return fmt.Errorf("failed to list tasks: %w", err)
-	}
-	totalCount := len(allTasks)
-
-	// Get paginated results
-	tasks, err := store.List(params)
+	listResult, err := store.List(params)
 	if err != nil {
 		return fmt.Errorf("failed to list tasks: %w", err)
 	}
 
-	// Create pagination info only when pagination was explicitly requested
-	var paginationInfo *core.PaginationInfo
-	// Only create pagination info if offset was provided or limit was explicitly set by user
-	if (offset != nil && *offset > 0) || limitExplicit {
-		offsetVal := 0
-		if offset != nil {
-			offsetVal = *offset
-		}
-		limitVal := 0
-		if limit != nil {
-			limitVal = *limit
-		}
-		hasMore := (offsetVal + len(tasks)) < totalCount
-
-		paginationInfo = &core.PaginationInfo{
-			TotalResults:     totalCount,
-			DisplayedResults: len(tasks),
-			Offset:           offsetVal,
-			Limit:            limitVal,
-			HasMore:          hasMore,
-		}
-	}
-
-	if err := renderTaskResultsWithPagination(cmd.OutOrStdout(), tasks, jsonOutput, markdownOutput, hideExtraFields, "", paginationInfo); err != nil {
+	if err := renderTaskResultsWithPagination(cmd.OutOrStdout(), listResult, jsonOutput, markdownOutput, hideExtraFields, ""); err != nil {
 		return fmt.Errorf("failed to render task results: %w", err)
 	}
 	return nil
@@ -209,39 +170,35 @@ func parseSortFields(sortFields string) []string {
 }
 
 // renderTaskResultsWithPagination renders a slice of tasks with pagination info
-func renderTaskResultsWithPagination(w io.Writer, tasks []core.Task, jsonOutput, markdownOutput, hideExtraFields bool, messagePrefix string, paginationInfo *core.PaginationInfo) error {
+func renderTaskResultsWithPagination(w io.Writer, listResult *core.ListResult, jsonOutput, markdownOutput, hideExtraFields bool, messagePrefix string) error {
 	// For JSON output with pagination info
-	if jsonOutput && paginationInfo != nil {
-		result := core.ListResult{
-			Tasks:      tasks,
-			Pagination: paginationInfo,
-		}
-		if err := json.NewEncoder(w).Encode(result); err != nil {
+	if jsonOutput && listResult.Pagination != nil {
+		if err := json.NewEncoder(w).Encode(listResult); err != nil {
 			return fmt.Errorf("failed to encode JSON: %w", err)
 		}
 		return nil
 	}
 
 	// Add pagination info to message prefix if not JSON output
-	if paginationInfo != nil && !jsonOutput {
+	if listResult.Pagination != nil && !jsonOutput {
 		if messagePrefix == "" {
 			messagePrefix = fmt.Sprintf("Showing %d-%d of %d tasks",
-				paginationInfo.Offset+1,
-				paginationInfo.Offset+paginationInfo.DisplayedResults,
-				paginationInfo.TotalResults)
-			if paginationInfo.HasMore {
+				listResult.Pagination.Offset+1,
+				listResult.Pagination.Offset+listResult.Pagination.DisplayedResults,
+				listResult.Pagination.TotalResults)
+			if listResult.Pagination.HasMore {
 				messagePrefix += fmt.Sprintf(" (use --offset %d for more)",
-					paginationInfo.Offset+paginationInfo.DisplayedResults)
+					listResult.Pagination.Offset+listResult.Pagination.DisplayedResults)
 			}
 		} else {
 			messagePrefix += fmt.Sprintf(" [%d-%d of %d total]",
-				paginationInfo.Offset+1,
-				paginationInfo.Offset+paginationInfo.DisplayedResults,
-				paginationInfo.TotalResults)
+				listResult.Pagination.Offset+1,
+				listResult.Pagination.Offset+listResult.Pagination.DisplayedResults,
+				listResult.Pagination.TotalResults)
 		}
 	}
 
-	return renderTaskResults(w, tasks, jsonOutput, markdownOutput, hideExtraFields, messagePrefix)
+	return renderTaskResults(w, listResult.Tasks, jsonOutput, markdownOutput, hideExtraFields, messagePrefix)
 }
 
 // renderTaskResults renders a slice of tasks using the specified output format

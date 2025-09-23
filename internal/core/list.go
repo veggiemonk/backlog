@@ -10,20 +10,6 @@ import (
 	"github.com/spf13/afero"
 )
 
-// PaginationInfo contains metadata about pagination results
-type PaginationInfo struct {
-	TotalResults     int  `json:"total_results"`
-	DisplayedResults int  `json:"displayed_results"`
-	Offset           int  `json:"offset"`
-	Limit            int  `json:"limit"`
-	HasMore          bool `json:"has_more"`
-}
-
-// ListResult contains the tasks and pagination metadata
-type ListResult struct {
-	Tasks      []Task          `json:"tasks"`
-	Pagination *PaginationInfo `json:"pagination,omitempty"`
-}
 
 // ListTasksParams holds the parameters for listing tasks.
 type ListTasksParams struct {
@@ -43,7 +29,7 @@ type ListTasksParams struct {
 }
 
 // List implements TaskStore.
-func (f *FileTaskStore) List(params ListTasksParams) ([]Task, error) {
+func (f *FileTaskStore) List(params ListTasksParams) (*ListResult, error) {
 	// Load all tasks from filesystem
 	tasks, err := f.loadAll()
 	if err != nil {
@@ -54,8 +40,8 @@ func (f *FileTaskStore) List(params ListTasksParams) ([]Task, error) {
 		return nil, err
 	}
 	SortTasks(filteredTasks, params.Sort, params.Reverse)
-	paginatedTasks := PaginateTasks(filteredTasks, params.Limit, params.Offset)
-	return paginatedTasks, nil
+	listResult := Paginate(filteredTasks, params.Limit, params.Offset)
+	return listResult, nil
 }
 
 // LoadAll loads all tasks from the tasks directory.
@@ -288,32 +274,3 @@ func SortTasks(tasks []Task, sortFields []string, reverse bool) {
 	}
 }
 
-// PaginateTasks applies pagination to a slice of tasks.
-// If limit is nil or 0, returns all tasks.
-// If offset is nil, defaults to 0.
-func PaginateTasks(tasks []Task, limit *int, offset *int) []Task {
-	if len(tasks) == 0 {
-		return tasks
-	}
-
-	// Default offset to 0 if nil
-	startIndex := 0
-	if offset != nil && *offset > 0 {
-		startIndex = *offset
-	}
-
-	// If offset is beyond the total number of tasks, return empty slice
-	if startIndex >= len(tasks) {
-		return []Task{}
-	}
-
-	// If no limit specified or limit is 0, return from offset to end
-	if limit == nil || *limit == 0 {
-		return tasks[startIndex:]
-	}
-
-	// Calculate end index
-	endIndex := min(startIndex+(*limit), len(tasks))
-
-	return tasks[startIndex:endIndex]
-}

@@ -3,9 +3,9 @@ package core
 import "strings"
 
 // Search searches for tasks containing the query string in various fields.
-func (f *FileTaskStore) Search(query string, listParams ListTasksParams) ([]Task, error) {
+func (f *FileTaskStore) Search(query string, listParams ListTasksParams) (*ListResult, error) {
 	// Get all tasks and search in memory
-	tasks, err := f.List(ListTasksParams{})
+	tasks, err := f.loadAll()
 	if err != nil {
 		return nil, err
 	}
@@ -60,6 +60,6 @@ func (f *FileTaskStore) Search(query string, listParams ListTasksParams) ([]Task
 	}
 
 	SortTasks(filteredMatches, listParams.Sort, listParams.Reverse)
-	paginatedMatches := PaginateTasks(filteredMatches, listParams.Limit, listParams.Offset)
-	return paginatedMatches, nil
+	listResult := Paginate(filteredMatches, listParams.Limit, listParams.Offset)
+	return listResult, nil
 }
