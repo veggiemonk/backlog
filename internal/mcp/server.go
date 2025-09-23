@@ -27,7 +27,6 @@ type TaskStore interface {
 	Create(params core.CreateTaskParams) (core.Task, error)
 	Update(task *core.Task, params core.EditTaskParams) error
 	List(params core.ListTasksParams) (*core.ListResult, error)
-	Search(query string, listParams core.ListTasksParams) (*core.ListResult, error)
 	Path(t core.Task) string
 	Archive(id core.TaskID) (string, error)
 }
@@ -128,9 +127,6 @@ func (s *Server) addTools() error {
 		return err
 	}
 	if err := s.registerTaskEdit(); err != nil {
-		return err
-	}
-	if err := s.registerTaskSearch(); err != nil {
 		return err
 	}
 	if err := s.registerTaskArchive(); err != nil {

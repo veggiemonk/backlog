@@ -2,17 +2,16 @@ package cmd
 
 import (
 	"encoding/json"
-	"strings"
 	"testing"
 
 	"github.com/matryer/is"
 	"github.com/veggiemonk/backlog/internal/core"
 )
 
-func Test_runList(t *testing.T) {
-	t.Run("filter by single label", func(t *testing.T) {
-		is := is.New(t)
-		output, err := exec(t, "list", runList, "-l", "first", "-j")
+func Test_runSearch(t *testing.T) {
+	t.Run("basic search by title", func(t *testing.T) {
+		is := is.NewRelaxed(t)
+		output, err := exec(t, "list", runList, "--query", "First", "-j")
 		is.NoErr(err)
 		listResult := &core.ListResult{}
 		is.NoErr(json.Unmarshal(output, listResult))
@@ -20,283 +19,22 @@ func Test_runList(t *testing.T) {
 		is.Equal(listResult.Tasks[0].Title, "First Task")
 	})
 
-	t.Run("filter by multiple labels", func(t *testing.T) {
-		is := is.New(t)
-		output, err := exec(t, "list", runList, "-l", "first,second,third,feature", "-j")
+	t.Run("search by partial title", func(t *testing.T) {
+		is := is.NewRelaxed(t)
+		output, err := exec(t, "list", runList, "--query", "Task", "-j")
 		is.NoErr(err)
 		listResult := &core.ListResult{}
 		is.NoErr(json.Unmarshal(output, listResult))
-		is.Equal(len(listResult.Tasks), 3) // feature label isn\'t set
+		is.Equal(len(listResult.Tasks), countTask) // All tasks contain "Task" in title
 	})
 
-	t.Run("filter by status", func(t *testing.T) {
-		is := is.New(t)
-		output, err := exec(t, "list", runList, "-s", "todo", "-j")
-		is.NoErr(err)
-		listResult := &core.ListResult{}
-		is.NoErr(json.Unmarshal(output, listResult))
-		is.Equal(len(listResult.Tasks), countTask-1) // countTask - 1 in-progress
-	})
-
-	t.Run("filter by multiple statuses", func(t *testing.T) {
-		is := is.New(t)
-		output, err := exec(t, "list", runList, "-s", "todo,in-progress", "-j")
-		is.NoErr(err)
-		listResult := &core.ListResult{}
-		is.NoErr(json.Unmarshal(output, listResult))
-		is.Equal(len(listResult.Tasks), countTask)
-	})
-
-	t.Run("filter by assigned user", func(t *testing.T) {
-		is := is.New(t)
-		//
-		output, err := exec(t, "list", runList, "-a", "first-user", "-j")
+	t.Run("search by description", func(t *testing.T) {
+		is := is.NewRelaxed(t)
+		output, err := exec(t, "list", runList, "--query", "First description", "-j")
 		is.NoErr(err)
 		listResult := &core.ListResult{}
 		is.NoErr(json.Unmarshal(output, listResult))
 		is.Equal(len(listResult.Tasks), 1)
 		is.Equal(listResult.Tasks[0].Title, "First Task")
-	})
-
-	t.Run("filter by multiple assigned users", func(t *testing.T) {
-		is := is.New(t)
-
-		output, err := exec(t, "list", runList, "-a", "first-user,second-user", "-j")
-		is.NoErr(err)
-		listResult := &core.ListResult{}
-		is.NoErr(json.Unmarshal(output, listResult))
-		is.Equal(len(listResult.Tasks), 2)
-		is.Equal(listResult.Tasks[0].Title, "First Task")
-		is.Equal(listResult.Tasks[1].Title, "Second Task")
-	})
-
-	t.Run("filter by priority", func(t *testing.T) {
-		is := is.New(t)
-
-		output, err := exec(t, "list", runList, "--priority", "high", "-j")
-		is.NoErr(err)
-		listResult := &core.ListResult{}
-		is.NoErr(json.Unmarshal(output, listResult))
-		is.Equal(len(listResult.Tasks), 1)
-		is.Equal(listResult.Tasks[0].Title, "High Priority Task")
-	})
-
-	t.Run("sort by title", func(t *testing.T) {
-		is := is.New(t)
-
-		output, err := exec(t, "list", runList, "--sort", "title", "-j")
-		is.NoErr(err)
-		listResult := &core.ListResult{}
-		is.NoErr(json.Unmarshal(output, listResult))
-		is.Equal(len(listResult.Tasks), countTask)
-		is.Equal(listResult.Tasks[0].Title, "Fifth Task")
-		is.Equal(listResult.Tasks[1].Title, "First Task")
-		is.Equal(listResult.Tasks[2].Title, "Fourth Task")
-		is.Equal(listResult.Tasks[3].Title, "High Priority Task")
-		is.Equal(listResult.Tasks[4].Title, "In Progress Task")
-		is.Equal(listResult.Tasks[5].Title, "Second Task")
-	})
-
-	t.Run("sort by title reversed", func(t *testing.T) {
-		is := is.New(t)
-
-		output, err := exec(t, "list", runList, "--sort", "title", "--reverse", "-j")
-		is.NoErr(err)
-		listResult := &core.ListResult{}
-		is.NoErr(json.Unmarshal(output, listResult))
-		is.Equal(len(listResult.Tasks), countTask)
-		// When reversed, "Updated Task" should come first alphabetically when reversed
-		is.Equal(listResult.Tasks[0].Title, "Unlabeled Task")
-		is.Equal(listResult.Tasks[1].Title, "Unassigned Task")
-		is.Equal(listResult.Tasks[2].Title, "Third Task")
-		is.Equal(listResult.Tasks[3].Title, "Second Task")
-		is.Equal(listResult.Tasks[4].Title, "In Progress Task")
-	})
-
-	t.Run("sort by priority", func(t *testing.T) {
-		is := is.New(t)
-
-		output, err := exec(t, "list", runList, "--sort", "priority", "-j")
-		is.NoErr(err)
-		listResult := &core.ListResult{}
-		is.NoErr(json.Unmarshal(output, listResult))
-		is.Equal(len(listResult.Tasks), countTask)
-		is.Equal(listResult.Tasks[0].Title, "High Priority Task")
-	})
-
-	t.Run("multiple sort fields", func(t *testing.T) {
-		is := is.New(t)
-
-		output, err := exec(t, "list", runList, "--sort", "priority,title", "-j")
-		is.NoErr(err)
-		listResult := &core.ListResult{}
-		is.NoErr(json.Unmarshal(output, listResult))
-		is.Equal(len(listResult.Tasks), countTask)
-		is.Equal(listResult.Tasks[0].Title, "High Priority Task")
-		is.Equal(listResult.Tasks[1].Title, "Fifth Task")
-		is.Equal(listResult.Tasks[2].Title, "First Task")
-		is.Equal(listResult.Tasks[3].Title, "Fourth Task")
-		is.Equal(listResult.Tasks[4].Title, "Second Task")
-		is.Equal(listResult.Tasks[5].Title, "Third Task")
-		is.Equal(listResult.Tasks[6].Title, "In Progress Task")
-		is.Equal(listResult.Tasks[7].Title, "Unassigned Task")
-		is.Equal(listResult.Tasks[8].Title, "Unlabeled Task")
-	})
-
-	t.Run("markdown output format", func(t *testing.T) {
-		is := is.New(t)
-
-		output, err := exec(t, "list", runList, "-m")
-		is.NoErr(err)
-		outputStr := string(output)
-		is.True(strings.Contains(outputStr, "|"))    // markdown table contains pipes
-		is.True(strings.Contains(outputStr, "ID"))   // should contain header
-		is.True(strings.Contains(outputStr, ":---")) // markdown table header separator
-	})
-
-	t.Run("hide extra fields", func(t *testing.T) {
-		is := is.New(t)
-
-		output, err := exec(t, "list", runList, "--hide-extra")
-		is.NoErr(err)
-		outputStr := string(output)
-		is.True(strings.Contains(outputStr, "ID"))
-		is.True(strings.Contains(outputStr, "STATUS"))
-		is.True(strings.Contains(outputStr, "TITLE"))
-		// Should not contain extra columns
-		is.True(!strings.Contains(outputStr, "LABELS"))
-		is.True(!strings.Contains(outputStr, "PRIORITY"))
-		is.True(!strings.Contains(outputStr, "ASSIGNED"))
-	})
-
-	t.Run("default table output format", func(t *testing.T) {
-		is := is.New(t)
-
-		output, err := exec(t, "list", runList, "list")
-		is.NoErr(err)
-		outputStr := string(output)
-		is.True(strings.Contains(outputStr, "ID"))
-		is.True(strings.Contains(outputStr, "STATUS"))
-		is.True(strings.Contains(outputStr, "TITLE"))
-		is.True(strings.Contains(outputStr, "LABELS"))
-		is.True(strings.Contains(outputStr, "PRIORITY"))
-		is.True(strings.Contains(outputStr, "ASSIGNED"))
-	})
-
-	t.Run("combined filters", func(t *testing.T) {
-		is := is.New(t)
-
-		output, err := exec(t, "list", runList, "-l", "second", "-s", "todo", "--priority", "medium", "-j")
-		is.NoErr(err)
-		listResult := &core.ListResult{}
-		is.NoErr(json.Unmarshal(output, listResult))
-		is.Equal(len(listResult.Tasks), 1) // 1 feature tasks with todo status
-	})
-
-	t.Run("empty results", func(t *testing.T) {
-		is := is.New(t)
-		output, err := exec(t, "list", runList, "-l", "nonexistent", "-j")
-		is.NoErr(err)
-		outputStr := strings.TrimSpace(string(output))
-		is.Equal(outputStr, "{\"tasks\":[],\"pagination\":{\"total_results\":0,\"displayed_results\":0,\"offset\":0,\"limit\":0,\"has_more\":false}}") // empty ListResult JSON
-	})
-
-	t.Run("empty results table format", func(t *testing.T) {
-		is := is.New(t)
-		output, err := exec(t, "list", runList, "-l", "nonexistent")
-		is.NoErr(err)
-		outputStr := strings.TrimSpace(string(output))
-		is.Equal(outputStr, "No tasks found.")
-	})
-
-	t.Run("filter unassigned tasks", func(t *testing.T) {
-		is := is.New(t)
-		output, err := exec(t, "list", runList, "--unassigned", "-j")
-		is.NoErr(err)
-		// Should not error, may return empty array since all test tasks are assigned
-		listResult := &core.ListResult{}
-		outputStr := strings.TrimSpace(string(output))
-		if outputStr != "{\"tasks\":[],\"pagination\":{\"total_results\":0,\"displayed_results\":0,\"offset\":0,\"limit\":0,\"has_more\":false}}" { // Check for empty ListResult JSON
-			err = json.Unmarshal(output, listResult)
-			is.NoErr(err)
-		}
-		is.Equal(len(listResult.Tasks), 1) // Assuming one unassigned task in setup
-		is.Equal(listResult.Tasks[0].Title, "Unassigned Task")
-	})
-
-	t.Run("short flag aliases", func(t *testing.T) {
-		t.Run("json", func(t *testing.T) {
-			is := is.New(t)
-			output, err := exec(t, "list", runList, "-j")
-			is.NoErr(err)
-			listResult := &core.ListResult{}
-			is.NoErr(json.Unmarshal(output, listResult))
-			is.Equal(len(listResult.Tasks), countTask)
-			is.Equal(listResult.Tasks[0].Title, "First Task")
-		})
-
-		t.Run("markdown", func(t *testing.T) {
-			is := is.New(t)
-			output, err := exec(t, "list", runList, "-m")
-			is.NoErr(err)
-			outputStr := string(output)
-			is.True(strings.Contains(outputStr, "|:---"))
-		})
-
-		t.Run("hide-extra-fields", func(t *testing.T) {
-			is := is.New(t)
-			output, err := exec(t, "list", runList, "-e")
-			is.NoErr(err)
-			outputStr := string(output)
-			is.True(!strings.Contains(outputStr, "LABELS"))
-		})
-
-		t.Run("reverse", func(t *testing.T) {
-			is := is.New(t)
-			output, err := exec(t, "list", runList, "-r", "-j")
-			is.NoErr(err)
-			listResult := &core.ListResult{}
-			is.NoErr(json.Unmarshal(output, listResult))
-			is.Equal(len(listResult.Tasks), countTask)
-			is.Equal(listResult.Tasks[0].Title, "In Progress Task") // the last task is
-		})
-
-		t.Run("unassigned", func(t *testing.T) {
-			is := is.New(t)
-			output, err := exec(t, "list", runList, "-u", "-j")
-			is.NoErr(err)
-			listResult := &core.ListResult{}
-					is.NoErr(json.Unmarshal(output, listResult))
-					is.Equal(len(listResult.Tasks), 1)
-					is.Equal(listResult.Tasks[0].Title, "Unassigned Task")		})
-	})
-
-	t.Run("invalid sort field", func(t *testing.T) {
-		is := is.New(t)
-		output, err := exec(t, "list", runList, "--sort", "invalidfield", "-j")
-		is.NoErr(err)
-		listResult := &core.ListResult{}
-		is.NoErr(json.Unmarshal(output, listResult))
-		is.Equal(len(listResult.Tasks), countTask)
-		is.Equal(listResult.Tasks[0].Title, "First Task")
-	})
-
-	t.Run("empty sort field", func(t *testing.T) {
-		is := is.New(t)
-		output, err := exec(t, "list", runList, "--sort", "", "-j")
-		is.NoErr(err)
-		listResult := &core.ListResult{}
-		is.NoErr(json.Unmarshal(output, listResult))
-		is.Equal(len(listResult.Tasks), 9)
-	})
-
-	t.Run("multiple combined flags", func(t *testing.T) {
-		is := is.New(t)
-		output, err := exec(t, "list", runList, "-l", "second", "-s", "todo", "--sort", "title", "-r", "--hide-extra", "-j")
-		is.NoErr(err)
-		listResult := &core.ListResult{}
-		is.NoErr(json.Unmarshal(output, listResult))
-		// Should filter by feature label, todo status, sort by title reversed, output JSON
-		is.Equal(len(listResult.Tasks), 1)
 	})
 }

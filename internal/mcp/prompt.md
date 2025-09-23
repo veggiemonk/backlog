@@ -272,7 +272,7 @@ backlog list --status todo --sort priority --reverse  # High priority first
 # Pagination examples
 backlog list --limit 5  # Get first 5 tasks
 backlog list --status todo --limit 10  # First 10 todo tasks
-backlog search "feature" --limit 3  # First 3 feature matches
+backlog list --query "feature" --limit 3  # First 3 feature matches
 
 # 2. Read task details
 backlog view 42
@@ -412,6 +412,7 @@ backlog list [flags]
 | `--reverse`      | `bool`   | Reverse the sort order                                        |
 | `--limit`        | `int`    | Maximum number of tasks to return (0 means no limit)          |
 | `--offset`       | `int`    | Number of tasks to skip from the beginning                    |
+| `--query`        | `string` | Search query to filter tasks by                               |
 
 ### `backlog view`
 
@@ -420,16 +421,6 @@ Retrieves and displays the details of a single task.
 ```bash
 backlog view ID
 ```
-
-### `backlog search`
-
-Searches tasks by content with optional filtering and pagination.
-
-```bash
-backlog search "QUERY" [flags]
-```
-
-Supports all the same flags as `list` command for filtering and pagination.
 
 ### `backlog archive`
 
@@ -453,7 +444,7 @@ Use pagination when:
 
 ### Pagination Parameters
 
-Both `backlog list` and `backlog search` support pagination:
+`backlog list` support pagination:
 
 - **`--limit`**: Maximum number of results to return (0 = no limit)
 - **`--offset`**: Number of results to skip from the beginning
@@ -470,11 +461,8 @@ backlog list --limit 10 --offset 10
 # Get first 5 high-priority tasks
 backlog list --status todo --sort priority --reverse --limit 5
 
-# Search with pagination
-backlog search "api" --limit 3
-
 # Search second page
-backlog search "api" --limit 3 --offset 3
+backlog list --query "api" --limit 3 --offset 3
 ```
 
 ### Pagination Response Format

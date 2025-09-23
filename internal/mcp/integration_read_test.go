@@ -35,7 +35,7 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 	{
 		res, err := sess.ListTools(t.Context(), &mcp.ListToolsParams{})
 		is.NoErr(err)
-		is.Equal(len(res.Tools), 7) // task_create, task_batch_create, task_list, task_view, task_edit, task_search, task_archive
+		is.Equal(len(res.Tools), 6) // task_create, task_batch_create, task_list, task_view, task_edit, task_archive
 	}
 	{
 		res, err := sess.ListPrompts(t.Context(), &mcp.ListPromptsParams{})
@@ -77,27 +77,13 @@ func TestMCP_Integration_Read_HTTP(t *testing.T) {
 		is.Equal(wrapped.ID.String(), picked.ID.String())
 	}
 
-	// 3) Search for a known keyword
-	{
-		res, err := sess.CallTool(t.Context(), &mcp.CallToolParams{Name: "task_search", Arguments: SearchParams{Query: "feature"}})
-		is.NoErr(err)
-		// Should have results thanks to setupTestData seeding "feature" labeled tasks
-		is.True(res != nil)
-		var searchResult core.ListResult
-		b, err := json.Marshal(res.StructuredContent)
-		is.NoErr(err)
-		is.NoErr(json.Unmarshal(b, &searchResult))
-
-		is.Equal(len(searchResult.Tasks), 4)
-	}
-
-	// 4) Read a resource (AGENTS.md)
+	// 3) Read a resource (AGENTS.md)
 	{
 		_, err := sess.ReadResource(t.Context(), &mcp.ReadResourceParams{URI: agentInstructionsURI})
 		is.NoErr(err)
 	}
 
-	// 5) Get a prompt
+	// 4) Get a prompt
 	{
 		_, err := sess.GetPrompt(t.Context(), &mcp.GetPromptParams{Name: "weekly_summary"})
 		is.NoErr(err)

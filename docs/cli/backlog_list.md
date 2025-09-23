@@ -27,6 +27,9 @@ backlog list --labels "bug"                     # List tasks containing the labe
 backlog list --labels "bug,feature"             # List tasks containing either "bug" or "feature" labels
 backlog list --priority "high"                  # List all high priority tasks
 
+# Search
+backlog list --query "refactor"                 # Search for tasks with the word "refactor" in them
+
 # dependency filters
 backlog list --has-dependency                   # List tasks that have at least one dependency
 backlog list --depended-on                      # List tasks that are depended on by other tasks
@@ -78,6 +81,7 @@ backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
       --offset int         Number of tasks to skip from the beginning
   -p, --parent string      Filter tasks by parent ID
       --priority string    Filter tasks by priority
+  -q, --query string       Search query to filter tasks by
   -r, --reverse            Reverse the order of tasks
       --sort string        Sort tasks by comma-separated fields (id, title, status, priority, created, updated)
   -s, --status strings     Filter tasks by status

@@ -8,6 +8,7 @@ import (
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
+	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
 var editCmd = &cobra.Command{
@@ -197,7 +198,7 @@ func runEdit(cmd *cobra.Command, args []string) error {
 	params.RemoveAC = removeAC
 
 	// get store from context
-	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
+	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)
 
 	// current task
 	task, err := store.Get(params.ID)

@@ -290,7 +290,7 @@ func TestSearchWithPagination(t *testing.T) {
 			Limit: &limit,
 		}
 
-		listResult, err := store.Search("feature", params)
+		listResult, err := store.List(params)
 		is.NoErr(err)
 		is.Equal(len(listResult.Tasks), 2) // Should limit results to 2
 
@@ -305,9 +305,10 @@ func TestSearchWithPagination(t *testing.T) {
 		offset := 1
 		params := ListTasksParams{
 			Offset: &offset,
+			Query:  stringPtr("feature"),
 		}
 
-		listResult, err := store.Search("feature", params)
+		listResult, err := store.List(params)
 		is.NoErr(err)
 		is.Equal(len(listResult.Tasks), 2) // Should have 2 remaining after offset (3 - 1)
 	})
@@ -319,9 +320,10 @@ func TestSearchWithPagination(t *testing.T) {
 		params := ListTasksParams{
 			Limit:  &limit,
 			Offset: &offset,
+			Query:  stringPtr("feature"),
 		}
 
-		listResult, err := store.Search("feature", params)
+		listResult, err := store.List(params)
 		is.NoErr(err)
 		is.Equal(len(listResult.Tasks), 1) // Should have 1 task (skip first, take one)
 	})
@@ -331,6 +333,10 @@ func TestSearchWithPagination(t *testing.T) {
 // Helper functions
 func intPtr(i int) *int {
 	return &i
+}
+
+func stringPtr(s string) *string {
+	return &s
 }
 
 
