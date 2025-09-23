@@ -3,6 +3,8 @@ package core
 import (
 	"encoding/json"
 	"fmt"
+	"maps"
+	"slices"
 	"strings"
 
 	"github.com/agnivade/levenshtein"
@@ -26,13 +28,14 @@ var (
 	_ json.Marshaler   = (*Priority)(nil)
 )
 
-var priorities = []string{
-	"unknown",
-	"low",
-	"medium",
-	"high",
-	"critical",
+var priorities = map[string]Priority{
+	"unknown":  PriorityUnknown,
+	"low":      PriorityLow,
+	"medium":   PriorityMedium,
+	"high":     PriorityHigh,
+	"critical": PriorityCritical,
 }
+var allPriorities = strings.Join(slices.Collect(maps.Keys(priorities)), ",")
 
 func (p Priority) String() string {
 	switch p {
@@ -82,28 +85,17 @@ func (p *Priority) UnmarshalYAML(value *yaml.Node) error {
 }
 func (p Priority) MarshalYAML() (any, error) { return p.String(), nil }
 
+const maxLevenShteinDistance = 3
+
 func ParsePriority(s string) (Priority, error) {
 	if s == "" {
 		return PriorityUnknown, nil
 	}
-
 	sp := strings.ReplaceAll(strings.ToLower(s), " ", "")
-	for _, validPriority := range priorities {
-		distance := levenshtein.ComputeDistance(sp, validPriority)
-		if distance < 3 {
-			switch validPriority {
-			case "unknown":
-				return PriorityUnknown, nil
-			case "low":
-				return PriorityLow, nil
-			case "medium":
-				return PriorityMedium, nil
-			case "high":
-				return PriorityHigh, nil
-			case "critical":
-				return PriorityCritical, nil
-			}
+	for validPriority, p := range priorities {
+		if levenshtein.ComputeDistance(sp, validPriority) < maxLevenShteinDistance {
+			return p, nil
 		}
 	}
-	return PriorityUnknown, fmt.Errorf("only valid priorities are %q: %q %w", strings.Join(priorities, ","), s, ErrInvalid)
+	return PriorityUnknown, fmt.Errorf("only valid priorities are %q: %q %w", allPriorities, s, ErrInvalid)
 }

@@ -126,29 +126,20 @@ func setListFlags(cmd *cobra.Command) {
 
 func runList(cmd *cobra.Command, args []string) error {
 	sortFieldsSlice := parseSortFields(sortFields)
-
-	var limit, offset *int
-	if limitFlag > 0 {
-		limit = &limitFlag
-	}
-	if offsetFlag > 0 {
-		offset = &offsetFlag
-	}
-
 	params := core.ListTasksParams{
-		Parent:        &filterParent,
-		Priority:      &filterPriority,
+		Parent:        filterParent,
+		Priority:      filterPriority,
 		Status:        filterStatus,
 		Assigned:      filterAssigned,
 		Labels:        filterLabels,
-		Query:         &query,
+		Query:         query,
 		Unassigned:    filterUnassigned,
 		HasDependency: hasDependency,
 		DependedOn:    dependedon,
 		Sort:          sortFieldsSlice,
 		Reverse:       reverseOrder,
-		Limit:         limit,
-		Offset:        offset,
+		Limit:         limitFlag,
+		Offset:        offsetFlag,
 	}
 
 	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)
@@ -177,7 +168,7 @@ func parseSortFields(sortFields string) []string {
 }
 
 // renderTaskResultsWithPagination renders a slice of tasks with pagination info
-func renderTaskResultsWithPagination(w io.Writer, listResult *core.ListResult, jsonOutput, markdownOutput, hideExtraFields bool, messagePrefix string) error {
+func renderTaskResultsWithPagination(w io.Writer, listResult core.ListResult, jsonOutput, markdownOutput, hideExtraFields bool, messagePrefix string) error {
 	// For JSON output with pagination info
 	if jsonOutput && listResult.Pagination != nil {
 		if err := json.NewEncoder(w).Encode(listResult); err != nil {

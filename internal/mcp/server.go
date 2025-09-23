@@ -26,7 +26,7 @@ type TaskStore interface {
 	Get(id string) (core.Task, error)
 	Create(params core.CreateTaskParams) (core.Task, error)
 	Update(task *core.Task, params core.EditTaskParams) error
-	List(params core.ListTasksParams) (*core.ListResult, error)
+	List(params core.ListTasksParams) (core.ListResult, error)
 	Path(t core.Task) string
 	Archive(id core.TaskID) (string, error)
 }

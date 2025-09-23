@@ -12,32 +12,32 @@ import (
 
 // ListTasksParams holds the parameters for listing tasks.
 type ListTasksParams struct {
-	Parent        *string  `json:"parent,omitempty" jsonschema:"Filter tasks by a parent task ID."`
+	Parent        string   `json:"parent,omitempty" jsonschema:"Filter tasks by a parent task ID."`
 	Status        []string `json:"status,omitempty" jsonschema:"Filter tasks by status."`
 	Assigned      []string `json:"assigned,omitempty" jsonschema:"Filter tasks by assignee."`
 	Labels        []string `json:"labels,omitempty" jsonschema:"Filter tasks by label."`
 	Sort          []string `json:"sort,omitempty" jsonschema:"Fields to sort by."`
-	Priority      *string  `json:"priority,omitempty" jsonschema:"Filter tasks by priority."`
-	Query         *string  `json:"query,omitempty" jsonschema:"Search query to filter tasks by."`
+	Priority      string   `json:"priority,omitempty" jsonschema:"Filter tasks by priority."`
+	Query         string   `json:"query,omitempty" jsonschema:"Search query to filter tasks by."`
 	Unassigned    bool     `json:"unassigned,omitempty" jsonschema:"Filter tasks that have no one assigned."`
 	DependedOn    bool     `json:"depended_on,omitempty" jsonschema:"Filter tasks that other tasks depend on."`
 	HasDependency bool     `json:"has_dependency,omitempty" jsonschema:"Filter tasks that have at least one dependency."`
 	Reverse       bool     `json:"reverse,omitempty" jsonschema:"Reverse the sort order."`
 	// Pagination
-	Limit  *int `json:"limit,omitempty" jsonschema:"Maximum number of tasks to return (0 means no limit)."`
-	Offset *int `json:"offset,omitempty" jsonschema:"Number of tasks to skip from the beginning."`
+	Limit  int `json:"limit,omitempty" jsonschema:"Maximum number of tasks to return (0 means no limit)."`
+	Offset int `json:"offset,omitempty" jsonschema:"Number of tasks to skip from the beginning."`
 }
 
 // List implements TaskStore.
-func (f *FileTaskStore) List(params ListTasksParams) (*ListResult, error) {
+func (f *FileTaskStore) List(params ListTasksParams) (result ListResult, err error) {
 	// Load all tasks from filesystem
 	tasks, err := f.loadAll()
 	if err != nil {
-		return nil, err
+		return result, fmt.Errorf("loading tasks: %v", err)
 	}
 	filteredTasks, err := filterTasks(tasks, params)
 	if err != nil {
-		return nil, err
+		return result, fmt.Errorf("filtering tasks: %v", err)
 	}
 	sortTasks(filteredTasks, params.Sort, params.Reverse)
 	listResult := Paginate(filteredTasks, params.Limit, params.Offset)
@@ -92,17 +92,17 @@ func filterTasks(tasks []Task, params ListTasksParams) ([]Task, error) {
 	var isPrioritySet bool
 	var err error
 
-	if params.Parent != nil && *params.Parent != "" {
-		parentID, err = parseTaskID(*params.Parent)
+	if params.Parent != "" {
+		parentID, err = parseTaskID(params.Parent)
 		if err != nil {
-			return nil, fmt.Errorf("parent task ID '%s': %w", *params.Parent, err)
+			return nil, fmt.Errorf("parent task ID '%s': %w", params.Parent, err)
 		}
 		isParentSet = true
 	}
-	if params.Priority != nil && *params.Priority != "" {
-		priority, err = ParsePriority(*params.Priority)
+	if params.Priority != "" {
+		priority, err = ParsePriority(params.Priority)
 		if err != nil {
-			return nil, fmt.Errorf("priority '%s': %w", *params.Priority, err)
+			return nil, fmt.Errorf("priority '%s': %w", params.Priority, err)
 		}
 		isPrioritySet = true
 	}
@@ -121,8 +121,8 @@ func filterTasks(tasks []Task, params ListTasksParams) ([]Task, error) {
 	}
 
 	var filteredTasks []Task
-	if params.Query != nil && *params.Query != "" {
-		filteredTasks = searchTasks(tasks, *params.Query)
+	if params.Query != "" {
+		filteredTasks = searchTasks(tasks, params.Query)
 	} else {
 		filteredTasks = tasks
 	}

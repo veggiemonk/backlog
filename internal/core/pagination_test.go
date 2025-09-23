@@ -12,8 +12,8 @@ func TestPaginate(t *testing.T) {
 	tests := []struct {
 		name              string
 		tasks             []Task
-		limit             *int
-		offset            *int
+		limit             int
+		offset            int
 		expectedCount     int
 		expectedFirst     string // ID of first task in result
 		expectedLast      string // ID of last task in result
@@ -30,8 +30,8 @@ func TestPaginate(t *testing.T) {
 				{ID: TaskID{seg: []int{2}}, Title: "Task 2"},
 				{ID: TaskID{seg: []int{3}}, Title: "Task 3"},
 			},
-			limit:             nil,
-			offset:            nil,
+			limit:             0,
+			offset:            0,
 			expectedCount:     3,
 			expectedFirst:     "01",
 			expectedLast:      "03",
@@ -48,8 +48,8 @@ func TestPaginate(t *testing.T) {
 				{ID: TaskID{seg: []int{2}}, Title: "Task 2"},
 				{ID: TaskID{seg: []int{3}}, Title: "Task 3"},
 			},
-			limit:             intPtr(2),
-			offset:            nil,
+			limit:             2,
+			offset:            0,
 			expectedCount:     2,
 			expectedFirst:     "01",
 			expectedLast:      "02",
@@ -66,8 +66,8 @@ func TestPaginate(t *testing.T) {
 				{ID: TaskID{seg: []int{2}}, Title: "Task 2"},
 				{ID: TaskID{seg: []int{3}}, Title: "Task 3"},
 			},
-			limit:             nil,
-			offset:            intPtr(1),
+			limit:             0,
+			offset:            1,
 			expectedCount:     2,
 			expectedFirst:     "02",
 			expectedLast:      "03",
@@ -86,8 +86,8 @@ func TestPaginate(t *testing.T) {
 				{ID: TaskID{seg: []int{4}}, Title: "Task 4"},
 				{ID: TaskID{seg: []int{5}}, Title: "Task 5"},
 			},
-			limit:             intPtr(2),
-			offset:            intPtr(1),
+			limit:             2,
+			offset:            1,
 			expectedCount:     2,
 			expectedFirst:     "02",
 			expectedLast:      "03",
@@ -103,8 +103,8 @@ func TestPaginate(t *testing.T) {
 				{ID: TaskID{seg: []int{1}}, Title: "Task 1"},
 				{ID: TaskID{seg: []int{2}}, Title: "Task 2"},
 			},
-			limit:             intPtr(2),
-			offset:            intPtr(5),
+			limit:             2,
+			offset:            5,
 			expectedCount:     0,
 			expectedTotal:     2,
 			expectedDisplayed: 0,
@@ -119,8 +119,8 @@ func TestPaginate(t *testing.T) {
 				{ID: TaskID{seg: []int{2}}, Title: "Task 2"},
 				{ID: TaskID{seg: []int{3}}, Title: "Task 3"},
 			},
-			limit:             intPtr(5),
-			offset:            intPtr(1),
+			limit:             5,
+			offset:            1,
 			expectedCount:     2,
 			expectedFirst:     "02",
 			expectedLast:      "03",
@@ -133,30 +133,13 @@ func TestPaginate(t *testing.T) {
 		{
 			name:              "empty_task_list",
 			tasks:             []Task{},
-			limit:             intPtr(5),
-			offset:            intPtr(0),
+			limit:             5,
+			offset:            0,
 			expectedCount:     0,
 			expectedTotal:     0,
 			expectedDisplayed: 0,
 			expectedOffset:    0,
 			expectedLimit:     5,
-			expectedHasMore:   false,
-		},
-		{
-			name: "zero_limit",
-			tasks: []Task{
-				{ID: TaskID{seg: []int{1}}, Title: "Task 1"},
-				{ID: TaskID{seg: []int{2}}, Title: "Task 2"},
-			},
-			limit:             intPtr(0),
-			offset:            nil,
-			expectedCount:     2,
-			expectedFirst:     "01",
-			expectedLast:      "02",
-			expectedTotal:     2,
-			expectedDisplayed: 2,
-			expectedOffset:    0,
-			expectedLimit:     0,
 			expectedHasMore:   false,
 		},
 	}
@@ -206,10 +189,7 @@ func TestListWithPagination(t *testing.T) {
 
 	t.Run("list_with_limit", func(t *testing.T) {
 		is := is.New(t)
-		limit := 3
-		params := ListTasksParams{
-			Limit: &limit,
-		}
+		params := ListTasksParams{Limit: 3}
 
 		listResult, err := store.List(params)
 		is.NoErr(err)
@@ -218,10 +198,7 @@ func TestListWithPagination(t *testing.T) {
 
 	t.Run("list_with_offset", func(t *testing.T) {
 		is := is.New(t)
-		offset := 2
-		params := ListTasksParams{
-			Offset: &offset,
-		}
+		params := ListTasksParams{Offset: 2}
 
 		listResult, err := store.List(params)
 		is.NoErr(err)
@@ -230,12 +207,7 @@ func TestListWithPagination(t *testing.T) {
 
 	t.Run("list_with_limit_and_offset", func(t *testing.T) {
 		is := is.New(t)
-		limit := 2
-		offset := 1
-		params := ListTasksParams{
-			Limit:  &limit,
-			Offset: &offset,
-		}
+		params := ListTasksParams{Limit: 2, Offset: 1}
 
 		listResult, err := store.List(params)
 		is.NoErr(err)
@@ -244,11 +216,7 @@ func TestListWithPagination(t *testing.T) {
 
 	t.Run("list_with_filter_and_pagination", func(t *testing.T) {
 		is := is.New(t)
-		limit := 2
-		params := ListTasksParams{
-			Status: []string{"todo"},
-			Limit:  &limit,
-		}
+		params := ListTasksParams{Status: []string{"todo"}, Limit: 2}
 
 		listResult, err := store.List(params)
 		is.NoErr(err)
@@ -285,10 +253,7 @@ func TestSearchWithPagination(t *testing.T) {
 
 	t.Run("search_with_limit", func(t *testing.T) {
 		is := is.New(t)
-		limit := 2
-		params := ListTasksParams{
-			Limit: &limit,
-		}
+		params := ListTasksParams{Limit: 2}
 
 		listResult, err := store.List(params)
 		is.NoErr(err)
@@ -302,11 +267,7 @@ func TestSearchWithPagination(t *testing.T) {
 
 	t.Run("search_with_offset", func(t *testing.T) {
 		is := is.New(t)
-		offset := 1
-		params := ListTasksParams{
-			Offset: &offset,
-			Query:  stringPtr("feature"),
-		}
+		params := ListTasksParams{Offset: 1, Query: "feature"}
 
 		listResult, err := store.List(params)
 		is.NoErr(err)
@@ -315,28 +276,10 @@ func TestSearchWithPagination(t *testing.T) {
 
 	t.Run("search_with_limit_and_offset", func(t *testing.T) {
 		is := is.New(t)
-		limit := 1
-		offset := 1
-		params := ListTasksParams{
-			Limit:  &limit,
-			Offset: &offset,
-			Query:  stringPtr("feature"),
-		}
+		params := ListTasksParams{Limit: 1, Offset: 1, Query: "feature"}
 
 		listResult, err := store.List(params)
 		is.NoErr(err)
 		is.Equal(len(listResult.Tasks), 1) // Should have 1 task (skip first, take one)
 	})
 }
-
-
-// Helper functions
-func intPtr(i int) *int {
-	return &i
-}
-
-func stringPtr(s string) *string {
-	return &s
-}
-
-

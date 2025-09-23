@@ -16,57 +16,52 @@ type ListResult struct {
 }
 
 // Paginate applies pagination to a slice of tasks and returns a ListResult.
-func Paginate(tasks []Task, limit *int, offset *int) *ListResult {
+func Paginate(tasks []Task, limit int, offset int) ListResult {
 	totalResults := len(tasks)
-
-	// Default offset to 0 if nil
-	startIndex := 0
-	if offset != nil && *offset > 0 {
-		startIndex = *offset
-	}
+	startIndex := offset
 
 	// If offset is beyond the total number of tasks, return empty result
 	if startIndex >= totalResults {
-		return &ListResult{
+		return ListResult{
 			Tasks: []Task{},
 			Pagination: &PaginationInfo{
 				TotalResults:     totalResults,
 				DisplayedResults: 0,
 				Offset:           startIndex,
-				Limit:            getLimit(limit),
+				Limit:            limit,
 				HasMore:          false,
 			},
 		}
 	}
 
 	// If no limit specified or limit is 0, return from offset to end
-	if limit == nil || *limit == 0 {
+	if limit == 0 {
 		paginatedTasks := tasks[startIndex:]
-		return &ListResult{
+		return ListResult{
 			Tasks: paginatedTasks,
 			Pagination: &PaginationInfo{
 				TotalResults:     totalResults,
 				DisplayedResults: len(paginatedTasks),
 				Offset:           startIndex,
-				Limit:            getLimit(limit),
+				Limit:            limit,
 				HasMore:          false,
 			},
 		}
 	}
 
 	// Calculate end index
-	endIndex := min(startIndex+(*limit), totalResults)
+	endIndex := min(startIndex+limit, totalResults)
 	paginatedTasks := tasks[startIndex:endIndex]
 
 	hasMore := endIndex < totalResults
 
-	return &ListResult{
+	return ListResult{
 		Tasks: paginatedTasks,
 		Pagination: &PaginationInfo{
 			TotalResults:     totalResults,
 			DisplayedResults: len(paginatedTasks),
 			Offset:           startIndex,
-			Limit:            getLimit(limit),
+			Limit:            limit,
 			HasMore:          hasMore,
 		},
 	}
@@ -100,11 +95,4 @@ func PaginateTasks(tasks []Task, limit *int, offset *int) []Task {
 	endIndex := min(startIndex+(*limit), len(tasks))
 
 	return tasks[startIndex:endIndex]
-}
-
-func getLimit(limit *int) int {
-	if limit == nil {
-		return 0
-	}
-	return *limit
 }

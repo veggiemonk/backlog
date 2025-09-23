@@ -27,10 +27,7 @@ var statuses = []string{
 	string(StatusArchived),
 	string(StatusRejected),
 }
-
-func printValidStatuses() string {
-	return strings.Join(statuses, ",")
-}
+var allStatuses = strings.Join(statuses, ",")
 
 func ParseStatus(s string) (Status, error) {
 	if s == "" {
@@ -43,5 +40,5 @@ func ParseStatus(s string) (Status, error) {
 			return Status(validStatus), nil
 		}
 	}
-	return "", fmt.Errorf("only valid statuses are %q: %q %w", printValidStatuses(), s, ErrInvalid)
+	return "", fmt.Errorf("only valid statuses are %q: %q %w", allStatuses, s, ErrInvalid)
 }

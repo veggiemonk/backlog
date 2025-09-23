@@ -152,7 +152,7 @@ func (s *Server) addPrompts() {
 		call := MCPToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
-				Parent: ptr("[PARENT_ID]"),
+				Parent: "[PARENT_ID]",
 				Sort:   []string{"id"},
 			},
 		}
@@ -301,7 +301,7 @@ func (s *Server) addPrompts() {
 		call := MCPToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
-				Parent: ptr("[PARENT_ID]"),
+				Parent: "[PARENT_ID]",
 				Sort:   []string{"id"},
 			},
 		}

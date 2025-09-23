@@ -30,10 +30,10 @@ func TestListTasks(t *testing.T) {
 	}{
 		{"no filter", core.ListTasksParams{}, 3, ""},
 		{"filter by status", core.ListTasksParams{Status: []string{"todo"}}, 2, ""},
-		{"filter by parent full name", core.ListTasksParams{Parent: ptr("T01")}, 1, "Task Three"},
+		{"filter by parent full name", core.ListTasksParams{Parent: "T01"}, 1, "Task Three"},
 		{"filter by status in progress", core.ListTasksParams{Status: []string{"in-progress"}}, 1, "Task Two"},
-		{"filter by parent no leading 0", core.ListTasksParams{Parent: ptr("T1")}, 1, "Task Three"},
-		{"filter by parent just number", core.ListTasksParams{Parent: ptr("1")}, 1, "Task Three"},
+		{"filter by parent no leading 0", core.ListTasksParams{Parent: "T1"}, 1, "Task Three"},
+		{"filter by parent just number", core.ListTasksParams{Parent: "1"}, 1, "Task Three"},
 	}
 
 	for _, tt := range tests {
@@ -86,12 +86,12 @@ func TestFilterAndSortTasks(t *testing.T) {
 		// All tasks are 'todo' by default, except T02 which is 'done'
 		// T04 is a sub-task of T01
 		// So there are no tasks that are sub-tasks of T01 and have status 'done'
-		listResult, err := store.List(core.ListTasksParams{Parent: ptr("T01"), Status: []string{"done"}})
+		listResult, err := store.List(core.ListTasksParams{Parent: "T01", Status: []string{"done"}})
 		is.NoErr(err)
 		is.Equal(len(listResult.Tasks), 0)
 
 		// T04 is a sub-task of T01 and has status 'todo'
-		listResult, err = store.List(core.ListTasksParams{Parent: ptr("T01"), Status: []string{"todo"}})
+		listResult, err = store.List(core.ListTasksParams{Parent: "T01", Status: []string{"todo"}})
 		is.NoErr(err)
 		is.Equal(len(listResult.Tasks), 1)
 		is.Equal(listResult.Tasks[0].Title, "Delta Task")
@@ -150,7 +150,7 @@ func TestFilterAndSortTasks(t *testing.T) {
 
 	t.Run("invalid parent filter", func(t *testing.T) {
 		is := is.New(t)
-		_, err := store.List(core.ListTasksParams{Parent: ptr("invalid-parent")})
+		_, err := store.List(core.ListTasksParams{Parent: "invalid-parent"})
 		is.True(err != nil)
 	})
 }
@@ -289,7 +289,7 @@ func TestSearchTasks(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			listResult, err := store.List(core.ListTasksParams{Query: &tt.query})
+			listResult, err := store.List(core.ListTasksParams{Query: tt.query})
 			is.NoErr(err)
 			is.Equal(len(listResult.Tasks), tt.expectedCount)
 

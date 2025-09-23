@@ -68,7 +68,7 @@ func TestMCPHandlers(t *testing.T) {
 			result, _, err := handler.list(ctx, req, core.ListTasksParams{})
 			is.NoErr(err)
 			is.True(result != nil)
-			listResult, ok := result.StructuredContent.(*core.ListResult)
+			listResult, ok := result.StructuredContent.(core.ListResult)
 			is.True(ok)
 			is.Equal(len(listResult.Tasks), 9)
 		})
@@ -82,7 +82,7 @@ func TestMCPHandlers(t *testing.T) {
 			result, _, err := handler.list(ctx, req, params)
 			is.NoErr(err)
 			is.True(result != nil)
-			listResult, ok := result.StructuredContent.(*core.ListResult)
+			listResult, ok := result.StructuredContent.(core.ListResult)
 			is.True(ok)
 			is.Equal(len(listResult.Tasks), 1)
 			for _, task := range listResult.Tasks {
