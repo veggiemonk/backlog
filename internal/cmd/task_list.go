@@ -114,7 +114,7 @@ func setListFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolVarP(&markdownOutput, "markdown", "m", false, "print markdown table")
 	cmd.Flags().BoolVarP(&jsonOutput, "json", "j", false, "Print JSON output")
 	// pagination
-	cmd.Flags().IntVar(&limitFlag, "limit", 0, "Maximum number of tasks to return (0 means no limit)")
+	cmd.Flags().IntVar(&limitFlag, "limit", 25, "Maximum number of tasks to return (0 means no limit)")
 	cmd.Flags().IntVar(&offsetFlag, "offset", 0, "Number of tasks to skip from the beginning")
 }
 
@@ -122,6 +122,8 @@ func runList(cmd *cobra.Command, args []string) error {
 	sortFieldsSlice := parseSortFields(sortFields)
 
 	var limit, offset *int
+	// Track if limit was explicitly set by user (not default)
+	limitExplicit := cmd.Flags().Changed("limit")
 	if limitFlag > 0 {
 		limit = &limitFlag
 	}
@@ -165,9 +167,10 @@ func runList(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to list tasks: %w", err)
 	}
 
-	// Create pagination info
+	// Create pagination info only when pagination was explicitly requested
 	var paginationInfo *core.PaginationInfo
-	if limit != nil || offset != nil {
+	// Only create pagination info if offset was provided or limit was explicitly set by user
+	if (offset != nil && *offset > 0) || limitExplicit {
 		offsetVal := 0
 		if offset != nil {
 			offsetVal = *offset

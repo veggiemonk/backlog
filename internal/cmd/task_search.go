@@ -89,25 +89,27 @@ func setSearchFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolVarP(&searchMarkdownOutput, "markdown", "m", false, "Print markdown table")
 	cmd.Flags().BoolVarP(&searchJSONOutput, "json", "j", false, "Print JSON output")
 	// pagination
-	cmd.Flags().IntVar(&searchLimitFlag, "limit", 0, "Maximum number of tasks to return (0 means no limit)")
+	cmd.Flags().IntVar(&searchLimitFlag, "limit", 25, "Maximum number of tasks to return (0 means no limit)")
 	cmd.Flags().IntVar(&searchOffsetFlag, "offset", 0, "Number of tasks to skip from the beginning")
 }
 
 func runSearch(cmd *cobra.Command, args []string) error {
 	query := args[0]
 	sortFieldsSlice := parseSortFields(searchSortFields)
-	
+
 	var limit, offset *int
+	// Track if limit was explicitly set by user (not default)
+	limitExplicit := cmd.Flags().Changed("limit")
 	if searchLimitFlag > 0 {
 		limit = &searchLimitFlag
 	}
 	if searchOffsetFlag > 0 {
 		offset = &searchOffsetFlag
 	}
-	
+
 	// Apply configuration defaults and limits
 	limit, offset = ApplyDefaultPagination(limit, offset)
-	
+
 	params := core.ListTasksParams{
 		Parent:        &searchParent,
 		Status:        searchStatus,
@@ -122,7 +124,7 @@ func runSearch(cmd *cobra.Command, args []string) error {
 		Offset:        offset,
 	}
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
-	
+
 	// Get total search count without pagination for metadata
 	totalParams := params
 	totalParams.Limit = nil
@@ -132,13 +134,13 @@ func runSearch(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to search tasks for query %q: %w", query, err)
 	}
 	totalCount := len(allTasks)
-	
+
 	// Get paginated search results
 	tasks, err := store.Search(query, params)
 	if err != nil {
 		return fmt.Errorf("failed to search tasks for query %q: %w", query, err)
 	}
-	
+
 	messagePrefix := ""
 	if !searchJSONOutput {
 		switch {
@@ -153,10 +155,11 @@ func runSearch(cmd *cobra.Command, args []string) error {
 			}
 		}
 	}
-	
-	// Create pagination info
+
+	// Create pagination info only when pagination was explicitly requested
 	var paginationInfo *core.PaginationInfo
-	if limit != nil || offset != nil {
+	// Only create pagination info if offset was provided or limit was explicitly set by user
+	if (offset != nil && *offset > 0) || limitExplicit {
 		offsetVal := 0
 		if offset != nil {
 			offsetVal = *offset
@@ -166,13 +169,13 @@ func runSearch(cmd *cobra.Command, args []string) error {
 			limitVal = *limit
 		}
 		hasMore := (offsetVal + len(tasks)) < totalCount
-		
+
 		paginationInfo = &core.PaginationInfo{
-			TotalResults:    totalCount,
+			TotalResults:     totalCount,
 			DisplayedResults: len(tasks),
-			Offset:          offsetVal,
-			Limit:           limitVal,
-			HasMore:         hasMore,
+			Offset:           offsetVal,
+			Limit:            limitVal,
+			HasMore:          hasMore,
 		}
 	}
 

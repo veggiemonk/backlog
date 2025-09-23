@@ -313,10 +313,7 @@ func PaginateTasks(tasks []Task, limit *int, offset *int) []Task {
 	}
 
 	// Calculate end index
-	endIndex := startIndex + *limit
-	if endIndex > len(tasks) {
-		endIndex = len(tasks)
-	}
+	endIndex := min(startIndex+(*limit), len(tasks))
 
 	return tasks[startIndex:endIndex]
 }
