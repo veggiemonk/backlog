@@ -8,7 +8,6 @@ Backlog is a zero-configuration task manager written in Go where tasks live insi
 The system is designed to be offline-first and completely portable, as the entire project state is contained within the Git repository.
 
 <!--toc:start-->
-
 - [Introduction](#introduction)
 - [Features](#features)
 - [Quick Start](#quick-start)
@@ -169,8 +168,6 @@ Backlog supports configuration through command-line flags and environment variab
 | ------------------- | --------------- | --------------------- | ---------- | ----------------------------------------- |
 | **Tasks Directory** | `--folder`      | `BACKLOG_FOLDER`      | `.backlog` | Directory for backlog tasks               |
 | **Auto Commit**     | `--auto-commit` | `BACKLOG_AUTO_COMMIT` | `true`     | Auto-committing changes to git repository |
-| **Page Size**       | `--page-size`   | `BACKLOG_PAGE_SIZE`   | `25`       | Default page size for pagination          |
-| **Max Limit**       | `--max-limit`   | `BACKLOG_MAX_LIMIT`   | `1000`     | Maximum limit for pagination              |
 | **Log Level**       | `--log-level`   | `BACKLOG_LOG_LEVEL`   | `info`     | Log level (debug, info, warn, error)      |
 | **Log Format**      | `--log-format`  | `BACKLOG_LOG_FORMAT`  | `text`     | Log format (json, text)                   |
 | **Log File**        | `--log-file`    | `BACKLOG_LOG_FILE`    | `""`       | Log file path (defaults to stderr)        |
@@ -181,15 +178,10 @@ Backlog supports configuration through command-line flags and environment variab
 # Using command-line flags
 backlog --folder /custom/path --log-level debug --auto-commit false list
 
-# Configure pagination limits
-backlog --page-size 10 --max-limit 100 list
-
 # Using environment variables
 export BACKLOG_FOLDER="/custom/path"
 export BACKLOG_LOG_LEVEL="debug"
 export BACKLOG_AUTO_COMMIT="false"
-export BACKLOG_PAGE_SIZE="10"
-export BACKLOG_MAX_LIMIT="100"
 backlog list
 
 # Flags override environment variables
@@ -327,6 +319,7 @@ backlog view T01.02
 
 # Edit task
 backlog edit T01 --status "in-progress" --assignee "alex"
+```
 
 ### Conflict Management
 
