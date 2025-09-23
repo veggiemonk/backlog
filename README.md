@@ -55,7 +55,7 @@ All tasks should have at least one acceptance criteria.
 Read the full instructions for backlog: ./internal/mcp/prompt.md
 ```
 
-Assuming that backlog is registered as an MCP server with the command `backlog mcp`. See config examples in [.gemini](./.gemini), [.claude](./.claude) and [.vscode](.vscode).
+Assuming that backlog is registered as an MCP server with the command `backlog mcp`. See configuration examples in [.gemini](./.gemini) and [.claude](./.claude).
 
 Interestingly, while this codebase is mostly hand-written, the documentation, comments, examples, and some of the tests were generated with AI. I found that AI agents yield better results when the structure of the project is already there and exactly how you want it, with the libraries you want, in the code style you want. After that, it gets easier.
 
@@ -241,7 +241,7 @@ backlog mcp --http --port 8106 # specify the port
 backlog mcp
 ```
 
-See this repository [.gemini](./.gemini), [.claude](./.claude) and [.vscode](./.vscode) for example configurations.
+See this repository [.gemini](./.gemini) or [.claude](./.claude) for example configurations.
 
 ### Basic Task Creation
 
