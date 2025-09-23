@@ -79,8 +79,8 @@ func TestUpdateTaskFields(t *testing.T) {
 			Title:       "Initial Task",
 			Assigned:    []string{"initial-user"},
 			Labels:      []string{"bug"},
-			Notes:       &[]string{"Initial implementation notes."}[0],
-			Plan:        &[]string{"Initial implementation plan."}[0],
+			Notes:       "Initial implementation notes.",
+			Plan:        "Initial implementation plan.",
 			Priority:    "medium",
 			Description: "This is the initial description.",
 		})

@@ -5,32 +5,24 @@ import (
 	"sort"
 )
 
-// ACManager handles acceptance criteria operations
-type ACManager struct{}
-
-// NewACManager creates a new ACManager instance
-func NewACManager() *ACManager {
-	return &ACManager{}
-}
-
-// HandleACChanges processes acceptance criteria changes for a task
-func (ac *ACManager) HandleACChanges(task *Task, params EditTaskParams) {
+// handleACChanges processes acceptance criteria changes for a task
+func handleACChanges(task *Task, params EditTaskParams) {
 	// 1. Remove ACs
-	ac.removeACs(task, params.RemoveAC)
+	removeACs(task, params.RemoveAC)
 
 	// 2. Check/Uncheck ACs
-	ac.checkACs(task, params.CheckAC)
-	ac.uncheckACs(task, params.UncheckAC)
+	checkACs(task, params.CheckAC)
+	uncheckACs(task, params.UncheckAC)
 
 	// 3. Add new ACs
-	ac.addACs(task, params.AddAC)
+	addACs(task, params.AddAC)
 
 	// 4. Re-index all ACs
-	ac.reindexACs(task)
+	reindexACs(task)
 }
 
 // removeACs removes acceptance criteria by index
-func (ac *ACManager) removeACs(task *Task, indicesToRemove []int) {
+func removeACs(task *Task, indicesToRemove []int) {
 	// Sort in reverse order to avoid index shifting issues
 	sort.Sort(sort.Reverse(sort.IntSlice(indicesToRemove)))
 
@@ -48,7 +40,7 @@ func (ac *ACManager) removeACs(task *Task, indicesToRemove []int) {
 }
 
 // checkACs marks acceptance criteria as checked
-func (ac *ACManager) checkACs(task *Task, indicesToCheck []int) {
+func checkACs(task *Task, indicesToCheck []int) {
 	for _, indexToCheck := range indicesToCheck {
 		for i := range task.AcceptanceCriteria {
 			if task.AcceptanceCriteria[i].Index == indexToCheck && !task.AcceptanceCriteria[i].Checked {
@@ -60,7 +52,7 @@ func (ac *ACManager) checkACs(task *Task, indicesToCheck []int) {
 }
 
 // uncheckACs marks acceptance criteria as unchecked
-func (ac *ACManager) uncheckACs(task *Task, indicesToUncheck []int) {
+func uncheckACs(task *Task, indicesToUncheck []int) {
 	for _, indexToUncheck := range indicesToUncheck {
 		for i := range task.AcceptanceCriteria {
 			if task.AcceptanceCriteria[i].Index == indexToUncheck && task.AcceptanceCriteria[i].Checked {
@@ -72,7 +64,7 @@ func (ac *ACManager) uncheckACs(task *Task, indicesToUncheck []int) {
 }
 
 // addACs adds new acceptance criteria
-func (ac *ACManager) addACs(task *Task, newCriteria []string) {
+func addACs(task *Task, newCriteria []string) {
 	for _, newCriterion := range newCriteria {
 		highestIndex := 0
 		for _, criterion := range task.AcceptanceCriteria {
@@ -92,7 +84,7 @@ func (ac *ACManager) addACs(task *Task, newCriteria []string) {
 }
 
 // reindexACs re-indexes all acceptance criteria to ensure sequential numbering
-func (ac *ACManager) reindexACs(task *Task) {
+func reindexACs(task *Task) {
 	sort.Slice(task.AcceptanceCriteria, func(i, j int) bool {
 		return task.AcceptanceCriteria[i].Index < task.AcceptanceCriteria[j].Index
 	})

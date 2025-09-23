@@ -72,8 +72,8 @@ func createTestTasks(t *testing.T, store mcpserver.TaskStore) {
 			Assigned:    []string{assigned[i]},
 			Labels:      []string{labels[i]},
 			Priority:    "medium",
-			Notes:       &[]string{fmt.Sprintf("%s implementation notes.", s)}[0],
-			Plan:        &[]string{fmt.Sprintf("%s implementation plan.", s)}[0],
+			Notes:       fmt.Sprintf("%s implementation notes.", s),
+			Plan:        fmt.Sprintf("%s implementation plan.", s),
 			Description: fmt.Sprintf("%s description.", s),
 			AC:          []string{fmt.Sprintf("%s AC.", s)},
 		})

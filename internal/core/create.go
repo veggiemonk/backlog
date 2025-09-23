@@ -12,13 +12,13 @@ type CreateTaskParams struct {
 	Title        string   `json:"title" jsonschema:"Required. The title of the task."`
 	Description  string   `json:"description" jsonschema:"A detailed description of the task."`
 	Priority     string   `json:"priority,omitempty" jsonschema:"The priority of the task."`
-	Parent       *string  `json:"parent,omitempty" jsonschema:"The ID of the parent task."`
+	Parent       string   `json:"parent,omitempty" jsonschema:"The ID of the parent task."`
 	Assigned     []string `json:"assigned,omitempty" jsonschema:"A list of names assigned."`
 	Labels       []string `json:"labels,omitempty" jsonschema:"A list of labels."`
 	Dependencies []string `json:"dependencies,omitempty" jsonschema:"A list of task IDs that this task depends on."`
 	AC           []string `json:"ac,omitempty" jsonschema:"A list of acceptance criteria."`
-	Plan         *string  `json:"plan,omitempty" jsonschema:"The implementation plan."`
-	Notes        *string  `json:"notes,omitempty" jsonschema:"Additional notes."`
+	Plan         string   `json:"plan,omitempty" jsonschema:"The implementation plan."`
+	Notes        string   `json:"notes,omitempty" jsonschema:"Additional notes."`
 }
 
 // Create implements TaskStore.
@@ -33,15 +33,15 @@ func (f *FileTaskStore) Create(params CreateTaskParams) (newTask Task, err error
 		}
 	}
 	var parentID TaskID
-	if params.Parent != nil && *params.Parent != "" {
-		parentID, err = parseTaskID(*params.Parent)
-		if err != nil && *params.Parent != "" {
-			return newTask, fmt.Errorf("invalid parent task ID '%s': %w", *params.Parent, err)
+	if params.Parent != "" {
+		parentID, err = parseTaskID(params.Parent)
+		if err != nil {
+			return newTask, fmt.Errorf("invalid parent task ID '%s': %w", params.Parent, err)
 		}
 		// Check if parent task actually exists
 		_, err := f.Get(parentID.String())
 		if err != nil {
-			return newTask, fmt.Errorf("parent task ID '%s' does not exist: %w", *params.Parent, err)
+			return newTask, fmt.Errorf("parent task ID '%s' does not exist: %w", params.Parent, err)
 		}
 	}
 	nextID, err := f.getNextTaskID(parentID.seg...)
@@ -75,11 +75,11 @@ func (f *FileTaskStore) Create(params CreateTaskParams) (newTask Task, err error
 	if err != nil {
 		return newTask, fmt.Errorf("invalid priority %q: %w", params.Priority, err)
 	}
-	if params.Notes != nil {
-		newTask.ImplementationNotes = fmt.Sprintf("%s\n", *params.Notes)
+	if params.Notes != "" {
+		newTask.ImplementationNotes = fmt.Sprintf("%s\n", params.Notes)
 	}
-	if params.Plan != nil {
-		newTask.ImplementationPlan = fmt.Sprintf("%s\n", *params.Plan)
+	if params.Plan != "" {
+		newTask.ImplementationPlan = fmt.Sprintf("%s\n", params.Plan)
 	}
 	newTask.CreatedAt = time.Now().UTC()
 

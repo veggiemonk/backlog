@@ -125,8 +125,7 @@ func (f *FileTaskStore) Update(task *Task, params EditTaskParams) error {
 	}
 
 	// Handle acceptance criteria changes
-	acManager := NewACManager()
-	acManager.HandleACChanges(task, params)
+	handleACChanges(task, params)
 
 	task.UpdatedAt = time.Now().UTC()
 
@@ -147,15 +146,11 @@ func batchRemoveAdd(orig []string, toRemove []string, toAdd []string) []string {
 		for _, l := range orig {
 			labelSet[l] = struct{}{}
 		}
-		if len(toAdd) > 0 {
-			for _, l := range toAdd {
-				labelSet[l] = struct{}{}
-			}
+		for _, l := range toAdd {
+			labelSet[l] = struct{}{}
 		}
-		if len(toRemove) > 0 {
-			for _, l := range toRemove {
-				delete(labelSet, l)
-			}
+		for _, l := range toRemove {
+			delete(labelSet, l)
 		}
 		newLabels := make([]string, 0, len(labelSet))
 		for l := range labelSet {

@@ -1,19 +1,17 @@
-package core_test
+package core
 
 import (
 	"testing"
 
 	"github.com/matryer/is"
-	"github.com/veggiemonk/backlog/internal/core"
 )
 
 func TestACManager(t *testing.T) {
 	is := is.New(t)
 
 	t.Run("add acceptance criteria", func(t *testing.T) {
-		task := &core.Task{}
-		acManager := core.NewACManager()
-		acManager.HandleACChanges(task, core.EditTaskParams{
+		task := Task{}
+		handleACChanges(&task, EditTaskParams{
 			AddAC: []string{"AC 1", "AC 2"},
 		})
 
@@ -25,15 +23,14 @@ func TestACManager(t *testing.T) {
 	})
 
 	t.Run("remove acceptance criteria", func(t *testing.T) {
-		task := &core.Task{
-			AcceptanceCriteria: []core.AcceptanceCriterion{
+		task := Task{
+			AcceptanceCriteria: []AcceptanceCriterion{
 				{Index: 1, Text: "AC 1"},
 				{Index: 2, Text: "AC 2"},
 				{Index: 3, Text: "AC 3"},
 			},
 		}
-		acManager := core.NewACManager()
-		acManager.HandleACChanges(task, core.EditTaskParams{
+		handleACChanges(&task, EditTaskParams{
 			RemoveAC: []int{2},
 		})
 
@@ -45,38 +42,31 @@ func TestACManager(t *testing.T) {
 	})
 
 	t.Run("check and uncheck acceptance criteria", func(t *testing.T) {
-		task := &core.Task{
-			AcceptanceCriteria: []core.AcceptanceCriterion{
+		task := Task{
+			AcceptanceCriteria: []AcceptanceCriterion{
 				{Index: 1, Text: "AC 1", Checked: false},
 				{Index: 2, Text: "AC 2", Checked: true},
 			},
 		}
-		acManager := core.NewACManager()
 
 		// Check AC 1
-		acManager.HandleACChanges(task, core.EditTaskParams{
-			CheckAC: []int{1},
-		})
+		handleACChanges(&task, EditTaskParams{CheckAC: []int{1}})
 		is.True(task.AcceptanceCriteria[0].Checked)
 
 		// Uncheck AC 2
-		acManager.HandleACChanges(task, core.EditTaskParams{
-			UncheckAC: []int{2},
-		})
+		handleACChanges(&task, EditTaskParams{UncheckAC: []int{2}})
 		is.True(!task.AcceptanceCriteria[1].Checked)
 	})
 
 	t.Run("comprehensive changes", func(t *testing.T) {
-		task := &core.Task{
-			AcceptanceCriteria: []core.AcceptanceCriterion{
+		task := Task{
+			AcceptanceCriteria: []AcceptanceCriterion{
 				{Index: 1, Text: "Initial AC 1", Checked: false},
 				{Index: 2, Text: "Initial AC 2", Checked: true},
 				{Index: 3, Text: "Initial AC 3", Checked: false},
 			},
 		}
-		acManager := core.NewACManager()
-
-		acManager.HandleACChanges(task, core.EditTaskParams{
+		handleACChanges(&task, EditTaskParams{
 			AddAC:     []string{"New AC 4"},
 			RemoveAC:  []int{2},
 			CheckAC:   []int{1},
@@ -102,18 +92,15 @@ func TestACManager(t *testing.T) {
 	})
 
 	t.Run("remove multiple criteria", func(t *testing.T) {
-		task := &core.Task{
-			AcceptanceCriteria: []core.AcceptanceCriterion{
+		task := Task{
+			AcceptanceCriteria: []AcceptanceCriterion{
 				{Index: 1, Text: "AC 1"},
 				{Index: 2, Text: "AC 2"},
 				{Index: 3, Text: "AC 3"},
 				{Index: 4, Text: "AC 4"},
 			},
 		}
-		acManager := core.NewACManager()
-		acManager.HandleACChanges(task, core.EditTaskParams{
-			RemoveAC: []int{1, 3},
-		})
+		handleACChanges(&task, EditTaskParams{RemoveAC: []int{1, 3}})
 
 		is.Equal(len(task.AcceptanceCriteria), 2)
 		is.Equal(task.AcceptanceCriteria[0].Text, "AC 2")
@@ -123,17 +110,14 @@ func TestACManager(t *testing.T) {
 	})
 
 	t.Run("re-indexing after removal", func(t *testing.T) {
-		task := &core.Task{
-			AcceptanceCriteria: []core.AcceptanceCriterion{
+		task := Task{
+			AcceptanceCriteria: []AcceptanceCriterion{
 				{Index: 1, Text: "AC 1"},
 				{Index: 2, Text: "AC 2"},
 				{Index: 3, Text: "AC 3"},
 			},
 		}
-		acManager := core.NewACManager()
-		acManager.HandleACChanges(task, core.EditTaskParams{
-			RemoveAC: []int{1},
-		})
+		handleACChanges(&task, EditTaskParams{RemoveAC: []int{1}})
 
 		is.Equal(len(task.AcceptanceCriteria), 2)
 		is.Equal(task.AcceptanceCriteria[0].Index, 1)

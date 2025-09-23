@@ -43,7 +43,7 @@ func TestCreateTask(t *testing.T) {
 	subtaskParams := CreateTaskParams{
 		Title:       "Subtask 1",
 		Description: "This is a subtask.",
-		Parent:      &[]string{"T1"}[0],
+		Parent:      "T1",
 		AC:          []string{"Subtask Criterion"},
 	}
 
@@ -66,8 +66,8 @@ func TestCreateTask(t *testing.T) {
 	is.True(strings.Contains(subtaskContent, "- [ ] #1 Subtask Criterion"))
 
 	// Test: create a task with an invalid parent
-
 }
+
 func TestCreateTask_InvalidParent(t *testing.T) {
 	is := is.New(t)
 	fs := afero.NewMemMapFs()
@@ -78,7 +78,7 @@ func TestCreateTask_InvalidParent(t *testing.T) {
 		params := CreateTaskParams{
 			Title:       "Should Fail",
 			Description: "This should not be created.",
-			Parent:      &invalidParent,
+			Parent:      invalidParent,
 			AC:          []string{"Invalid Parent Criterion"},
 		}
 		_, err := store.Create(params)

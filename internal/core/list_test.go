@@ -12,10 +12,9 @@ import (
 func TestListTasks(t *testing.T) {
 	is := is.New(t)
 	store := core.NewFileTaskStore(afero.NewMemMapFs(), ".backlog")
-	t1Parent := "T1"
 	_, _ = store.Create(core.CreateTaskParams{Title: "Task One"})
 	taskTwo, _ := store.Create(core.CreateTaskParams{Title: "Task Two"})
-	_, _ = store.Create(core.CreateTaskParams{Title: "Task Three", Parent: &t1Parent})
+	_, _ = store.Create(core.CreateTaskParams{Title: "Task Three", Parent: "T1"})
 	is.NoErr(store.Update(&taskTwo, core.EditTaskParams{
 		ID:        taskTwo.ID.String(),
 		NewTitle:  &taskTwo.Title,
@@ -64,8 +63,7 @@ func TestFilterAndSortTasks(t *testing.T) {
 		NewStatus: ptr("done"),
 	}))
 
-	parentID := "T01"
-	_, _ = store.Create(core.CreateTaskParams{Title: "Delta Task", Parent: &parentID, Assigned: []string{"charlie"}})
+	_, _ = store.Create(core.CreateTaskParams{Title: "Delta Task", Parent: "T01", Assigned: []string{"charlie"}})
 
 	t.Run("filter by assignee", func(t *testing.T) {
 		is := is.NewRelaxed(t)

@@ -73,7 +73,7 @@ func setupTestData(t *testing.T, store *core.FileTaskStore) {
 		Description: "Create login endpoint",
 		Labels:      []string{"api", "auth"},
 		Priority:    "high",
-		Parent:      &parentID,
+		Parent:      parentID,
 		Assigned:    []string{"alice"},
 	})
 	is.NoErr(err)

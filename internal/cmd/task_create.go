@@ -105,14 +105,14 @@ func runCreate(cmd *cobra.Command, args []string) error {
 	params := core.CreateTaskParams{
 		Title:        args[0],
 		Description:  description,
-		Parent:       &parent,
+		Parent:       parent,
 		Priority:     priority,
 		Assigned:     assigned,
 		Labels:       labels,
 		Dependencies: dependencies,
 		AC:           ac,
-		Plan:         &plan,
-		Notes:        &notes,
+		Plan:         plan,
+		Notes:        notes,
 	}
 
 	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)

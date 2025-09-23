@@ -503,7 +503,7 @@ func TestReferenceUpdater_FindTaskReferences(t *testing.T) {
 	childParams := CreateTaskParams{
 		Title:       "Child Task",
 		Description: "Child",
-		Parent:      &[]string{parent.ID.String()}[0],
+		Parent:      parent.ID.String(),
 		AC:          []string{"Child AC"},
 	}
 	child, err := store.Create(childParams)
