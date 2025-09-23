@@ -37,11 +37,11 @@ func TestListTasks(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tasks, err := store.List(tt.params)
+			listResult, err := store.List(tt.params)
 			is.NoErr(err)
-			is.Equal(len(tasks), tt.expectedCount)
+			is.Equal(len(listResult.Tasks), tt.expectedCount)
 			if tt.expectedTitle != "" {
-				is.Equal(tt.expectedTitle, tasks[0].Title)
+				is.Equal(tt.expectedTitle, listResult.Tasks[0].Title)
 			}
 		})
 	}
@@ -68,16 +68,16 @@ func TestFilterAndSortTasks(t *testing.T) {
 
 	t.Run("filter by assignee", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		tasks, err := store.List(core.ListTasksParams{Assigned: []string{"alice"}})
+		listResult, err := store.List(core.ListTasksParams{Assigned: []string{"alice"}})
 		is.NoErr(err)
-		is.Equal(len(tasks), 2) // Bravo, Charlie
+		is.Equal(len(listResult.Tasks), 2) // Bravo, Charlie
 	})
 
 	t.Run("filter by multiple names assigned", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		tasks, err := store.List(core.ListTasksParams{Assigned: []string{"alice", "charlie"}})
+		listResult, err := store.List(core.ListTasksParams{Assigned: []string{"alice", "charlie"}})
 		is.NoErr(err)
-		is.Equal(len(tasks), 3) // Bravo, Charlie, Delta
+		is.Equal(len(listResult.Tasks), 3) // Bravo, Charlie, Delta
 	})
 
 	t.Run("filter by parent and status", func(t *testing.T) {
@@ -85,60 +85,60 @@ func TestFilterAndSortTasks(t *testing.T) {
 		// All tasks are 'todo' by default, except T02 which is 'done'
 		// T04 is a sub-task of T01
 		// So there are no tasks that are sub-tasks of T01 and have status 'done'
-		tasks, err := store.List(core.ListTasksParams{Parent: ptr("T01"), Status: []string{"done"}})
+		listResult, err := store.List(core.ListTasksParams{Parent: ptr("T01"), Status: []string{"done"}})
 		is.NoErr(err)
-		is.Equal(len(tasks), 0)
+		is.Equal(len(listResult.Tasks), 0)
 
 		// T04 is a sub-task of T01 and has status 'todo'
-		tasks, err = store.List(core.ListTasksParams{Parent: ptr("T01"), Status: []string{"todo"}})
+		listResult, err = store.List(core.ListTasksParams{Parent: ptr("T01"), Status: []string{"todo"}})
 		is.NoErr(err)
-		is.Equal(len(tasks), 1)
-		is.Equal(tasks[0].Title, "Delta Task")
+		is.Equal(len(listResult.Tasks), 1)
+		is.Equal(listResult.Tasks[0].Title, "Delta Task")
 	})
 
 	t.Run("sort by title", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		tasks, err := store.List(core.ListTasksParams{Sort: []string{"title"}})
+		listResult, err := store.List(core.ListTasksParams{Sort: []string{"title"}})
 		is.NoErr(err)
-		is.Equal(len(tasks), 4)
-		is.Equal(tasks[0].Title, "Alpha Task")
-		is.Equal(tasks[1].Title, "Bravo Task")
-		is.Equal(tasks[2].Title, "Charlie Task")
-		is.Equal(tasks[3].Title, "Delta Task")
+		is.Equal(len(listResult.Tasks), 4)
+		is.Equal(listResult.Tasks[0].Title, "Alpha Task")
+		is.Equal(listResult.Tasks[1].Title, "Bravo Task")
+		is.Equal(listResult.Tasks[2].Title, "Charlie Task")
+		is.Equal(listResult.Tasks[3].Title, "Delta Task")
 	})
 
 	t.Run("sort by title reversed", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		tasks, err := store.List(core.ListTasksParams{Sort: []string{"title"}, Reverse: true})
+		listResult, err := store.List(core.ListTasksParams{Sort: []string{"title"}, Reverse: true})
 		is.NoErr(err)
-		is.Equal(len(tasks), 4)
-		is.Equal(tasks[0].Title, "Delta Task")
-		is.Equal(tasks[1].Title, "Charlie Task")
-		is.Equal(tasks[2].Title, "Bravo Task")
-		is.Equal(tasks[3].Title, "Alpha Task")
+		is.Equal(len(listResult.Tasks), 4)
+		is.Equal(listResult.Tasks[0].Title, "Delta Task")
+		is.Equal(listResult.Tasks[1].Title, "Charlie Task")
+		is.Equal(listResult.Tasks[2].Title, "Bravo Task")
+		is.Equal(listResult.Tasks[3].Title, "Alpha Task")
 	})
 
 	t.Run("sort by priority", func(t *testing.T) {
 		is := is.NewRelaxed(t)
-		tasks, err := store.List(core.ListTasksParams{Sort: []string{"priority"}})
+		listResult, err := store.List(core.ListTasksParams{Sort: []string{"priority"}})
 		is.NoErr(err)
-		is.Equal(len(tasks), 4)
+		is.Equal(len(listResult.Tasks), 4)
 		// Sorting is alphabetical on priority string: high, low, medium
-		is.Equal(tasks[0].Priority.String(), "high")
-		is.Equal(tasks[1].Priority.String(), "medium")
-		is.Equal(tasks[2].Priority.String(), "low")
+		is.Equal(listResult.Tasks[0].Priority.String(), "high")
+		is.Equal(listResult.Tasks[1].Priority.String(), "medium")
+		is.Equal(listResult.Tasks[2].Priority.String(), "low")
 		// T04 has no priority, so it will be last.
 	})
 
 	t.Run("sort by id", func(t *testing.T) {
 		is := is.New(t)
-		tasks, err := store.List(core.ListTasksParams{Sort: []string{"id"}})
+		listResult, err := store.List(core.ListTasksParams{Sort: []string{"id"}})
 		is.NoErr(err)
-		is.Equal(len(tasks), 4)
-		is.Equal(tasks[0].ID.Name(), "T01")
-		is.Equal(tasks[1].ID.Name(), "T01.01")
-		is.Equal(tasks[2].ID.Name(), "T02")
-		is.Equal(tasks[3].ID.Name(), "T03")
+		is.Equal(len(listResult.Tasks), 4)
+		is.Equal(listResult.Tasks[0].ID.Name(), "T01")
+		is.Equal(listResult.Tasks[1].ID.Name(), "T01.01")
+		is.Equal(listResult.Tasks[2].ID.Name(), "T02")
+		is.Equal(listResult.Tasks[3].ID.Name(), "T03")
 	})
 
 	t.Run("invalid status filter", func(t *testing.T) {
@@ -166,24 +166,24 @@ func TestFilterUnassignedTasks(t *testing.T) {
 	_, _ = store.Create(core.CreateTaskParams{Title: "Unassigned Task"})
 
 	t.Run("filter unassigned tasks", func(t *testing.T) {
-		tasks, err := store.List(core.ListTasksParams{Unassigned: true})
+		listResult, err := store.List(core.ListTasksParams{Unassigned: true})
 		is.NoErr(err)
-		is.Equal(len(tasks), 1) // Only the task with no one assigned
-		is.Equal(tasks[0].Title, "Unassigned Task")
+		is.Equal(len(listResult.Tasks), 1) // Only the task with no one assigned
+		is.Equal(listResult.Tasks[0].Title, "Unassigned Task")
 	})
 
 	t.Run("filter unassigned tasks with status", func(t *testing.T) {
 		is := is.New(t)
 		// All unassigned tasks should have status 'todo' by default
-		tasks, err := store.List(core.ListTasksParams{Unassigned: true, Status: []string{"todo"}})
+		listResult, err := store.List(core.ListTasksParams{Unassigned: true, Status: []string{"todo"}})
 		is.NoErr(err)
-		is.Equal(len(tasks), 1) // Only the unassigned task with 'todo' status
-		is.Equal(tasks[0].Title, "Unassigned Task")
+		is.Equal(len(listResult.Tasks), 1) // Only the unassigned task with 'todo' status
+		is.Equal(listResult.Tasks[0].Title, "Unassigned Task")
 
 		// There should be no unassigned tasks with 'done' status
-		tasks, err = store.List(core.ListTasksParams{Unassigned: true, Status: []string{"done"}})
+		listResult, err = store.List(core.ListTasksParams{Unassigned: true, Status: []string{"done"}})
 		is.NoErr(err)
-		is.Equal(len(tasks), 0)
+		is.Equal(len(listResult.Tasks), 0)
 	})
 }
 
@@ -202,21 +202,21 @@ func TestDependents(t *testing.T) {
 	is.NoErr(err)
 
 	t.Run("list dependents tasks", func(t *testing.T) {
-		tasks, err := store.List(core.ListTasksParams{DependedOn: true})
+		listResult, err := store.List(core.ListTasksParams{DependedOn: true})
 		is.NoErr(err)
-		is.Equal(len(tasks), 2) // No parent specified, should return no tasks
+		is.Equal(len(listResult.Tasks), 2) // No parent specified, should return no tasks
 	})
 
 	t.Run("list tasks with dependencies", func(t *testing.T) {
-		tasks, err := store.List(core.ListTasksParams{HasDependency: true})
+		listResult, err := store.List(core.ListTasksParams{HasDependency: true})
 		is.NoErr(err)
-		is.Equal(len(tasks), 3) // Should return all tasks with dependencies
+		is.Equal(len(listResult.Tasks), 3) // Should return all tasks with dependencies
 	})
 
 	t.Run("list blocking tasks", func(t *testing.T) {
-		tasks, err := store.List(core.ListTasksParams{DependedOn: true, Status: []string{"todo"}})
+		listResult, err := store.List(core.ListTasksParams{DependedOn: true, Status: []string{"todo"}})
 		is.NoErr(err)
-		is.Equal(len(tasks), 2) // Non-existent parent, should return no tasks
+		is.Equal(len(listResult.Tasks), 2) // Non-existent parent, should return no tasks
 	})
 
 	// Mark medium task as done
@@ -227,9 +227,9 @@ func TestDependents(t *testing.T) {
 	is.NoErr(err)
 
 	t.Run("list blocking tasks after medium task done", func(t *testing.T) {
-		tasks, err := store.List(core.ListTasksParams{DependedOn: true, Status: []string{"todo"}})
+		listResult, err := store.List(core.ListTasksParams{DependedOn: true, Status: []string{"todo"}})
 		is.NoErr(err)
-		is.Equal(len(tasks), 1) // Medium task is done, should still return base level tasks
+		is.Equal(len(listResult.Tasks), 1) // Medium task is done, should still return base level tasks
 	})
 }
 

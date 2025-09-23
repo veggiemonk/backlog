@@ -98,17 +98,12 @@ func runSearch(cmd *cobra.Command, args []string) error {
 	sortFieldsSlice := parseSortFields(searchSortFields)
 
 	var limit, offset *int
-	// Track if limit was explicitly set by user (not default)
-	limitExplicit := cmd.Flags().Changed("limit")
 	if searchLimitFlag > 0 {
 		limit = &searchLimitFlag
 	}
 	if searchOffsetFlag > 0 {
 		offset = &searchOffsetFlag
 	}
-
-	// Apply configuration defaults and limits
-	limit, offset = ApplyDefaultPagination(limit, offset)
 
 	params := core.ListTasksParams{
 		Parent:        &searchParent,
@@ -125,18 +120,7 @@ func runSearch(cmd *cobra.Command, args []string) error {
 	}
 	store := cmd.Context().Value(ctxKeyStore).(TaskStore)
 
-	// Get total search count without pagination for metadata
-	totalParams := params
-	totalParams.Limit = nil
-	totalParams.Offset = nil
-	allTasks, err := store.Search(query, totalParams)
-	if err != nil {
-		return fmt.Errorf("failed to search tasks for query %q: %w", query, err)
-	}
-	totalCount := len(allTasks)
-
-	// Get paginated search results
-	tasks, err := store.Search(query, params)
+	listResult, err := store.Search(query, params)
 	if err != nil {
 		return fmt.Errorf("failed to search tasks for query %q: %w", query, err)
 	}
@@ -144,42 +128,19 @@ func runSearch(cmd *cobra.Command, args []string) error {
 	messagePrefix := ""
 	if !searchJSONOutput {
 		switch {
-		case totalCount == 0:
+		case listResult.Pagination.TotalResults == 0:
 			messagePrefix = fmt.Sprintf("No tasks found matching '%s'.", query)
-		case totalCount > 0:
-			if limit != nil || offset != nil {
+		case listResult.Pagination.TotalResults > 0:
+			if listResult.Pagination.Limit != 0 || listResult.Pagination.Offset != 0 {
 				// Show pagination info in search prefix
-				messagePrefix = fmt.Sprintf("Found %d task(s) matching '%s':", totalCount, query)
+				messagePrefix = fmt.Sprintf("Found %d task(s) matching '%s':", listResult.Pagination.TotalResults, query)
 			} else {
-				messagePrefix = fmt.Sprintf("Found %d task(s) matching '%s':", len(tasks), query)
+				messagePrefix = fmt.Sprintf("Found %d task(s) matching '%s':", len(listResult.Tasks), query)
 			}
 		}
 	}
 
-	// Create pagination info only when pagination was explicitly requested
-	var paginationInfo *core.PaginationInfo
-	// Only create pagination info if offset was provided or limit was explicitly set by user
-	if (offset != nil && *offset > 0) || limitExplicit {
-		offsetVal := 0
-		if offset != nil {
-			offsetVal = *offset
-		}
-		limitVal := 0
-		if limit != nil {
-			limitVal = *limit
-		}
-		hasMore := (offsetVal + len(tasks)) < totalCount
-
-		paginationInfo = &core.PaginationInfo{
-			TotalResults:     totalCount,
-			DisplayedResults: len(tasks),
-			Offset:           offsetVal,
-			Limit:            limitVal,
-			HasMore:          hasMore,
-		}
-	}
-
-	if err := renderTaskResultsWithPagination(cmd.OutOrStdout(), tasks, searchJSONOutput, searchMarkdownOutput, searchHideExtraFields, messagePrefix, paginationInfo); err != nil {
+	if err := renderTaskResultsWithPagination(cmd.OutOrStdout(), listResult, searchJSONOutput, searchMarkdownOutput, searchHideExtraFields, messagePrefix); err != nil {
 		return fmt.Errorf("failed to render task results for query %q: %w", query, err)
 	}
 	return nil

@@ -14,37 +14,37 @@ func Test_runList(t *testing.T) {
 		is := is.New(t)
 		output, err := exec(t, "list", runList, "-l", "first", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), 1)
-		is.Equal(tasks[0].Title, "First Task")
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), 1)
+		is.Equal(listResult.Tasks[0].Title, "First Task")
 	})
 
 	t.Run("filter by multiple labels", func(t *testing.T) {
 		is := is.New(t)
 		output, err := exec(t, "list", runList, "-l", "first,second,third,feature", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), 3) // feature label isn't set
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), 3) // feature label isn\'t set
 	})
 
 	t.Run("filter by status", func(t *testing.T) {
 		is := is.New(t)
 		output, err := exec(t, "list", runList, "-s", "todo", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), countTask-1) // countTask - 1 in-progress
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), countTask-1) // countTask - 1 in-progress
 	})
 
 	t.Run("filter by multiple statuses", func(t *testing.T) {
 		is := is.New(t)
 		output, err := exec(t, "list", runList, "-s", "todo,in-progress", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), countTask)
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), countTask)
 	})
 
 	t.Run("filter by assigned user", func(t *testing.T) {
@@ -52,10 +52,10 @@ func Test_runList(t *testing.T) {
 		//
 		output, err := exec(t, "list", runList, "-a", "first-user", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), 1)
-		is.Equal(tasks[0].Title, "First Task")
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), 1)
+		is.Equal(listResult.Tasks[0].Title, "First Task")
 	})
 
 	t.Run("filter by multiple assigned users", func(t *testing.T) {
@@ -63,11 +63,11 @@ func Test_runList(t *testing.T) {
 
 		output, err := exec(t, "list", runList, "-a", "first-user,second-user", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), 2)
-		is.Equal(tasks[0].Title, "First Task")
-		is.Equal(tasks[1].Title, "Second Task")
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), 2)
+		is.Equal(listResult.Tasks[0].Title, "First Task")
+		is.Equal(listResult.Tasks[1].Title, "Second Task")
 	})
 
 	t.Run("filter by priority", func(t *testing.T) {
@@ -75,10 +75,10 @@ func Test_runList(t *testing.T) {
 
 		output, err := exec(t, "list", runList, "--priority", "high", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), 1)
-		is.Equal(tasks[0].Title, "High Priority Task")
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), 1)
+		is.Equal(listResult.Tasks[0].Title, "High Priority Task")
 	})
 
 	t.Run("sort by title", func(t *testing.T) {
@@ -86,15 +86,15 @@ func Test_runList(t *testing.T) {
 
 		output, err := exec(t, "list", runList, "--sort", "title", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), countTask)
-		is.Equal(tasks[0].Title, "Fifth Task")
-		is.Equal(tasks[1].Title, "First Task")
-		is.Equal(tasks[2].Title, "Fourth Task")
-		is.Equal(tasks[3].Title, "High Priority Task")
-		is.Equal(tasks[4].Title, "In Progress Task")
-		is.Equal(tasks[5].Title, "Second Task")
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), countTask)
+		is.Equal(listResult.Tasks[0].Title, "Fifth Task")
+		is.Equal(listResult.Tasks[1].Title, "First Task")
+		is.Equal(listResult.Tasks[2].Title, "Fourth Task")
+		is.Equal(listResult.Tasks[3].Title, "High Priority Task")
+		is.Equal(listResult.Tasks[4].Title, "In Progress Task")
+		is.Equal(listResult.Tasks[5].Title, "Second Task")
 	})
 
 	t.Run("sort by title reversed", func(t *testing.T) {
@@ -102,15 +102,15 @@ func Test_runList(t *testing.T) {
 
 		output, err := exec(t, "list", runList, "--sort", "title", "--reverse", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), countTask)
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), countTask)
 		// When reversed, "Updated Task" should come first alphabetically when reversed
-		is.Equal(tasks[0].Title, "Unlabeled Task")
-		is.Equal(tasks[1].Title, "Unassigned Task")
-		is.Equal(tasks[2].Title, "Third Task")
-		is.Equal(tasks[3].Title, "Second Task")
-		is.Equal(tasks[4].Title, "In Progress Task")
+		is.Equal(listResult.Tasks[0].Title, "Unlabeled Task")
+		is.Equal(listResult.Tasks[1].Title, "Unassigned Task")
+		is.Equal(listResult.Tasks[2].Title, "Third Task")
+		is.Equal(listResult.Tasks[3].Title, "Second Task")
+		is.Equal(listResult.Tasks[4].Title, "In Progress Task")
 	})
 
 	t.Run("sort by priority", func(t *testing.T) {
@@ -118,10 +118,10 @@ func Test_runList(t *testing.T) {
 
 		output, err := exec(t, "list", runList, "--sort", "priority", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), countTask)
-		is.Equal(tasks[0].Title, "High Priority Task")
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), countTask)
+		is.Equal(listResult.Tasks[0].Title, "High Priority Task")
 	})
 
 	t.Run("multiple sort fields", func(t *testing.T) {
@@ -129,18 +129,18 @@ func Test_runList(t *testing.T) {
 
 		output, err := exec(t, "list", runList, "--sort", "priority,title", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), countTask)
-		is.Equal(tasks[0].Title, "High Priority Task")
-		is.Equal(tasks[1].Title, "Fifth Task")
-		is.Equal(tasks[2].Title, "First Task")
-		is.Equal(tasks[3].Title, "Fourth Task")
-		is.Equal(tasks[4].Title, "Second Task")
-		is.Equal(tasks[5].Title, "Third Task")
-		is.Equal(tasks[6].Title, "In Progress Task")
-		is.Equal(tasks[7].Title, "Unassigned Task")
-		is.Equal(tasks[8].Title, "Unlabeled Task")
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), countTask)
+		is.Equal(listResult.Tasks[0].Title, "High Priority Task")
+		is.Equal(listResult.Tasks[1].Title, "Fifth Task")
+		is.Equal(listResult.Tasks[2].Title, "First Task")
+		is.Equal(listResult.Tasks[3].Title, "Fourth Task")
+		is.Equal(listResult.Tasks[4].Title, "Second Task")
+		is.Equal(listResult.Tasks[5].Title, "Third Task")
+		is.Equal(listResult.Tasks[6].Title, "In Progress Task")
+		is.Equal(listResult.Tasks[7].Title, "Unassigned Task")
+		is.Equal(listResult.Tasks[8].Title, "Unlabeled Task")
 	})
 
 	t.Run("markdown output format", func(t *testing.T) {
@@ -188,9 +188,9 @@ func Test_runList(t *testing.T) {
 
 		output, err := exec(t, "list", runList, "-l", "second", "-s", "todo", "--priority", "medium", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), 1) // 1 feature tasks with todo status
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), 1) // 1 feature tasks with todo status
 	})
 
 	t.Run("empty results", func(t *testing.T) {
@@ -198,7 +198,7 @@ func Test_runList(t *testing.T) {
 		output, err := exec(t, "list", runList, "-l", "nonexistent", "-j")
 		is.NoErr(err)
 		outputStr := strings.TrimSpace(string(output))
-		is.Equal(outputStr, "[]") // empty JSON array
+		is.Equal(outputStr, "{\"tasks\":[],\"pagination\":{\"total_results\":0,\"displayed_results\":0,\"offset\":0,\"limit\":0,\"has_more\":false}}") // empty ListResult JSON
 	})
 
 	t.Run("empty results table format", func(t *testing.T) {
@@ -214,12 +214,14 @@ func Test_runList(t *testing.T) {
 		output, err := exec(t, "list", runList, "--unassigned", "-j")
 		is.NoErr(err)
 		// Should not error, may return empty array since all test tasks are assigned
-		var tasks []*core.Task
+		listResult := &core.ListResult{}
 		outputStr := strings.TrimSpace(string(output))
-		if outputStr != "[]" {
-			err = json.Unmarshal(output, &tasks)
+		if outputStr != "{\"tasks\":[],\"pagination\":{\"total_results\":0,\"displayed_results\":0,\"offset\":0,\"limit\":0,\"has_more\":false}}" { // Check for empty ListResult JSON
+			err = json.Unmarshal(output, listResult)
 			is.NoErr(err)
 		}
+		is.Equal(len(listResult.Tasks), 1) // Assuming one unassigned task in setup
+		is.Equal(listResult.Tasks[0].Title, "Unassigned Task")
 	})
 
 	t.Run("short flag aliases", func(t *testing.T) {
@@ -227,10 +229,10 @@ func Test_runList(t *testing.T) {
 			is := is.New(t)
 			output, err := exec(t, "list", runList, "-j")
 			is.NoErr(err)
-			tasks := []*core.Task{}
-			is.NoErr(json.Unmarshal(output, &tasks))
-			is.Equal(len(tasks), countTask)
-			is.Equal(tasks[0].Title, "First Task")
+			listResult := &core.ListResult{}
+			is.NoErr(json.Unmarshal(output, listResult))
+			is.Equal(len(listResult.Tasks), countTask)
+			is.Equal(listResult.Tasks[0].Title, "First Task")
 		})
 
 		t.Run("markdown", func(t *testing.T) {
@@ -253,49 +255,48 @@ func Test_runList(t *testing.T) {
 			is := is.New(t)
 			output, err := exec(t, "list", runList, "-r", "-j")
 			is.NoErr(err)
-			tasks := []*core.Task{}
-			is.NoErr(json.Unmarshal(output, &tasks))
-			is.Equal(len(tasks), countTask)
-			is.Equal(tasks[0].Title, "In Progress Task") // the last task is
+			listResult := &core.ListResult{}
+			is.NoErr(json.Unmarshal(output, listResult))
+			is.Equal(len(listResult.Tasks), countTask)
+			is.Equal(listResult.Tasks[0].Title, "In Progress Task") // the last task is
 		})
 
 		t.Run("unassigned", func(t *testing.T) {
 			is := is.New(t)
 			output, err := exec(t, "list", runList, "-u", "-j")
 			is.NoErr(err)
-			tasks := []*core.Task{}
-			is.NoErr(json.Unmarshal(output, &tasks))
-			is.Equal(len(tasks), 1)
-			is.Equal(tasks[0].Title, "Unassigned Task")
-		})
+			listResult := &core.ListResult{}
+					is.NoErr(json.Unmarshal(output, listResult))
+					is.Equal(len(listResult.Tasks), 1)
+					is.Equal(listResult.Tasks[0].Title, "Unassigned Task")		})
 	})
 
 	t.Run("invalid sort field", func(t *testing.T) {
 		is := is.New(t)
 		output, err := exec(t, "list", runList, "--sort", "invalidfield", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), countTask)
-		is.Equal(tasks[0].Title, "First Task")
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), countTask)
+		is.Equal(listResult.Tasks[0].Title, "First Task")
 	})
 
 	t.Run("empty sort field", func(t *testing.T) {
 		is := is.New(t)
 		output, err := exec(t, "list", runList, "--sort", "", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
-		is.Equal(len(tasks), 9)
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
+		is.Equal(len(listResult.Tasks), 9)
 	})
 
 	t.Run("multiple combined flags", func(t *testing.T) {
 		is := is.New(t)
 		output, err := exec(t, "list", runList, "-l", "second", "-s", "todo", "--sort", "title", "-r", "--hide-extra", "-j")
 		is.NoErr(err)
-		tasks := []*core.Task{}
-		is.NoErr(json.Unmarshal(output, &tasks))
+		listResult := &core.ListResult{}
+		is.NoErr(json.Unmarshal(output, listResult))
 		// Should filter by feature label, todo status, sort by title reversed, output JSON
-		is.Equal(len(tasks), 1)
+		is.Equal(len(listResult.Tasks), 1)
 	})
 }

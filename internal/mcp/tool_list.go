@@ -33,52 +33,15 @@ func (h *handler) list(ctx context.Context, req *mcp.CallToolRequest, params cor
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
-	// Get total count without pagination for metadata
-	totalParams := params
-	totalParams.Limit = nil
-	totalParams.Offset = nil
-	allTasks, err := h.store.List(totalParams)
-	if err != nil {
-		return nil, nil, fmt.Errorf("list (total count): %v", err)
-	}
-	totalCount := len(allTasks)
-
-	// Get paginated results
-	tasks, err := h.store.List(params)
+	listResult, err := h.store.List(params)
 	if err != nil {
 		return nil, nil, fmt.Errorf("list: %v", err)
 	}
 
-	// Create result with pagination info
-	result := &core.ListResult{
-		Tasks: tasks,
+	if len(listResult.Tasks) == 0 {
+		return &mcp.CallToolResult{Content: []mcp.Content{&mcp.TextContent{Text: "No tasks found."}}}, listResult, nil
 	}
 
-	// Add pagination info if pagination was requested
-	if params.Limit != nil || params.Offset != nil {
-		offsetVal := 0
-		if params.Offset != nil {
-			offsetVal = *params.Offset
-		}
-		limitVal := 0
-		if params.Limit != nil {
-			limitVal = *params.Limit
-		}
-		hasMore := (offsetVal + len(tasks)) < totalCount
-
-		result.Pagination = &core.PaginationInfo{
-			TotalResults:     totalCount,
-			DisplayedResults: len(tasks),
-			Offset:           offsetVal,
-			Limit:            limitVal,
-			HasMore:          hasMore,
-		}
-	}
-
-	if len(tasks) == 0 {
-		return &mcp.CallToolResult{Content: []mcp.Content{&mcp.TextContent{Text: "No tasks found."}}}, result, nil
-	}
-
-	res := &mcp.CallToolResult{StructuredContent: result}
+	res := &mcp.CallToolResult{StructuredContent: listResult}
 	return res, nil, nil
 }

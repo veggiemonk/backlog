@@ -73,7 +73,7 @@ backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
   -e, --hide-extra         Hide extra fields (labels, priority, assigned)
   -j, --json               Print JSON output
   -l, --labels strings     Filter tasks by labels
-      --limit int          Maximum number of tasks to return (0 means no limit) (default 25)
+      --limit int          Maximum number of tasks to return (0 means no limit)
   -m, --markdown           print markdown table
       --offset int         Number of tasks to skip from the beginning
   -p, --parent string      Filter tasks by parent ID
@@ -92,8 +92,6 @@ backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
       --log-file string     Log file path (defaults to stderr)
       --log-format string   Log format (json, text) (default "text")
       --log-level string    Log level (debug, info, warn, error) (default "info")
-      --max-limit int       Maximum limit for pagination (default 50)
-      --page-size int       Default page size for pagination (default 25)
 ```
 
 ### SEE ALSO

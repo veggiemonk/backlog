@@ -36,53 +36,16 @@ func (h *handler) search(ctx context.Context, req *mcp.CallToolRequest, params S
 		filters = *params.Filters
 	}
 
-	// Get total search count without pagination for metadata
-	totalFilters := filters
-	totalFilters.Limit = nil
-	totalFilters.Offset = nil
-	allTasks, err := h.store.Search(params.Query, totalFilters)
-	if err != nil {
-		return nil, nil, fmt.Errorf("search (total count): %v", err)
-	}
-	totalCount := len(allTasks)
-
-	// Get paginated search results
-	tasks, err := h.store.Search(params.Query, filters)
+	listResult, err := h.store.Search(params.Query, filters)
 	if err != nil {
 		return nil, nil, fmt.Errorf("search: %v", err)
 	}
 
-	// Create result with pagination info
-	result := &core.ListResult{
-		Tasks: tasks,
-	}
-
-	// Add pagination info if pagination was requested
-	if filters.Limit != nil || filters.Offset != nil {
-		offsetVal := 0
-		if filters.Offset != nil {
-			offsetVal = *filters.Offset
-		}
-		limitVal := 0
-		if filters.Limit != nil {
-			limitVal = *filters.Limit
-		}
-		hasMore := (offsetVal + len(tasks)) < totalCount
-
-		result.Pagination = &core.PaginationInfo{
-			TotalResults:     totalCount,
-			DisplayedResults: len(tasks),
-			Offset:           offsetVal,
-			Limit:            limitVal,
-			HasMore:          hasMore,
-		}
-	}
-
-	if len(tasks) == 0 {
+	if len(listResult.Tasks) == 0 {
 		content := []mcp.Content{&mcp.TextContent{Text: "No matching tasks found."}}
-		return &mcp.CallToolResult{Content: content}, result, nil
+		return &mcp.CallToolResult{Content: content}, listResult, nil
 	}
 
-	res := &mcp.CallToolResult{StructuredContent: result}
+	res := &mcp.CallToolResult{StructuredContent: listResult}
 	return res, nil, nil
 }

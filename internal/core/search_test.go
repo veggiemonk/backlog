@@ -64,13 +64,13 @@ func TestSearchTasks(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tasks, err := store.Search(tt.query, core.ListTasksParams{})
+			listResult, err := store.Search(tt.query, core.ListTasksParams{})
 			is.NoErr(err)
-			is.Equal(len(tasks), tt.expectedCount)
+			is.Equal(len(listResult.Tasks), tt.expectedCount)
 
 			if tt.expectedCount > 0 {
 				var titles []string
-				for _, task := range tasks {
+				for _, task := range listResult.Tasks {
 					titles = append(titles, task.Title)
 				}
 				sort.Strings(titles)
