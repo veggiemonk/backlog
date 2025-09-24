@@ -1,0 +1,12 @@
+nav:
+  - backlog.md
+  - backlog_create.md
+  - backlog_edit.md
+  - backlog_list.md
+  - backlog_view.md
+  - backlog_search.md
+  - backlog_archive.md
+  - backlog_mcp.md
+  - backlog_doctor.md
+  - backlog_instructions.md
+  - backlog_version.md

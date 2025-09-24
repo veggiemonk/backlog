@@ -8,26 +8,6 @@ nav_order: 2
 
 This guide will help you get up and running with Backlog quickly.
 
-## Installation
-
-### Option 1: Install from Source
-
-```bash
-git clone https://github.com/veggiemonk/backlog
-cd backlog
-go build .
-```
-
-### Option 2: Install Directly
-
-```bash
-go install github.com/veggiemonk/backlog@latest
-```
-
-### Option 3: Download Binary
-
-Download the latest binary from the [releases page](https://github.com/veggiemonk/backlog/releases).
-
 ## First Steps
 
 No initialization is required! Backlog works immediately in any directory.
@@ -189,6 +169,6 @@ git log -1 --oneline
 
 ## Next Steps
 
-- Learn about [AI Integration](ai-integration.html) to use Backlog with AI agents
-- Explore the complete [CLI Reference](cli/) for all available commands
-- Check out the [Development Guide](development/) if you want to contribute
+- Learn about [AI Integration](ai-integration.md) to use Backlog with AI agents
+- Explore the complete [CLI Reference](cli/backlog.md) for all available commands
+- Check out the [Development Guide](development/index.md) if you want to contribute

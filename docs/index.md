@@ -24,65 +24,18 @@ The system is designed to be offline-first and completely portable, as the entir
 - **Portable**: Entire project state contained within the Git repository
 - **Zero Configuration**: No setup files or databases required
 
-## Quick Start
-
-### Installation
-
-```bash
-# Build from source
-git clone https://github.com/veggiemonk/backlog
-cd backlog
-go build .
-
-# Or install directly
-go install github.com/veggiemonk/backlog@latest
-```
-
-You can also download the binary from the [release page](https://github.com/veggiemonk/backlog/releases).
-
-### Basic Usage
-
-```bash
-# Create a simple task
-backlog create "Fix the login button styling"
-
-# Create task with metadata
-backlog create "Implement password reset" \
-  -d "Users should be able to request a password reset link via email" \
-  -a "alex" -l "backend,security" --priority "high"
-
-# List all tasks
-backlog list
-
-# View specific task
-backlog view T01
-```
-
-## AI Agent Integration
-
-Start the MCP server to enable AI agent interaction:
-
-```bash
-# Start MCP server for AI agents
-backlog mcp --http --port 8106  # HTTP transport
-backlog mcp                     # STDIO transport (default)
-```
-
-AI agents can then:
-- Create tasks from conversation context
-- Break down large tasks into subtasks
-- Update task status and assignments
-- Search and analyze task patterns
-
 ## Why Backlog?
 
 **For Humans**: The context window deteriorates rapidly on large-scale projects. A workaround is to ask AI agents to "make a plan for X, write it to a markdown file and keep it updated with the ongoing tasks". This technique has worked incredibly well, making refactoring and other significant code changes more resilient to failures.
 
 **For AI Agents**: Backlog provides a structured MCP server that AI tools can understand and trust to handle task management details, providing a much better experience when using AI tools for complex tasks.
 
-## Learn More
+## Contributors
 
-- [Getting Started Guide](getting-started.html) - Detailed setup and usage
-- [CLI Reference](cli/) - Complete command documentation
-- [AI Integration](ai-integration.html) - MCP server setup for AI agents
-- [Development](development/) - Architecture and contribution guide
+This project is made possible by all its contributors.
+
+<a href="https://github.com/veggiemonk/backlog/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=veggiemonk/backlog" />
+</a>
+
+Made with [contrib.rocks](https://contrib.rocks).

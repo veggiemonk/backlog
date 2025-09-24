@@ -1,0 +1,9 @@
+nav:
+  - index.md
+  - getting-started.md
+  - installation.md
+  - ai-integration.md
+  - cli:
+    - ...
+  - development:
+    - ...

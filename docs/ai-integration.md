@@ -34,6 +34,21 @@ backlog mcp --http --port 8106
 
 Use HTTP transport for web-based AI agents or custom integrations.
 
+```mermaid
+graph TD
+    subgraph AI Agent
+        A[Your AI Assistant] -->|Sends MCP Request| B(backlog mcp server);
+    end
+
+    subgraph Your Machine
+        B -->|Executes Command| C{backlog CLI};
+        C -->|Modifies Task Files| D([.backlog/*.md]);
+        C -->|Commits to Git| E([Git Repository]);
+    end
+
+    B -->|Sends Response| A;
+```
+
 ## Available MCP Tools
 
 The MCP server exposes the following tools to AI agents:
@@ -266,4 +281,4 @@ Create tasks with realistic time estimates and dependencies.
 2. **Permissions**: Check write permissions for `.backlog/` directory
 3. **Disk Space**: Ensure sufficient disk space for task files
 
-For more troubleshooting help, see the [Development Guide](development/) or file an issue on [GitHub](https://github.com/veggiemonk/backlog/issues).
+For more troubleshooting help, see the [Development Guide](development/index.md) or file an issue on [GitHub](https://github.com/veggiemonk/backlog/issues).
