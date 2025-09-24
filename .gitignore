@@ -3,3 +3,5 @@ bin/
 coverage.*
 dist/
 .gocache
+uv.lock
+.python-version

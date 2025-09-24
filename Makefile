@@ -1,5 +1,5 @@
 
-.PHONY: help all build install test cover lint tidy docs clean debug-mcp login-ghcr install-tools pin-actions fix-struct-tags
+.PHONY: help all build install test cover lint tidy docs clean debug-mcp login-ghcr install-tools pin-actions fix-struct-tags doc-website
 
 # Default target
 help: ## Show this help message
@@ -63,3 +63,6 @@ pin-actions: ## pin github actions
 
 fix-struct-tags: ## format struct tags
 	golangci-lint run -E tagalign --fix
+
+doc-website: ## documentation website
+	uv run mkdocs serve

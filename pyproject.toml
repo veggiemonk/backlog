@@ -1,0 +1,7 @@
+[project]
+name = "backlog"
+version = "0.1.0"
+description = "Manage the backlog of your project with just markdown in git."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["mkdocs>=1.6.1", "mkdocs-material>=9.6.20"]
