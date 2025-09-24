@@ -56,7 +56,7 @@ func Init(level, format, logFile string) {
 	opts := &slog.HandlerOptions{
 		Level:     lvl,
 		AddSource: false,
-		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+		ReplaceAttr: func(_ []string, a slog.Attr) slog.Attr {
 			if a.Key == slog.TimeKey {
 				t := a.Value.Time()
 				a = slog.Attr{Key: "time", Value: slog.StringValue(t.Format("15:04:05"))}

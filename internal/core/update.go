@@ -8,23 +8,23 @@ import (
 
 // EditTaskParams holds the parameters for editing a task.
 type EditTaskParams struct {
-	ID              string   `json:"id" jsonschema:"Required. The ID of the task to edit."`
-	NewTitle        *string  `json:"new_title,omitempty" jsonschema:"A new title for the task."`
-	NewDescription  *string  `json:"new_description,omitempty" jsonschema:"A new description for the task."`
-	NewStatus       *string  `json:"new_status,omitempty" jsonschema:"A new status (e.g., 'in-progress', 'done')."`
-	NewPriority     *string  `json:"new_priority,omitempty" jsonschema:"A new priority."`
-	NewParent       *string  `json:"new_parent,omitempty" jsonschema:"A new parent task ID."`
-	AddAssigned     []string `json:"add_assigned,omitempty" jsonschema:"A new list of assigned."`
-	RemoveAssigned  []string `json:"remove_assigned,omitempty" jsonschema:"A list of assigned to remove."`
-	AddLabels       []string `json:"add_labels,omitempty" jsonschema:"Add new list of labels."`
-	RemoveLabels    []string `json:"remove_labels,omitempty" jsonschema:"A list of labels to remove."`
+	ID              string   `json:"id"                         jsonschema:"Required. The ID of the task to edit."`
+	NewTitle        *string  `json:"new_title,omitempty"        jsonschema:"A new title for the task."`
+	NewDescription  *string  `json:"new_description,omitempty"  jsonschema:"A new description for the task."`
+	NewStatus       *string  `json:"new_status,omitempty"       jsonschema:"A new status (e.g., 'in-progress', 'done')."`
+	NewPriority     *string  `json:"new_priority,omitempty"     jsonschema:"A new priority."`
+	NewParent       *string  `json:"new_parent,omitempty"       jsonschema:"A new parent task ID."`
+	AddAssigned     []string `json:"add_assigned,omitempty"     jsonschema:"A new list of assigned."`
+	RemoveAssigned  []string `json:"remove_assigned,omitempty"  jsonschema:"A list of assigned to remove."`
+	AddLabels       []string `json:"add_labels,omitempty"       jsonschema:"Add new list of labels."`
+	RemoveLabels    []string `json:"remove_labels,omitempty"    jsonschema:"A list of labels to remove."`
 	NewDependencies []string `json:"new_dependencies,omitempty" jsonschema:"A new list of dependencies (replaces the old list)."`
-	NewNotes        *string  `json:"new_notes,omitempty" jsonschema:"New implementation notes."`
-	NewPlan         *string  `json:"new_plan,omitempty" jsonschema:"New implementation plan."`
-	AddAC           []string `json:"add_ac,omitempty" jsonschema:"A list of new acceptance criteria to add."`
-	CheckAC         []int    `json:"check_ac,omitempty" jsonschema:"A list of 1-based indices of AC to check."`
-	UncheckAC       []int    `json:"uncheck_ac,omitempty" jsonschema:"A list of 1-based indices of AC to uncheck."`
-	RemoveAC        []int    `json:"remove_ac,omitempty" jsonschema:"A list of 1-based indices of AC to remove."`
+	NewNotes        *string  `json:"new_notes,omitempty"        jsonschema:"New implementation notes."`
+	NewPlan         *string  `json:"new_plan,omitempty"         jsonschema:"New implementation plan."`
+	AddAC           []string `json:"add_ac,omitempty"           jsonschema:"A list of new acceptance criteria to add."`
+	CheckAC         []int    `json:"check_ac,omitempty"         jsonschema:"A list of 1-based indices of AC to check."`
+	UncheckAC       []int    `json:"uncheck_ac,omitempty"       jsonschema:"A list of 1-based indices of AC to uncheck."`
+	RemoveAC        []int    `json:"remove_ac,omitempty"        jsonschema:"A list of 1-based indices of AC to remove."`
 }
 
 // Update updates an existing task based on the provided parameters.

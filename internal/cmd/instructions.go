@@ -22,7 +22,7 @@ func init() {
 	rootCmd.AddCommand(instructionsCmd)
 }
 
-func runInstructions(cmd *cobra.Command, args []string) error {
+func runInstructions(_ *cobra.Command, _ []string) error {
 	fmt.Printf("%s\n", mcp.PromptInstructions)
 	return nil
 }

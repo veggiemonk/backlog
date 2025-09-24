@@ -1,5 +1,5 @@
 
-.PHONY: help all build install test cover lint tidy docs clean debug-mcp
+.PHONY: help all build install test cover lint tidy docs clean debug-mcp login-ghcr install-tools pin-actions fix-struct-tags
 
 # Default target
 help: ## Show this help message
@@ -61,3 +61,5 @@ install-tools: ## Install development tools
 pin-actions: ## pin github actions
 	go tool github.com/stacklok/frizbee actions .github/workflows
 
+fix-struct-tags: ## format struct tags
+	golangci-lint run -E tagalign --fix

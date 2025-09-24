@@ -22,7 +22,7 @@ backlog version # Print the version information
 # Dirty: false
 `,
 
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		fmt.Printf("Backlog version:\n%s\n", version.Get().String())
 		return nil
 	},

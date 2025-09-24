@@ -35,7 +35,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 	is.NoErr(err)
 
 	t.Run("task_view schema compliance", func(t *testing.T) {
-		// Call the tool
+		is := is.New(t)
 		result, _, err := server.handler.view(t.Context(), &mcp.CallToolRequest{}, ViewParams{
 			ID: task.ID.String(),
 		})
@@ -49,7 +49,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 	})
 
 	t.Run("task_create schema compliance", func(t *testing.T) {
-		// Call the tool
+		is := is.New(t)
 		result, _, err := server.handler.create(t.Context(), &mcp.CallToolRequest{}, core.CreateTaskParams{
 			Title:       "New Test Task",
 			Description: "Another test task",
@@ -65,7 +65,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 	})
 
 	t.Run("task_edit schema compliance", func(t *testing.T) {
-		// Call the tool
+		is := is.New(t)
 		result, _, err := server.handler.edit(t.Context(), &mcp.CallToolRequest{}, core.EditTaskParams{
 			ID:       task.ID.String(),
 			NewTitle: ptr("Updated Test Task"),
@@ -81,6 +81,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 
 	// Test that validation actually catches schema violations
 	t.Run("schema validation catches violations", func(t *testing.T) {
+		is := is.New(t)
 		// Create invalid data that doesn't match the wrapped task schema
 		invalidData := map[string]any{
 			"WrongField": "should not be here",
@@ -112,6 +113,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 
 	// Test that Tasks schema validation catches violations
 	t.Run("tasks schema validation catches violations", func(t *testing.T) {
+		is := is.New(t)
 		// Create invalid data that doesn't match the wrapped tasks schema
 		invalidData := map[string]any{
 			"Tasks": "not an array", // Should be an array
@@ -137,7 +139,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 	})
 
 	t.Run("task_list schema compliance", func(t *testing.T) {
-		// Call the tool
+		is := is.New(t)
 		result, _, err := server.handler.list(t.Context(), &mcp.CallToolRequest{}, core.ListTasksParams{})
 		is.NoErr(err)
 		is.True(result != nil)
@@ -149,7 +151,7 @@ func TestOutputSchemaCompliance(t *testing.T) {
 	})
 
 	t.Run("task_batch_create schema compliance", func(t *testing.T) {
-		// Call the tool
+		is := is.New(t)
 		result, _, err := server.handler.batchCreate(t.Context(), &mcp.CallToolRequest{}, ListCreateParams{
 			Tasks: []core.CreateTaskParams{
 				{

@@ -32,7 +32,7 @@ var rootCmd = &cobra.Command{
 	Short: "Backlog is a git-native, markdown-based task manager",
 	Long: `A Git-native, Markdown-based task manager for developers and AI agents.
 Backlog helps you manage tasks within your git repository.`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(cmd *cobra.Command, _ []string) error {
 		// Default action when no subcommand is provided
 		if err := cmd.Help(); err != nil {
 			return fmt.Errorf("failed to display help: %w", err)

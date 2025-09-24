@@ -82,24 +82,24 @@ func (f *FileTaskStore) getNextTaskID(treePath ...int) (TaskID, error) {
 	var nextSeg []int
 	if len(treePath) == 0 {
 		// Top-level task
-		max := 0
+		maximum := 0
 		for _, id := range matchingIDs {
-			if id.seg[0] > max {
-				max = id.seg[0]
+			if id.seg[0] > maximum {
+				maximum = id.seg[0]
 			}
 		}
-		nextSeg = []int{max + 1}
+		nextSeg = []int{maximum + 1}
 	} else {
 		// Subtask or deeper
-		max := 0
+		maximum := 0
 		for _, id := range matchingIDs {
 			last := id.seg[len(id.seg)-1]
-			if last > max {
-				max = last
+			if last > maximum {
+				maximum = last
 			}
 		}
 		nextSeg = append([]int{}, treePath...)
-		nextSeg = append(nextSeg, max+1)
+		nextSeg = append(nextSeg, maximum+1)
 	}
 
 	return TaskID{seg: nextSeg}, nil

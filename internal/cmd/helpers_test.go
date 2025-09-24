@@ -68,14 +68,14 @@ func createTestTasks(t *testing.T, store mcpserver.TaskStore) {
 
 	for i, s := range base {
 		t1, _ := store.Create(core.CreateTaskParams{
-			Title:       fmt.Sprintf("%s Task", s),
+			Title:       s + " Task",
 			Assigned:    []string{assigned[i]},
 			Labels:      []string{labels[i]},
 			Priority:    "medium",
-			Notes:       fmt.Sprintf("%s implementation notes.", s),
-			Plan:        fmt.Sprintf("%s implementation plan.", s),
-			Description: fmt.Sprintf("%s description.", s),
-			AC:          []string{fmt.Sprintf("%s AC.", s)},
+			Notes:       s + " implementation notes.",
+			Plan:        s + " implementation plan.",
+			Description: s + " description.",
+			AC:          []string{s + " AC."},
 		})
 		_ = t1
 	}
@@ -105,8 +105,8 @@ func createTestTasks(t *testing.T, store mcpserver.TaskStore) {
 	t9, err := store.Create(core.CreateTaskParams{
 		Title:       "In Progress Task",
 		Description: "in progress description.",
-		Assigned:    []string{"nineth-user"},
-		Labels:      []string{"nineth"},
+		Assigned:    []string{"ninth-user"},
+		Labels:      []string{"ninth"},
 	})
 	if err != nil {
 		t.Fatalf("failed to create task: %v", err)

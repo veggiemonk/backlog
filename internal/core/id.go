@@ -39,7 +39,7 @@ func parseTaskID(id string) (TaskID, error) {
 		id = id[1:]
 	}
 	parts := strings.Split(id, fieldTaskSeperator)
-	var segments []int
+	segments := make([]int, 0, len(parts))
 	for _, part := range parts {
 		num, err := strconv.Atoi(part)
 		if err != nil {
@@ -151,7 +151,7 @@ func (t TaskID) Parent() *TaskID {
 }
 
 func (t TaskID) NextSubTaskID() TaskID {
-	newSeg := make([]int, len(t.seg))
+	newSeg := make([]int, len(t.seg), len(t.seg)+1)
 	copy(newSeg, t.seg)
 	newSeg = append(newSeg, 1)
 	return TaskID{seg: newSeg}

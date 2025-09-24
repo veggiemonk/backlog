@@ -7,9 +7,8 @@ import (
 )
 
 func TestACManager(t *testing.T) {
-	is := is.New(t)
-
 	t.Run("add acceptance criteria", func(t *testing.T) {
+		is := is.New(t)
 		task := Task{}
 		handleACChanges(&task, EditTaskParams{
 			AddAC: []string{"AC 1", "AC 2"},
@@ -23,6 +22,7 @@ func TestACManager(t *testing.T) {
 	})
 
 	t.Run("remove acceptance criteria", func(t *testing.T) {
+		is := is.New(t)
 		task := Task{
 			AcceptanceCriteria: []AcceptanceCriterion{
 				{Index: 1, Text: "AC 1"},
@@ -42,6 +42,7 @@ func TestACManager(t *testing.T) {
 	})
 
 	t.Run("check and uncheck acceptance criteria", func(t *testing.T) {
+		is := is.New(t)
 		task := Task{
 			AcceptanceCriteria: []AcceptanceCriterion{
 				{Index: 1, Text: "AC 1", Checked: false},
@@ -59,6 +60,7 @@ func TestACManager(t *testing.T) {
 	})
 
 	t.Run("comprehensive changes", func(t *testing.T) {
+		is := is.New(t)
 		task := Task{
 			AcceptanceCriteria: []AcceptanceCriterion{
 				{Index: 1, Text: "Initial AC 1", Checked: false},
@@ -92,6 +94,7 @@ func TestACManager(t *testing.T) {
 	})
 
 	t.Run("remove multiple criteria", func(t *testing.T) {
+		is := is.New(t)
 		task := Task{
 			AcceptanceCriteria: []AcceptanceCriterion{
 				{Index: 1, Text: "AC 1"},
@@ -110,6 +113,7 @@ func TestACManager(t *testing.T) {
 	})
 
 	t.Run("re-indexing after removal", func(t *testing.T) {
+		is := is.New(t)
 		task := Task{
 			AcceptanceCriteria: []AcceptanceCriterion{
 				{Index: 1, Text: "AC 1"},

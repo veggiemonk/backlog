@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strconv"
 	"sync"
 
 	"github.com/imjasonh/version"
@@ -93,7 +94,7 @@ func NewServer(store TaskStore, autoCommit bool) (*Server, error) {
 
 // RunHTTP starts the server with streamable HTTP transport
 func (s *Server) RunHTTP(port int) error {
-	addr := net.JoinHostPort("localhost", fmt.Sprintf("%d", port))
+	addr := net.JoinHostPort("localhost", strconv.Itoa(port))
 	handler := mcp.NewStreamableHTTPHandler(func(request *http.Request) *mcp.Server { return s.mcpServer }, nil)
 	logging.Info("MCP server starting", "transport", "http", "address", addr)
 	server := &http.Server{

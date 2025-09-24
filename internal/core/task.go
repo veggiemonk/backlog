@@ -31,17 +31,17 @@ func NewTask() Task {
 type Task struct {
 	// --- Front Matter Fields ---
 
-	ID           TaskID           `yaml:"id" json:"id"`
-	Title        string           `yaml:"title" json:"title"`
-	Status       Status           `yaml:"status" json:"status"`
-	Parent       TaskID           `yaml:"parent" json:"parent"`
-	Assigned     MaybeStringArray `yaml:"assigned,omitempty" json:"assigned,omitempty"`
-	Labels       MaybeStringArray `yaml:"labels,omitempty" json:"labels,omitempty"`
-	Dependencies MaybeStringArray `yaml:"dependencies,omitempty" json:"dependencies,omitempty"`
-	Priority     Priority         `yaml:"priority,omitempty" json:"priority,omitempty"`
-	CreatedAt    time.Time        `yaml:"created_at" json:"created_at"`
-	UpdatedAt    time.Time        `yaml:"updated_at,omitempty" json:"updated_at,omitzero"`
-	History      []HistoryEntry   `yaml:"history,omitempty" json:"history,omitempty"`
+	ID           TaskID           `json:"id"                     yaml:"id"`
+	Title        string           `json:"title"                  yaml:"title"`
+	Status       Status           `json:"status"                 yaml:"status"`
+	Parent       TaskID           `json:"parent"                 yaml:"parent"`
+	Assigned     MaybeStringArray `json:"assigned,omitempty"     yaml:"assigned,omitempty"`
+	Labels       MaybeStringArray `json:"labels,omitempty"       yaml:"labels,omitempty"`
+	Dependencies MaybeStringArray `json:"dependencies,omitempty" yaml:"dependencies,omitempty"`
+	Priority     Priority         `json:"priority,omitempty"     yaml:"priority,omitempty"`
+	CreatedAt    time.Time        `json:"created_at"             yaml:"created_at"`
+	UpdatedAt    time.Time        `json:"updated_at,omitzero"    yaml:"updated_at,omitempty"`
+	History      []HistoryEntry   `json:"history,omitempty"      yaml:"history,omitempty"`
 
 	// --- Markdown Body Fields ---
 
@@ -126,10 +126,10 @@ type AcceptanceCriterion struct {
 
 // HistoryEntry represents a single entry in the task's history.
 type HistoryEntry struct {
-	Timestamp time.Time      `yaml:"timestamp" json:"timestamp"`
-	Change    string         `yaml:"change" json:"change"`
-	Type      string         `yaml:"type,omitempty" json:"type,omitempty"`         // Type of change: "field_update", "id_change", "conflict_resolution", etc.
-	Metadata  map[string]any `yaml:"metadata,omitempty" json:"metadata,omitempty"` // Additional metadata about the change
+	Timestamp time.Time      `json:"timestamp"          yaml:"timestamp"`
+	Change    string         `json:"change"             yaml:"change"`
+	Type      string         `json:"type,omitempty"     yaml:"type,omitempty"`     // Type of change: "field_update", "id_change", "conflict_resolution", etc.
+	Metadata  map[string]any `json:"metadata,omitempty" yaml:"metadata,omitempty"` // Additional metadata about the change
 }
 
 // RecordChange adds a history entry to the task for the given change
@@ -188,14 +188,14 @@ func RecordParentChange(task *Task, oldParent, newParent TaskID, reason string) 
 	}
 
 	var changeDesc string
-	if newParent.IsZero() {
+	switch {
+	case newParent.IsZero():
 		changeDesc = fmt.Sprintf("Removed parent reference %s (%s)", oldParent.String(), reason)
-	} else if oldParent.IsZero() {
+	case oldParent.IsZero():
 		changeDesc = fmt.Sprintf("Added parent reference %s (%s)", newParent.String(), reason)
-	} else {
+	default:
 		changeDesc = fmt.Sprintf("Updated parent from %s to %s (%s)", oldParent.String(), newParent.String(), reason)
 	}
-
 	entry := HistoryEntry{
 		Timestamp: time.Now().UTC(),
 		Change:    changeDesc,

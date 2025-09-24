@@ -8,20 +8,20 @@ import (
 	"github.com/veggiemonk/backlog/internal/core"
 )
 
-// MCPToolCall represents a structured MCP tool call that can be marshaled to JSON
-type MCPToolCall struct {
+// ToolCall represents a structured MCP tool call that can be marshaled to JSON
+type ToolCall struct {
 	Name      string `json:"name"`
 	Arguments any    `json:"arguments"`
 }
 
 // formatToolCall converts an MCPToolCall to a formatted JSON string
-func formatToolCall(call MCPToolCall) string {
+func formatToolCall(call ToolCall) string {
 	bytes, _ := json.MarshalIndent(call, "", "  ")
 	return string(bytes)
 }
 
 // formatMultipleToolCalls formats multiple tool calls with descriptions
-func formatMultipleToolCalls(description string, calls ...MCPToolCall) string {
+func formatMultipleToolCalls(description string, calls ...ToolCall) string {
 	result := description + "\n\n"
 	for i, call := range calls {
 		if i > 0 {
@@ -32,34 +32,38 @@ func formatMultipleToolCalls(description string, calls ...MCPToolCall) string {
 	return result
 }
 
+var bugReport = &mcp.Prompt{
+	Name:        "create_bug_report",
+	Description: "Create a new bug report task.",
+}
+
+func taskCreate(_ context.Context, _ *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+	call := ToolCall{
+		Name: "task_create",
+		Arguments: core.CreateTaskParams{
+			Title:       "Bug: [BUG_TITLE]",
+			Description: "[BUG_DESCRIPTION]",
+			Labels:      []string{"bug"},
+		},
+	}
+	text := "Create a new bug report task using:\n" + formatToolCall(call)
+	return &mcp.GetPromptResult{
+		Messages: []*mcp.PromptMessage{{
+			Content: &mcp.TextContent{Text: text},
+			Role:    "assistant",
+		}},
+	}, nil
+}
+
 // addPrompts adds all MCP prompts to the server
 func (s *Server) addPrompts() {
-	s.mcpServer.AddPrompt(&mcp.Prompt{
-		Name:        "create_bug_report",
-		Description: "Create a new bug report task.",
-	}, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-		call := MCPToolCall{
-			Name: "task_create",
-			Arguments: core.CreateTaskParams{
-				Title:       "Bug: [BUG_TITLE]",
-				Description: "[BUG_DESCRIPTION]",
-				Labels:      []string{"bug"},
-			},
-		}
-		text := "Create a new bug report task using:\n" + formatToolCall(call)
-		return &mcp.GetPromptResult{
-			Messages: []*mcp.PromptMessage{{
-				Content: &mcp.TextContent{Text: text},
-				Role:    "assistant",
-			}},
-		}, nil
-	})
+	s.mcpServer.AddPrompt(bugReport, taskCreate)
 
 	s.mcpServer.AddPrompt(&mcp.Prompt{
 		Name:        "weekly_summary",
 		Description: "Generate a summary of tasks completed in the last week.",
 	}, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-		call := MCPToolCall{
+		call := ToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
 				Status:  []string{"done"},
@@ -80,7 +84,7 @@ func (s *Server) addPrompts() {
 		Name:        "prioritize_todo",
 		Description: "Show high priority tasks that need to be done.",
 	}, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-		call := MCPToolCall{
+		call := ToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
 				Status:  []string{"todo"},
@@ -101,7 +105,7 @@ func (s *Server) addPrompts() {
 		Name:        "create_feature_request",
 		Description: "Create a new feature request task.",
 	}, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-		call := MCPToolCall{
+		call := ToolCall{
 			Name: "task_create",
 			Arguments: core.CreateTaskParams{
 				Title:       "Feature: [FEATURE_TITLE]",
@@ -122,14 +126,14 @@ func (s *Server) addPrompts() {
 		Name:        "blocked_tasks",
 		Description: "Find tasks that are blocked or waiting on dependencies.",
 	}, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-		tasksDependees := MCPToolCall{
+		tasksDependees := ToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
 				Status:        []string{"todo", "in-progress"},
 				HasDependency: true,
 			},
 		}
-		tasksDependents := MCPToolCall{
+		tasksDependents := ToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
 				Status:     []string{"todo", "in-progress"},
@@ -149,7 +153,7 @@ func (s *Server) addPrompts() {
 		Name:        "project_overview",
 		Description: "Get an overview of all tasks grouped by project or epic.",
 	}, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-		call := MCPToolCall{
+		call := ToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
 				Parent: "[PARENT_ID]",
@@ -171,7 +175,7 @@ func (s *Server) addPrompts() {
 		Name:        "quick_standup",
 		Description: "Generate a quick standup report showing what was done, what's in progress, and what's next.",
 	}, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-		doneCall := MCPToolCall{
+		doneCall := ToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
 				Status:  []string{"done"},
@@ -179,13 +183,13 @@ func (s *Server) addPrompts() {
 				Reverse: true,
 			},
 		}
-		inProgressCall := MCPToolCall{
+		inProgressCall := ToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
 				Status: []string{"in-progress"},
 			},
 		}
-		todoCall := MCPToolCall{
+		todoCall := ToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
 				Status:  []string{"todo"},
@@ -213,7 +217,7 @@ func (s *Server) addPrompts() {
 		Name:        "review_completed",
 		Description: "Review recently completed tasks for retrospective or reporting.",
 	}, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-		call := MCPToolCall{
+		call := ToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
 				Status:  []string{"done"},
@@ -235,7 +239,7 @@ func (s *Server) addPrompts() {
 		Name:        "search_by_label",
 		Description: "Search for tasks by a specific label or tag.",
 	}, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-		call := MCPToolCall{
+		call := ToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
 				Labels: []string{"[LABEL_NAME]"},
@@ -255,7 +259,7 @@ func (s *Server) addPrompts() {
 		Name:        "unassigned_tasks",
 		Description: "Find tasks that haven't been assigned to anyone.",
 	}, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-		call := MCPToolCall{
+		call := ToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
 				Unassigned: true,
@@ -276,7 +280,7 @@ func (s *Server) addPrompts() {
 		Name:        "create_epic",
 		Description: "Create a new epic or large project task that can contain subtasks.",
 	}, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-		call := MCPToolCall{
+		call := ToolCall{
 			Name: "task_create",
 			Arguments: core.CreateTaskParams{
 				Title:       "Epic: [EPIC_TITLE]",
@@ -298,7 +302,7 @@ func (s *Server) addPrompts() {
 		Name:        "user_story_breakdown",
 		Description: "Break down a user story into smaller tasks.",
 	}, func(ctx context.Context, req *mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
-		call := MCPToolCall{
+		call := ToolCall{
 			Name: "task_list",
 			Arguments: core.ListTasksParams{
 				Parent: "[PARENT_ID]",

@@ -10,7 +10,6 @@ import (
 )
 
 func TestGetNextTaskID(t *testing.T) {
-	is := is.New(t)
 	filenames := []string{
 		"T24.1-cli-kanban-board-milestone-view.md",
 		"T200-Add-Claude-Code-integration-with-workflow-commands-during-init.md",
@@ -26,24 +25,28 @@ func TestGetNextTaskID(t *testing.T) {
 	fs := afero.NewMemMapFs()
 	store := NewFileTaskStore(fs, ".backlog")
 
+	is := is.New(t)
 	for _, name := range filenames {
 		_, err := fs.Create(".backlog/" + name)
 		is.NoErr(err)
 	}
 
 	t.Run("next top-level ID", func(t *testing.T) {
+		is := is.New(t)
 		nextID, err := store.getNextTaskID()
 		is.NoErr(err)
 		is.Equal("T223", nextID.Name())
 	})
 
 	t.Run("next subtask ID", func(t *testing.T) {
+		is := is.New(t)
 		nextID, err := store.getNextTaskID(217)
 		is.NoErr(err)
 		is.Equal("T217.05", nextID.Name())
 	})
 
 	t.Run("next subtask ID deeper level", func(t *testing.T) {
+		is := is.New(t)
 		nextID, err := store.getNextTaskID(217, 3)
 		is.NoErr(err)
 		is.Equal("T217.03.01", nextID.Name())

@@ -51,6 +51,7 @@ func TestParseTaskWithDependencies(t *testing.T) {
 	is.Equal("T03", taskC.ID.Name())
 
 	t.Run("single dependency", func(t *testing.T) {
+		is := is.New(t)
 		// Add dependency from task B to task A using Update
 		dependencies := []string{taskA.ID.Name()}
 		editParams := EditTaskParams{
@@ -82,6 +83,7 @@ func TestParseTaskWithDependencies(t *testing.T) {
 	})
 
 	t.Run("multiple dependencies", func(t *testing.T) {
+		is := is.New(t)
 		// Add multiple dependencies to task C
 		dependencies := []string{taskA.ID.Name(), taskB.ID.Name()}
 		editParams := EditTaskParams{

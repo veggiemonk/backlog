@@ -409,12 +409,10 @@ func (cr *ConflictResolver) findNextAvailableID(conflictID TaskID) (TaskID, erro
 
 // ExecuteResolutionPlan executes the given resolution plan
 func (cr *ConflictResolver) ExecuteResolutionPlan(plan *ResolutionPlan, dryRun bool) ([]string, error) {
-	var results []string
-
+	results := make([]string, 0, len(plan.Actions))
 	if dryRun {
 		results = append(results, "DRY RUN MODE - No changes will be made")
 	}
-
 	for _, action := range plan.Actions {
 		result, err := cr.executeAction(action, dryRun)
 		if err != nil {
@@ -422,7 +420,6 @@ func (cr *ConflictResolver) ExecuteResolutionPlan(plan *ResolutionPlan, dryRun b
 		}
 		results = append(results, result)
 	}
-
 	return results, nil
 }
 

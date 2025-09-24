@@ -9,16 +9,16 @@ import (
 
 // CreateTaskParams holds the parameters for creating a new task.
 type CreateTaskParams struct {
-	Title        string   `json:"title" jsonschema:"Required. The title of the task."`
-	Description  string   `json:"description" jsonschema:"A detailed description of the task."`
-	Priority     string   `json:"priority,omitempty" jsonschema:"The priority of the task."`
-	Parent       string   `json:"parent,omitempty" jsonschema:"The ID of the parent task."`
-	Assigned     []string `json:"assigned,omitempty" jsonschema:"A list of names assigned."`
-	Labels       []string `json:"labels,omitempty" jsonschema:"A list of labels."`
+	Title        string   `json:"title"                  jsonschema:"Required. The title of the task."`
+	Description  string   `json:"description"            jsonschema:"A detailed description of the task."`
+	Priority     string   `json:"priority,omitempty"     jsonschema:"The priority of the task."`
+	Parent       string   `json:"parent,omitempty"       jsonschema:"The ID of the parent task."`
+	Assigned     []string `json:"assigned,omitempty"     jsonschema:"A list of names assigned."`
+	Labels       []string `json:"labels,omitempty"       jsonschema:"A list of labels."`
 	Dependencies []string `json:"dependencies,omitempty" jsonschema:"A list of task IDs that this task depends on."`
-	AC           []string `json:"ac,omitempty" jsonschema:"A list of acceptance criteria."`
-	Plan         string   `json:"plan,omitempty" jsonschema:"The implementation plan."`
-	Notes        string   `json:"notes,omitempty" jsonschema:"Additional notes."`
+	AC           []string `json:"ac,omitempty"           jsonschema:"A list of acceptance criteria."`
+	Plan         string   `json:"plan,omitempty"         jsonschema:"The implementation plan."`
+	Notes        string   `json:"notes,omitempty"        jsonschema:"Additional notes."`
 }
 
 // Create implements TaskStore.

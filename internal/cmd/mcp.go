@@ -37,7 +37,7 @@ backlog mcp                    # Start the MCP server using stdio transport
 	RunE: runMCPServer,
 }
 
-func runMCPServer(cmd *cobra.Command, args []string) error {
+func runMCPServer(cmd *cobra.Command, _ []string) error {
 	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)
 	server, err := mcpserver.NewServer(store, viper.GetBool(configAutoCommit))
 	if err != nil {

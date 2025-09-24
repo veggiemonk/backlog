@@ -12,19 +12,19 @@ import (
 
 // ListTasksParams holds the parameters for listing tasks.
 type ListTasksParams struct {
-	Parent        string   `json:"parent,omitempty" jsonschema:"Filter tasks by a parent task ID."`
-	Status        []string `json:"status,omitempty" jsonschema:"Filter tasks by status."`
-	Assigned      []string `json:"assigned,omitempty" jsonschema:"Filter tasks by assignee."`
-	Labels        []string `json:"labels,omitempty" jsonschema:"Filter tasks by label."`
-	Sort          []string `json:"sort,omitempty" jsonschema:"Fields to sort by."`
-	Priority      string   `json:"priority,omitempty" jsonschema:"Filter tasks by priority."`
-	Query         string   `json:"query,omitempty" jsonschema:"Search query to filter tasks by."`
-	Unassigned    bool     `json:"unassigned,omitempty" jsonschema:"Filter tasks that have no one assigned."`
-	DependedOn    bool     `json:"depended_on,omitempty" jsonschema:"Filter tasks that other tasks depend on."`
+	Parent        string   `json:"parent,omitempty"         jsonschema:"Filter tasks by a parent task ID."`
+	Status        []string `json:"status,omitempty"         jsonschema:"Filter tasks by status."`
+	Assigned      []string `json:"assigned,omitempty"       jsonschema:"Filter tasks by assignee."`
+	Labels        []string `json:"labels,omitempty"         jsonschema:"Filter tasks by label."`
+	Sort          []string `json:"sort,omitempty"           jsonschema:"Fields to sort by."`
+	Priority      string   `json:"priority,omitempty"       jsonschema:"Filter tasks by priority."`
+	Query         string   `json:"query,omitempty"          jsonschema:"Search query to filter tasks by."`
+	Unassigned    bool     `json:"unassigned,omitempty"     jsonschema:"Filter tasks that have no one assigned."`
+	DependedOn    bool     `json:"depended_on,omitempty"    jsonschema:"Filter tasks that other tasks depend on."`
 	HasDependency bool     `json:"has_dependency,omitempty" jsonschema:"Filter tasks that have at least one dependency."`
-	Reverse       bool     `json:"reverse,omitempty" jsonschema:"Reverse the sort order."`
+	Reverse       bool     `json:"reverse,omitempty"        jsonschema:"Reverse the sort order."`
 	// Pagination
-	Limit  int `json:"limit,omitempty" jsonschema:"Maximum number of tasks to return (0 means no limit)."`
+	Limit  int `json:"limit,omitempty"  jsonschema:"Maximum number of tasks to return (0 means no limit)."`
 	Offset int `json:"offset,omitempty" jsonschema:"Number of tasks to skip from the beginning."`
 }
 
