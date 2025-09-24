@@ -69,9 +69,13 @@ func Add(path, oldPath, message string) error {
 	if err != nil {
 		return fmt.Errorf("could not get status: %w", err)
 	}
-	if !status.IsClean() && len(status) != 1 {
-		logging.Warn("the repository status is not clean, skip commit", "status", status.String())
-		return nil
+	for fpath, fstat := range status {
+		logging.Info("git status", "path", fpath, "staging", string(fstat.Staging))
+		// If there is another file added, just skip
+		if fpath != path && fstat.Staging == git.Added {
+			logging.Warn("the repository status is not clean, skip commit", "status", status.String())
+			return nil
+		}
 	}
 	// used in case of a rename (change of title)
 	if oldPath != "" {
