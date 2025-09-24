@@ -15,7 +15,7 @@ This section contains technical documentation about the Backlog project's archit
 
 ## Contents
 
-- [**Technical Analysis**](analysis.html) - Comprehensive analysis of the codebase, architecture, and implementation patterns
+- [**Technical Analysis**](analysis.md) - Comprehensive analysis of the codebase, architecture, and implementation patterns
 - [**Project Plan**](plan.md) - Detailed recreation plan with development phases and acceptance criteria
 
 ## Contributing

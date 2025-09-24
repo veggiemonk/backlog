@@ -82,18 +82,18 @@ backlog edit 42 \
 backlog edit 42 --plan "1. Refactor login button\n2. Test on mobile\n3. Review with team"
 
 # 12. Adding Dependencies
-# Use the --dep flag to add one or more task dependencies.
+# Use the --deps flag to add one or more task dependencies.
 # This will replace all existing dependencies with the new ones.
-backlog edit 42 --dep "T1" --dep "T2"
+backlog edit 42 --deps "T1" --deps "T2"
 
 # 13. Setting a Single Dependency
 # If you want to make a task depend on another specific task:
-backlog edit 42 --dep "T15"
+backlog edit 42 --deps "T15"
 # This makes task 42 dependent on task T15, meaning T15 must be completed before T42 can be started.
 
 # 14. Setting Multiple Dependencies
 # You can make a task depend on multiple other tasks:
-backlog edit 42 --dep "T15" --dep "T18" --dep "T20"
+backlog edit 42 --deps "T15" --deps "T18" --deps "T20"
 # This makes task 42 dependent on tasks T15, T18, and T20.
 	
 ```
@@ -104,7 +104,7 @@ backlog edit 42 --dep "T15" --dep "T18" --dep "T20"
       --ac strings                Add a new acceptance criterion (can be used multiple times)
   -a, --assigned strings          Add assigned names for the task (can be used multiple times)
       --check-ac ints             Check an acceptance criterion by its index
-      --dep strings               Set dependencies (can be used multiple times)
+      --deps strings              Set dependencies (can be used multiple times)
   -d, --description string        New description for the task
   -h, --help                      help for edit
   -l, --labels strings            Add labels for the task (can be used multiple times)
