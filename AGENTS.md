@@ -98,3 +98,10 @@ FULLY READ THE INSTRUCTIONS FOR BACKLOG CLI [prompt.md](./internal/mcp/prompt.md
 
 - **`go-task-manager-reviewer`**: An expert agent for reviewing Go code related to this project.
 - **When to use**: Use this agent when you need an expert review of new features, architectural changes, or refactoring, especially concerning task management logic, storage, or CLI commands.
+
+---
+
+## 8. Documentation
+
+- **Primary Source of Truth**: The `README.md` file is the main source of truth for project setup, usage, and high-level concepts.
+- **Generated Docs**: The `docs/` directory contains documentation generated from the source code and other resources. Refer to these for detailed information on CLI commands and other aspects of the project.

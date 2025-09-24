@@ -48,3 +48,6 @@ plugins:
   - search
   - awesome-pages
   - autolinks
+  - gen-files:
+      scripts:
+        - scripts/gen_docs.py

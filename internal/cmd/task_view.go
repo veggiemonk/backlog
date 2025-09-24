@@ -21,7 +21,7 @@ Examples:
   backlog view T01 --json    # View task T01 in JSON format
   backlog view T01 -j        # View task T01 in JSON format (short flag)`,
 	Args: cobra.ExactArgs(1),
-	RunE:  view,
+	RunE: view,
 }
 
 func view(cmd *cobra.Command, args []string) error {
