@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -45,12 +44,12 @@ func runMCPServer(cmd *cobra.Command, _ []string) error {
 	}
 	if httpTransport {
 		logging.Info("starting MCP server", "transport", "http", "port", mcpHTTPPort)
-		if err := server.RunHTTP(mcpHTTPPort); err != nil {
+		if err := server.RunHTTP(cmd.Context(), mcpHTTPPort); err != nil {
 			return fmt.Errorf("HTTP server failed: %v", err)
 		}
 		return nil
 	}
-	if err := server.RunStdio(context.Background()); err != nil {
+	if err := server.RunStdio(cmd.Context()); err != nil {
 		return fmt.Errorf("stdio server failed: %v", err)
 	}
 	return nil
