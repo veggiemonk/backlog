@@ -1,3 +1,8 @@
+---
+layout: page
+title: backlog
+---
+
 ## backlog
 
 Backlog is a git-native, markdown-based task manager

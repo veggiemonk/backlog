@@ -33,6 +33,7 @@ tidy: ## Run go mod tidy on all modules
 	
 docs: ## Generate documentation
 	rm -rf ./docs/reference
+	rm -f ./docs/*.md
 	go generate -x ./...
 
 clean: ## Clean up build artifacts

@@ -1,3 +1,8 @@
+---
+layout: page
+title: backlog version
+---
+
 ## backlog version
 
 Print the version information

@@ -1,3 +1,8 @@
+---
+layout: page
+title: backlog instructions
+---
+
 ## backlog instructions
 
 instructions for agents to learn to use backlog

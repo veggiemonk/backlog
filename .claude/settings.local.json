@@ -25,7 +25,8 @@
       "Bash(go list:*)",
       "Bash(go get:*)",
       "Bash(BACKLOG_FOLDER=\"/tmp/test-backlog\" BACKLOG_AUTO_COMMIT=false BACKLOG_LOG_LEVEL=debug ./bin/backlog list)",
-      "Bash(BACKLOG_FOLDER=\"/tmp/env-folder\" ./bin/backlog --folder=\"/tmp/flag-folder\" --log-level=debug list)"
+      "Bash(BACKLOG_FOLDER=\"/tmp/env-folder\" ./bin/backlog --folder=\"/tmp/flag-folder\" --log-level=debug list)",
+      "mcp__gopls__go_package_api"
     ],
     "deny": [],
     "ask": [
