@@ -38,15 +38,27 @@ with mkdocs_gen_files.open("prompts/mcp.md", "w") as f:
     f.write("---\n\n")
     f.write(prompt_content)
 
-# Fix the link in the README content for the docs site
-readme_for_docs = (
-    readme.replace("(./internal/mcp/prompt.md)", "(prompts/mcp.md)")
-    .replace(
-        "(./.backlog)", "(https://github.com/veggiemonk/backlog/tree/main/.backlog)"
+def replace_internal_links(content):
+    """Replaces internal links with their corresponding URLs for the docs site."""
+    return (
+        content.replace("(./internal/mcp/prompt.md)", "(prompts/mcp.md)")
+        .replace(
+            "(./.backlog)",
+            "(https://github.com/veggiemonk/backlog/tree/main/.backlog)",
+        )
+        .replace(
+            "(./.gemini)",
+            "(https://github.com/veggiemonk/backlog/tree/main/.gemini)",
+        )
+        .replace(
+            "(./.claude)",
+            "(https://github.com/veggiemonk/backlog/tree/main/.claude)",
+        )
     )
-    .replace("(./.gemini)", "(https://github.com/veggiemonk/backlog/tree/main/.gemini)")
-    .replace("(./.claude)", "(https://github.com/veggiemonk/backlog/tree/main/.claude)")
-)
+
+
+# Fix the link in the README content for the docs site
+readme_for_docs = replace_internal_links(readme)
 
 # Generate index.md from the full README
 with mkdocs_gen_files.open("index.md", "w") as f:
@@ -56,6 +68,7 @@ with mkdocs_gen_files.open("index.md", "w") as f:
     f.write("nav_order: 1\n")
     f.write("---\n\n")
     f.write(readme_for_docs)
+
 
 # Define the sections to extract and the files to generate
 sections = {
@@ -68,20 +81,7 @@ sections = {
 for title, (filename, nav_order) in sections.items():
     content = get_section(readme, title)
     if content:
-        content_for_docs = (
-            content.replace(
-                "(./.backlog)",
-                "(https://github.com/veggiemonk/backlog/tree/main/.backlog)",
-            )
-            .replace(
-                "(./.gemini)",
-                "(https://github.com/veggiemonk/backlog/tree/main/.gemini)",
-            )
-            .replace(
-                "(./.claude)",
-                "(https://github.com/veggiemonk/backlog/tree/main/.claude)",
-            )
-        )
+        content_for_docs = replace_internal_links(content)
         with mkdocs_gen_files.open(filename, "w") as f:
             f.write("---\n")
             f.write("layout: page\n")

@@ -32,7 +32,7 @@ tidy: ## Run go mod tidy on all modules
 	go mod tidy
 	
 docs: ## Generate documentation
-	rm -rf ./docs/cli
+	rm -rf ./docs/reference
 	go generate -x ./...
 
 clean: ## Clean up build artifacts
@@ -57,6 +57,7 @@ install-tools: ## Install development tools
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	go install github.com/stacklok/frizbee@latest
 	go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest
+	go install github.com/goreleaser/goreleaser@latest
 
 pin-actions: ## pin github actions
 	frizbee actions .github/workflows
