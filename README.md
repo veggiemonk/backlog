@@ -1,5 +1,7 @@
 # Backlog <!-- omit in toc -->
 
+[![Go](https://github.com/veggiemonk/backlog/actions/workflows/build.yaml/badge.svg?branch=main)](https://github.com/veggiemonk/backlog/actions/workflows/build.yaml)
+
 > Manage the backlog of your project with just markdown in git.
 > The goal is to provide a frictionless collaboration between AI agents and developers
 
