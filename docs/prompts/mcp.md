@@ -34,9 +34,7 @@ Efficiently manage all project tasks, status, and documentation using the Backlo
 - **You interact via CLI only**: `backlog create`, `backlog edit`, etc.
 - **Never bypass the CLI** - It handles Git, metadata, file naming, and relationships.
 
----
-
-# ⚠️ CRITICAL: NEVER EDIT OR DELETE TASK FILES DIRECTLY. Edit Only via CLI Commands
+## ⚠️ CRITICAL: NEVER EDIT OR DELETE TASK FILES DIRECTLY. Edit Only via CLI Commands
 
 **ALL task operations MUST use the Backlog CLI commands.**
 
@@ -49,7 +47,6 @@ Efficiently manage all project tasks, status, and documentation using the Backlo
 
 **Why?** Direct file editing breaks metadata synchronization, Git tracking, and task relationships.
 
----
 
 ## 1. Source of Truth & File Structure
 
@@ -66,7 +63,6 @@ Efficiently manage all project tasks, status, and documentation using the Backlo
 - This ensures metadata is correctly updated and the project stays in sync.
 - The CLI returns structured output, so you don't need to parse files.
 
----
 
 ## 2. Common Mistakes to Avoid
 

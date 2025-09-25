@@ -28,7 +28,6 @@ var (
 )
 
 var dirReplacer = strings.NewReplacer(
-	"(./internal/mcp/prompt.md)", "(prompts/mcp.md)",
 	"(./.backlog)", "(https://github.com/veggiemonk/backlog/tree/main/.backlog)",
 	"(./.gemini)", "(https://github.com/veggiemonk/backlog/tree/main/.gemini)",
 	"(./.claude)", "(https://github.com/veggiemonk/backlog/tree/main/.claude)",
@@ -69,7 +68,9 @@ func addIndex() error {
 	buf.WriteString("title: Home\n")
 	buf.WriteString("nav_order:  1\n")
 	buf.WriteString("---\n\n")
-	buf.WriteString(dirReplacer.Replace(string(b)))
+	content := dirReplacer.Replace(string(b))
+	content = strings.ReplaceAll(content, "(./internal/mcp/prompt.md)", "(prompts/mcp.md)")
+	buf.WriteString(content)
 	path := filepath.Join(dirDocs, "index.md")
 	if err := os.WriteFile(path, buf.Bytes(), 0o644); err != nil {
 		return err
@@ -88,7 +89,8 @@ func addPrompt() error {
 	buf.WriteString("title: Prompt to use Backlog CLI\n")
 	buf.WriteString("nav_order: 2\n")
 	buf.WriteString("---\n\n")
-	buf.Write(b)
+	content := dirReplacer.Replace(string(b))
+	buf.WriteString(content)
 	path := filepath.Join(dirDocs, "prompts", "mcp.md")
 	if err := os.WriteFile(path, buf.Bytes(), 0o644); err != nil {
 		return fmt.Errorf("write file %s: %w", path, err)
@@ -107,7 +109,9 @@ func addAGENTSmd() error {
 	buf.WriteString("title: AGENTS.md\n")
 	buf.WriteString("nav_order: 3\n")
 	buf.WriteString("---\n\n")
-	buf.Write(b)
+	content := dirReplacer.Replace(string(b))
+	content = strings.ReplaceAll(content, "(./internal/mcp/prompt.md)", "(../prompts/mcp.md)")
+	buf.WriteString(content)
 	path := filepath.Join(dirDocs, "prompts", "AGENTS.md")
 	if err := os.WriteFile(path, buf.Bytes(), 0o644); err != nil {
 		return fmt.Errorf("write file %s: %w", path, err)
