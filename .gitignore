@@ -6,3 +6,5 @@ dist/
 .venv/
 uv.lock
 .python-version
+/site
+/.cache
