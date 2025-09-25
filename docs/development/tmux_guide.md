@@ -1,4 +1,4 @@
-# A Guide to `tmux` for Humans and AI Agents
+# A Guide to `tmux` for AI Agents
 
 This document provides a guide to understanding and using `tmux`, a terminal multiplexer. It is designed to be read by humans and parsed by AI agents to learn how to manage terminal sessions effectively.
 
@@ -19,11 +19,9 @@ This document provides a guide to understanding and using `tmux`, a terminal mul
 -   **Window**: A single screen within a session, similar to a browser tab. Each window fills the entire terminal screen.
 -   **Pane**: A rectangular section of a window where a separate shell or program is running. You can split a window into multiple panes.
 
-### The Prefix Key
+### AI Agent Interaction
 
-All `tmux` keyboard shortcuts are triggered by first pressing a **prefix key**. The default prefix is `Ctrl-b`. After pressing the prefix, you press the command key (e.g., `c` to create a new window).
-
-To send an actual `Ctrl-b` keystroke to the application running in a pane, you press `Ctrl-b` twice.
+For AI agents, the concept of a "prefix key" and keyboard shortcuts is irrelevant. AI agents interact with `tmux` directly through shell commands. All operations, such as creating windows, splitting panes, or sending commands to a pane, are executed using `tmux` commands in the shell, as detailed in the "Programmatic Control for Agents" section. This direct command-line interface allows agents to orchestrate `tmux` sessions programmatically without needing to simulate keyboard input.
 
 ## 3. Common Use Cases & Commands
 
@@ -44,7 +42,9 @@ This is the most powerful feature of `tmux`. You can start a long-running proces
     ```
 
 -   **Detach from the current session (leaves it running):**
-    -   Press `Ctrl-b` then `d`.
+    ```sh
+    tmux detach
+    ```
 
 -   **Attach to the most recent session:**
     ```sh
@@ -65,86 +65,115 @@ This is the most powerful feature of `tmux`. You can start a long-running proces
 
 You can organize your workspace for a project with multiple related command-line tasks.
 
-#### Managing Windows (Tabs)
-
-| Action | Keystroke | Description |
+| Action | Command | Description |
 | :--- | :--- | :--- |
-| Create a new window | `Ctrl-b` `c` | A new window is created with a shell prompt. |
-| Go to the next window | `Ctrl-b` `n` | Cycles forward through your windows. |
-| Go to the previous window | `Ctrl-b` `p` | Cycles backward through your windows. |
-| Go to a specific window | `Ctrl-b` `[0-9]`| Jumps directly to the window number. |
-| Rename the current window | `Ctrl-b` `,` | Useful for organizing your work. |
+| Create a new window | `tmux new-window` | A new window is created with a shell prompt. |
+| Go to the next window | `tmux next-window` | Cycles forward through your windows. |
+| Go to the previous window | `tmux previous-window` | Cycles backward through your windows. |
+| Go to a specific window | `tmux select-window -t <window-number>`| Jumps directly to the window number. |
+| Rename the current window | `tmux rename-window <new-name>` | Useful for organizing your work. |
 
 #### Managing Panes (Splits)
 
-| Action | Keystroke | Description |
+| Action | Command | Description |
 | :--- | :--- | :--- |
-| Split pane vertically | `Ctrl-b` `%` | Creates a new pane to the right. |
-| Split pane horizontally | `Ctrl-b` `"` | Creates a new pane below. |
-| Navigate between panes | `Ctrl-b` `[arrow key]` | Moves the cursor to the pane in that direction. |
-| Close the current pane | `Ctrl-b` `x` | You will be prompted to confirm. |
-| Toggle pane zoom | `Ctrl-b` `z` | Expands the current pane to fill the window. Press again to unzoom. |
+| Split pane vertically | `tmux split-window -h` | Creates a new pane to the right. |
+| Split pane horizontally | `tmux split-window -v` | Creates a new pane below. |
+| Navigate between panes | `tmux select-pane -U/D/L/R` | Moves the cursor to the pane in that direction. |
+| Close the current pane | `tmux kill-pane` | You will be prompted to confirm. |
+| Toggle pane zoom | `tmux resize-pane -Z` | Expands the current pane to fill the window. Press again to unzoom. |
 
-### Use Case 3: Pair Programming
+## 3. Programmatic Control for Agents
 
-Multiple users can connect to the same `tmux` session to share a terminal.
+For an AI agent to orchestrate complex tasks, it needs to use shell commands instead of key bindings. The following commands are essential for programmatic control.
 
-1.  **User 1**: Starts a new session on a shared server.
+### Targeting
+Commands often require a target, specified with the `-t` flag. The target syntax is `session_name:window_index.pane_index`.
+- `my_session:0.1` refers to the second pane of the first window in the session named `my_session`.
+
+### Capturing Output
+To see the output of a command, an agent must capture the contents of a pane.
+
+### Checking for Existence
+To avoid errors, an agent can check if a session already exists before trying to create it.
+
+| Action | Command | Description |
+| :--- | :--- | :--- |
+| **Send Keystrokes** | `tmux send-keys -t <target> "command" C-m` | Sends a command string and an "Enter" (`C-m`) to the target pane. This is the primary way to run commands in an existing pane. |
+| **New Window** | `tmux new-window -t <target-session> -n <name>` | Creates a new window in the target session and gives it a name. |
+| **Split Pane** | `tmux split-window -h -t <target-pane>` | Splits a target pane horizontally (creating a vertical line). Use `-v` for a vertical split. |
+| **Select Pane** | `tmux select-pane -t <target-pane>` | Selects a specific pane (makes it the active one). |
+| **List Panes** | `tmux list-panes -s -t <target-session>` | Lists all panes in a session with their details, allowing an agent to discover the layout and pane indexes. |
+| **Capture Pane** | `tmux capture-pane -p -t <target-pane>` | Captures the full contents (including scrollback history) of a target pane and prints it to standard output. |
+| **Check for Session** | `tmux has-session -t <session-name>` | Returns a zero exit code if the session exists, and a non-zero exit code otherwise. This is useful for scripting. |
+
+
+## 4. Example Workflow for Agents
+
+Here is a step-by-step example of how an AI agent can use `tmux` to run a process in the background, check its output, and then terminate it.
+
+1.  **Check if a session named `my-app` already exists.**
     ```sh
-    tmux new -s pair_programming
+    tmux has-session -t my-app
     ```
-2.  **User 2**: Attaches to that same session.
+
+2.  **If it doesn't exist, create it.**
     ```sh
-    tmux attach -t pair_programming
+    tmux new-session -d -s my-app
+    ```
+    *   The `-d` flag starts the session in detached mode, so it doesn't attach to it.
+
+3.  **Create a new window for the application.**
+    ```sh
+    tmux new-window -t my-app -n server
     ```
 
-Both users will see the same screen and can type in the same terminal. `tmux` will resize the view to the smallest user's terminal.
+4.  **Split the window into two panes.**
+    ```sh
+    tmux split-window -h -t my-app:server
+    ```
 
-## 4. Basic Configuration (`~/.tmux.conf`)
+5.  **In the first pane (pane 0), start a web server.**
+    ```sh
+    tmux send-keys -t my-app:server.0 "python3 -m http.server 8080" C-m
+    ```
 
-You can customize `tmux` by creating a configuration file at `~/.tmux.conf`.
+6.  **In the second pane (pane 1), use `curl` to check if the server is running.**
+    ```sh
+    tmux send-keys -t my-app:server.1 "curl -s http://localhost:8080" C-m
+    ```
 
-**Example `~/.tmux.conf`:**
+7.  **Capture the output of the `curl` command from pane 1.**
+    ```sh
+    tmux capture-pane -p -t my-app:server.1
+    ```
+    *   The agent can then parse this output to verify the server's response.
 
-```
-# Change the prefix key to Ctrl-a (like the 'screen' command)
-set-option -g prefix C-a
-unbind-key C-b
-bind-key C-a send-prefix
-
-# Enable mouse mode for scrolling and pane selection
-set -g mouse on
-
-# Use more intuitive split commands
-bind | split-window -h
-bind - split-window -v
-unbind '''%'''
-unbind '''"'''
-```
-
-After editing the file, you need to reload the configuration from within a `tmux` session:
--   Press `Ctrl-b` then `:` to open the command prompt.
--   Type `source-file ~/.tmux.conf` and press Enter.
+8.  **Kill the session to clean up.**
+    ```sh
+    tmux kill-session -t my-app
+    ```
 
 ## 5. Command Cheatsheet
 
-| Action              | Command                       | Keystroke           |
-| :------------------ | :---------------------------- | :------------------ |
-| **Sessions**        |                               |                     |
-| New Session         | `tmux new -s <name>`          |                     |
-| List Sessions       | `tmux ls`                     |                     |
-| Attach to Session   | `tmux attach -t <name>`       |                     |
-| Detach from Session |                               | `Ctrl-b` `d`        |
-| Kill Session        | `tmux kill-session -t <name>` |                     |
-| **Windows**         |                               |                     |
-| New Window          |                               | `Ctrl-b` `c`        |
-| Next Window         |                               | `Ctrl-b` `n`        |
-| Previous Window     |                               | `Ctrl-b` `p`        |
-| Rename Window       |                               | `Ctrl-b` `,`        |
-| **Panes**           |                               |                     |
-| Split Vertically    |                               | `Ctrl-b` `%`        |
-| Split Horizontally  |                               | `Ctrl-b` `"`        |
-| Navigate Panes      |                               | `Ctrl-b` `[arrows]` |
-| Close Pane          |                               | `Ctrl-b` `x`        |
-| Zoom/Unzoom Pane    |                               | `Ctrl-b` `z`        |
-
+| Action | Command |
+| :--- | :--- |
+| **Sessions** | |
+| New Session | `tmux new -s <name>` |
+| List Sessions | `tmux ls` |
+| Attach to Session | `tmux attach -t <name>` |
+| Detach from Session | `tmux detach` |
+| Kill Session | `tmux kill-session -t <name>` |
+| **Windows** | |
+| New Window | `tmux new-window -n <name>` |
+| Next Window | `tmux next-window` |
+| Previous Window | `tmux previous-window` |
+| Rename Window | `tmux rename-window <new-name>` |
+| **Panes** | |
+| Split Vertically | `tmux split-window -v` |
+| Split Horizontally | `tmux split-window -h` |
+| Navigate Panes | `tmux select-pane -U/D/L/R` |
+| Close Pane | `tmux kill-pane` |
+| Zoom/Unzoom Pane | `tmux resize-pane -Z` |
+| **Agent Control** | |
+| Send Command | `tmux send-keys -t <target> "cmd" C-m` |

@@ -2,7 +2,7 @@
     "mcp": {
         "allowed": [
             "gopls",
-            "playwright"
+            "chrome"
         ]
     },
     "general": {
@@ -29,10 +29,10 @@
             "timeout": 30000,
             "trust": true
         },
-        "playwright": {
+        "chrome": {
             "command": "npx",
             "args": [
-                "@playwright/mcp@latest"
+                "chrome-devtools-mcp@latest"
             ]
         }
     },
