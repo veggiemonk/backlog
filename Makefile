@@ -1,5 +1,5 @@
 
-.PHONY: help all build install test cover lint tidy docs clean debug-mcp login-ghcr install-tools pin-actions fix-struct-tags
+.PHONY: help all build install test cover lint tidy docs clean debug-mcp login-ghcr install-tools pin-actions fix-struct-tags doc-website
 
 # Default target
 help: ## Show this help message
@@ -59,7 +59,10 @@ install-tools: ## Install development tools
 	go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest
 
 pin-actions: ## pin github actions
-	go tool github.com/stacklok/frizbee actions .github/workflows
+	frizbee actions .github/workflows
 
 fix-struct-tags: ## format struct tags
 	golangci-lint run -E tagalign --fix
+
+doc-website: ## documentation website
+	uv run mkdocs serve

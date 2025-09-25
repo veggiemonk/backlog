@@ -4,15 +4,16 @@ go 1.25.1
 
 require (
 	github.com/agnivade/levenshtein v1.2.1
-	github.com/go-git/go-git/v6 v6.0.0-20250922134601-9bda2a038490
+	github.com/go-git/go-git/v6 v6.0.0-20250923192830-1ad5b9c7da82
 	github.com/google/jsonschema-go v0.3.0
 	github.com/imjasonh/version v0.0.1
 	github.com/matryer/is v1.4.1
-	github.com/modelcontextprotocol/go-sdk v0.6.0
+	github.com/modelcontextprotocol/go-sdk v0.7.0
 	github.com/olekukonko/tablewriter v1.1.0
 	github.com/spf13/afero v1.15.0
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/viper v1.21.0
+	github.com/yuin/goldmark v1.7.13
 	go.yaml.in/yaml/v4 v4.0.0-rc.2
 )
 

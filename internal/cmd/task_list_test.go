@@ -10,7 +10,7 @@ import (
 
 func Test_runSearch(t *testing.T) {
 	t.Run("basic search by title", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 		output, err := exec(t, "list", runList, "--query", "First", "-j")
 		is.NoErr(err)
 		listResult := &core.ListResult{}
@@ -20,7 +20,7 @@ func Test_runSearch(t *testing.T) {
 	})
 
 	t.Run("search by partial title", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 		output, err := exec(t, "list", runList, "--query", "Task", "-j")
 		is.NoErr(err)
 		listResult := &core.ListResult{}
@@ -29,7 +29,7 @@ func Test_runSearch(t *testing.T) {
 	})
 
 	t.Run("search by description", func(t *testing.T) {
-		is := is.NewRelaxed(t)
+		is := is.New(t)
 		output, err := exec(t, "list", runList, "--query", "First description", "-j")
 		is.NoErr(err)
 		listResult := &core.ListResult{}

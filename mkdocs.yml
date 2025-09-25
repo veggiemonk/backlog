@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
+site_name: Backlog
+site_url: https://veggiemonk.github.io/backlog
+site_author: Julien Bisconti
+site_description: >-
+  Backlog is a zero-configuration task manager written in Go where tasks live
+  inside a Git repository.
+
+repo_name: veggiemonk/backlog
+repo_url: https://github.com/veggiemonk/backlog
+edit_uri: ""
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+extra_javascript:
+  - https://unpkg.com/mermaid@8.14.0/dist/mermaid.min.js
+
+plugins:
+  - search
+  - awesome-pages
+  - autolinks
+  - gen-files:
+      scripts:
+        - scripts/gen_docs.py

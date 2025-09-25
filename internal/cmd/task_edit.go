@@ -85,18 +85,18 @@ backlog edit 42 \
 backlog edit 42 --plan "1. Refactor login button\n2. Test on mobile\n3. Review with team"
 
 # 12. Adding Dependencies
-# Use the --dep flag to add one or more task dependencies.
+# Use the --deps flag to add one or more task dependencies.
 # This will replace all existing dependencies with the new ones.
-backlog edit 42 --dep "T1" --dep "T2"
+backlog edit 42 --deps "T1" --deps "T2"
 
 # 13. Setting a Single Dependency
 # If you want to make a task depend on another specific task:
-backlog edit 42 --dep "T15"
+backlog edit 42 --deps "T15"
 # This makes task 42 dependent on task T15, meaning T15 must be completed before T42 can be started.
 
 # 14. Setting Multiple Dependencies
 # You can make a task depend on multiple other tasks:
-backlog edit 42 --dep "T15" --dep "T18" --dep "T20"
+backlog edit 42 --deps "T15" --deps "T18" --deps "T20"
 # This makes task 42 dependent on tasks T15, T18, and T20.
 	`,
 	RunE: runEdit,
@@ -136,7 +136,7 @@ func setEditFlags(cmd *cobra.Command) {
 	cmd.Flags().StringSliceVarP(&removeAssigned, "remove-assigned", "A", nil, "Assigned names to remove from the task (can be used multiple times)")
 	cmd.Flags().StringSliceVarP(&addLabels, "labels", "l", nil, "Add labels for the task (can be used multiple times)")
 	cmd.Flags().StringSliceVarP(&removeLabels, "remove-labels", "L", nil, "Labels to remove from the task (can be used multiple times)")
-	cmd.Flags().StringSliceVar(&newDependencies, "dep", nil, "Set dependencies (can be used multiple times)")
+	cmd.Flags().StringSliceVar(&newDependencies, "deps", nil, "Set dependencies (can be used multiple times)")
 	cmd.Flags().StringVar(&newNotes, "notes", "", "New implementation notes for the task")
 	cmd.Flags().StringVar(&newPlan, "plan", "", "New implementation plan for the task")
 
@@ -166,7 +166,7 @@ func runEdit(cmd *cobra.Command, args []string) error {
 	if cmd.Flags().Changed("parent") {
 		params.NewParent = &newParent
 	}
-	if cmd.Flags().Changed("dep") {
+	if cmd.Flags().Changed("deps") {
 		params.NewDependencies = newDependencies
 	}
 	if cmd.Flags().Changed("assigned") {
