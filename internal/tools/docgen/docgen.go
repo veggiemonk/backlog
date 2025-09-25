@@ -33,26 +33,26 @@ var dirReplacer = strings.NewReplacer(
 	"(./.claude)", "(https://github.com/veggiemonk/backlog/tree/main/.claude)",
 )
 
+var (
+	cliPromptPath = "internal/mcp/prompt-cli.md"
+	mcpPromptPath = "internal/mcp/prompt-mcp.md"
+)
+
 func main() {
 	format := flag.String("format", "markdown", "markdown|man|rest")
 	flag.Parse()
 
-	if err := os.MkdirAll(dirDocs, 0o750); err != nil {
-		log.Fatal(err)
-	}
-	if err := genReference(dirRef, *format); err != nil {
-		log.Fatal(err)
-	}
-	if err := splitReadMe(); err != nil {
-		log.Fatal(err)
-	}
-	if err := addPrompt(); err != nil {
-		log.Fatal(err)
-	}
-	if err := addAGENTSmd(); err != nil {
-		log.Fatal(err)
-	}
-	if err := addIndex(); err != nil {
+	checkErr(func() error { return os.MkdirAll(dirDocs, 0o750) })
+	checkErr(func() error { return genReference(dirRef, *format) })
+	checkErr(splitReadMe)
+	checkErr(addPromptCLI)
+	checkErr(addPromptMCP)
+	checkErr(addAGENTSmd)
+	checkErr(addIndex)
+}
+
+func checkErr(f func() error) {
+	if err := f(); err != nil {
 		log.Fatal(err)
 	}
 }
@@ -69,7 +69,8 @@ func addIndex() error {
 	buf.WriteString("nav_order:  1\n")
 	buf.WriteString("---\n\n")
 	content := dirReplacer.Replace(string(b))
-	content = strings.ReplaceAll(content, "(./internal/mcp/prompt.md)", "(prompts/mcp.md)")
+	content = strings.ReplaceAll(content, "(./"+cliPromptPath+")", "(prompts/cli.md)")
+	content = strings.ReplaceAll(content, "(./"+mcpPromptPath+")", "(prompts/mcp.md)")
 	buf.WriteString(content)
 	path := filepath.Join(dirDocs, "index.md")
 	if err := os.WriteFile(path, buf.Bytes(), 0o644); err != nil {
@@ -78,8 +79,8 @@ func addIndex() error {
 	return nil
 }
 
-func addPrompt() error {
-	b, err := os.ReadFile("internal/mcp/prompt.md")
+func addPromptCLI() error {
+	b, err := os.ReadFile(cliPromptPath)
 	if err != nil {
 		return err
 	}
@@ -87,6 +88,26 @@ func addPrompt() error {
 	buf.WriteString("---\n")
 	buf.WriteString("layout: page\n")
 	buf.WriteString("title: Prompt to use Backlog CLI\n")
+	buf.WriteString("nav_order: 1\n")
+	buf.WriteString("---\n\n")
+	content := dirReplacer.Replace(string(b))
+	buf.WriteString(content)
+	path := filepath.Join(dirDocs, "prompts", "cli.md")
+	if err := os.WriteFile(path, buf.Bytes(), 0o644); err != nil {
+		return fmt.Errorf("write file %s: %w", path, err)
+	}
+	return nil
+}
+
+func addPromptMCP() error {
+	b, err := os.ReadFile(mcpPromptPath)
+	if err != nil {
+		return err
+	}
+	var buf bytes.Buffer
+	buf.WriteString("---\n")
+	buf.WriteString("layout: page\n")
+	buf.WriteString("title: Prompt to use Backlog MCP\n")
 	buf.WriteString("nav_order: 2\n")
 	buf.WriteString("---\n\n")
 	content := dirReplacer.Replace(string(b))
@@ -110,7 +131,7 @@ func addAGENTSmd() error {
 	buf.WriteString("nav_order: 3\n")
 	buf.WriteString("---\n\n")
 	content := dirReplacer.Replace(string(b))
-	content = strings.ReplaceAll(content, "(./internal/mcp/prompt.md)", "(../prompts/mcp.md)")
+	content = strings.ReplaceAll(content, "(./internal/mcp/prompt-cli.md)", "(../prompts/cli.md)")
 	buf.WriteString(content)
 	path := filepath.Join(dirDocs, "prompts", "AGENTS.md")
 	if err := os.WriteFile(path, buf.Bytes(), 0o644); err != nil {

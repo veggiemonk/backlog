@@ -18,9 +18,15 @@ Backlog includes an MCP server that exposes task management capabilities as stru
 
 #### Usage
 
-To make these tools available to an agent, start the MCP server:
+To make these tools available to an agent:
+
+1. Instruct your AI tools with  `backlog instructions --mcp`
+2. Start the MCP server
 
 ```bash
+# Instruct agent how to interact with backlog.
+backlog instructions --mode mcp >> AGENTS.md
+
 # Start MCP server for AI integration (HTTP transport)
 backlog mcp --http --port 8106
 
@@ -38,9 +44,12 @@ This method bypasses the MCP server, which can reduce overhead and token consump
 
 #### Example CLI Usage by an Agent
 
-An agent could be instructed to perform the following:
+An agent could be instructed to use backlog with `backlog instructions --cli`
 
 ```bash
+# Instruct agent how to interact with backlog.
+backlog instructions --mode cli >> AGENTS.md
+
 # Agent creates a new task
 backlog create "Refactor the authentication module" -d "The current module is hard to test."
 

@@ -7,8 +7,11 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-//go:embed prompt.md
-var PromptInstructions string
+//go:embed prompt-cli.md
+var PromptCLIInstructions string
+
+//go:embed prompt-mcp.md
+var PromptMCPInstructions string
 
 // addResources adds all MCP resources to the server
 func (s *Server) addResources() {
@@ -24,7 +27,7 @@ func (s *Server) addResources() {
 				{
 					URI:      geminiInstructionsURI,
 					MIMEType: "text/markdown",
-					Text:     PromptInstructions,
+					Text:     PromptCLIInstructions,
 				},
 			},
 		}, nil
@@ -42,7 +45,7 @@ func (s *Server) addResources() {
 				{
 					URI:      claudeInstructionsURI,
 					MIMEType: "text/markdown",
-					Text:     PromptInstructions,
+					Text:     PromptCLIInstructions,
 				},
 			},
 		}, nil
@@ -60,7 +63,7 @@ func (s *Server) addResources() {
 				{
 					URI:      agentInstructionsURI,
 					MIMEType: "text/markdown",
-					Text:     PromptInstructions,
+					Text:     PromptCLIInstructions,
 				},
 			},
 		}, nil

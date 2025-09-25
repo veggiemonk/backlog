@@ -77,7 +77,7 @@ You MUST use the `gopls` tools for code intelligence.
 
 ## 5. Planning and Task Management (`backlog`)
 
-FULLY READ THE INSTRUCTIONS FOR BACKLOG CLI [prompt.md](./internal/mcp/prompt.md)
+FULLY READ THE INSTRUCTIONS FOR BACKLOG CLI [prompt-cli.md](./internal/mcp/prompt-cli.md)
 
 ---
 

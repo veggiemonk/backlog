@@ -19,7 +19,9 @@ backlog instructions [flags]
 
 ```
 
-backlog instructions               # outputs the instructions 
+backlog instructions               # outputs the instructions for agents to use the cli.
+backlog instructions --mode cli    # outputs the instructions for agents to use the cli.
+backlog instructions --mode mcp    # outputs the instructions for agents to use MCP.
 backlog instructions >> AGENTS.md  # add instructions to agent base prompt.
 
 ```
@@ -27,7 +29,8 @@ backlog instructions >> AGENTS.md  # add instructions to agent base prompt.
 ### Options
 
 ```
-  -h, --help   help for instructions
+  -h, --help          help for instructions
+      --mode string   which mode the agent will use backlog: (cli|mcp) (default "cli")
 ```
 
 ### Options inherited from parent commands

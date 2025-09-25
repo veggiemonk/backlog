@@ -1,9 +1,3 @@
----
-layout: page
-title: Prompt to use Backlog MCP
-nav_order: 2
----
-
 # Instructions for the usage of Backlog via MCP Server
 
 ## Backlog: Comprehensive Project Management via MCP Tools
