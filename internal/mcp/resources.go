@@ -13,6 +13,12 @@ var PromptCLIInstructions string
 //go:embed prompt-mcp.md
 var PromptMCPInstructions string
 
+const (
+	geminiInstructionsURI = "mcp://backlog/GEMINI.md"
+	claudeInstructionsURI = "mcp://backlog/CLAUDE.md"
+	agentInstructionsURI  = "mcp://backlog/AGENTS.md"
+)
+
 // addResources adds all MCP resources to the server
 func (s *Server) addResources() {
 	geminiResource := &mcp.Resource{

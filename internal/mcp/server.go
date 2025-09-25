@@ -8,18 +8,13 @@ import (
 	"net/http"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/imjasonh/version"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
-)
-
-const (
-	geminiInstructionsURI = "mcp://backlog/GEMINI.md"
-	claudeInstructionsURI = "mcp://backlog/CLAUDE.md"
-	agentInstructionsURI  = "mcp://backlog/AGENTS.md"
 )
 
 // TaskStore interface matches the one expected by the MCP handlers
@@ -64,7 +59,7 @@ func NewServer(store TaskStore, autoCommit bool) (*Server, error) {
 			Title:   "backlog",
 			Version: ver.Version,
 		}, &mcp.ServerOptions{
-			Instructions: "Use this MCP server to manage your backlog tasks programmatically.",
+			Instructions: "Use this MCP server to manage your backlog tasks programmatically." + PromptMCPInstructions,
 			HasPrompts:   true,
 			HasTools:     true,
 			HasResources: true,
@@ -93,7 +88,7 @@ func NewServer(store TaskStore, autoCommit bool) (*Server, error) {
 }
 
 // RunHTTP starts the server with streamable HTTP transport
-func (s *Server) RunHTTP(port int) error {
+func (s *Server) RunHTTP(ctx context.Context, port int) error {
 	addr := net.JoinHostPort("localhost", strconv.Itoa(port))
 	handler := mcp.NewStreamableHTTPHandler(func(request *http.Request) *mcp.Server { return s.mcpServer }, nil)
 	logging.Info("MCP server starting", "transport", "http", "address", addr)
@@ -105,7 +100,16 @@ func (s *Server) RunHTTP(port int) error {
 		IdleTimeout:       60 * 1e9, // 60 seconds
 		ReadHeaderTimeout: 5 * 1e9,  // 5 seconds
 	}
-	return server.ListenAndServe()
+	go func() {
+		<-ctx.Done()
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		_ = server.Shutdown(shutdownCtx) // best effort shutdown
+	}()
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		return err
+	}
+	return nil
 }
 
 // RunStdio starts the server with stdio transport
