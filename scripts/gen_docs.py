@@ -30,16 +30,23 @@ with open("README.md", "r") as f:
 with open("internal/mcp/prompt.md", "r") as f:
     prompt_content = f.read()
 
-with mkdocs_gen_files.open("reference/prompt.md", "w") as f:
+with mkdocs_gen_files.open("prompts/mcp.md", "w") as f:
     f.write("---\n")
     f.write("layout: page\n")
-    f.write("title: Prompt Instructions\n")
-    f.write("nav_order: 10\n")
+    f.write("title: Prompt to use Backlog CLI\n")
+    f.write("nav_order: 2\n")
     f.write("---\n\n")
     f.write(prompt_content)
 
 # Fix the link in the README content for the docs site
-readme_for_docs = readme.replace("(./internal/mcp/prompt.md)", "(reference/prompt.md)")
+readme_for_docs = (
+    readme.replace("(./internal/mcp/prompt.md)", "(prompts/mcp.md)")
+    .replace(
+        "(./.backlog)", "(https://github.com/veggiemonk/backlog/tree/main/.backlog)"
+    )
+    .replace("(./.gemini)", "(https://github.com/veggiemonk/backlog/tree/main/.gemini)")
+    .replace("(./.claude)", "(https://github.com/veggiemonk/backlog/tree/main/.claude)")
+)
 
 # Generate index.md from the full README
 with mkdocs_gen_files.open("index.md", "w") as f:
@@ -61,10 +68,24 @@ sections = {
 for title, (filename, nav_order) in sections.items():
     content = get_section(readme, title)
     if content:
+        content_for_docs = (
+            content.replace(
+                "(./.backlog)",
+                "(https://github.com/veggiemonk/backlog/tree/main/.backlog)",
+            )
+            .replace(
+                "(./.gemini)",
+                "(https://github.com/veggiemonk/backlog/tree/main/.gemini)",
+            )
+            .replace(
+                "(./.claude)",
+                "(https://github.com/veggiemonk/backlog/tree/main/.claude)",
+            )
+        )
         with mkdocs_gen_files.open(filename, "w") as f:
             f.write("---\n")
             f.write("layout: page\n")
             f.write(f"title: {title}\n")
             f.write(f"nav_order: {nav_order}\n")
             f.write("---\n\n")
-            f.write(content)
+            f.write(content_for_docs)
