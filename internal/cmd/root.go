@@ -44,19 +44,19 @@ Backlog helps you manage tasks within your git repository.`,
 const (
 	// Environment variable names for configuration
 	envPrefix        = "BACKLOG"
-	envVarLogFile    = "BACKLOG_LOG_FILE"
-	envVarLogLevel   = "BACKLOG_LOG_LEVEL"
-	envVarLogFormat  = "BACKLOG_LOG_FORMAT"
-	envVarAutoCommit = "BACKLOG_AUTO_COMMIT"
+	envVarLogFile    = envPrefix + "_LOG_FILE"
+	envVarLogLevel   = envPrefix + "_LOG_LEVEL"
+	envVarLogFormat  = envPrefix + "_LOG_FORMAT"
+	envVarAutoCommit = envPrefix + "_AUTO_COMMIT"
 
 	// folder
 	configFolder  = "folder"
-	envVarDir     = "BACKLOG_FOLDER"
+	envVarDir     = envPrefix + "_FOLDER"
 	defaultFolder = ".backlog"
 
 	// git
 	configAutoCommit  = "auto-commit"
-	defaultAutoCommit = true
+	defaultAutoCommit = false
 
 	// logging
 	configLogLevel   = "log-level"
