@@ -15,6 +15,7 @@ import (
 	"unicode"
 
 	"github.com/spf13/cobra/doc"
+	"github.com/spf13/viper"
 	"github.com/veggiemonk/backlog/internal/cmd"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
@@ -49,6 +50,51 @@ func main() {
 	checkErr(addPromptMCP)
 	checkErr(addAGENTSmd)
 	checkErr(addIndex)
+	checkErr(addEnvVars)
+}
+
+func addEnvVars() error {
+	files, err := os.ReadDir(dirRef)
+	if err != nil {
+		return err
+	}
+	sep := "### Options"
+	var buf strings.Builder
+	buf.WriteString("\n#### Environment Variables\n\n")
+	buf.WriteString("```\n")
+	buf.WriteString("\t(name)\t\t(default)\n")
+	for k, v := range viper.AllSettings() {
+		if len(k) < 8 {
+			buf.WriteString(fmt.Sprintf("\t%s\t\t%v\n", strings.ToUpper(k), v))
+		} else {
+			buf.WriteString(fmt.Sprintf("\t%s\t%v\n", strings.ToUpper(k), v))
+		}
+	}
+	buf.WriteString("```\n")
+	buf.WriteString("\n#### Flags\n")
+	for _, f := range files {
+		if filepath.Ext(f.Name()) != ".md" {
+			continue
+		}
+		path := filepath.Join(dirRef, f.Name())
+		b, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		before, after, found := strings.Cut(string(b), sep)
+		if !found {
+			continue
+		}
+		results := fmt.Sprintf("%s\n%s\n%s%s", before, sep, buf.String(), after)
+
+		if err := os.WriteFile(path, []byte(results), os.ModePerm); err != nil {
+			return err
+		}
+
+	}
+
+	return nil
 }
 
 func checkErr(f func() error) {
@@ -281,9 +327,6 @@ func genReference(out, format string) error {
 			return err
 		}
 		return nil
-		// if err := doc.GenMarkdownTree(root, out); err != nil {
-		// 	return err
-		// }
 	case "man":
 		hdr := &doc.GenManHeader{Title: strings.ToUpper(root.Name()), Section: "1"}
 		if err := doc.GenManTree(root, hdr, out); err != nil {

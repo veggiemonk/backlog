@@ -31,7 +31,22 @@ Examples:
 backlog doctor [flags]
 ```
 
+
 ### Options
+
+#### Environment Variables
+
+```
+	(name)		(default)
+	FOLDER		.backlog
+	AUTO-COMMIT	false
+	LOG-LEVEL	info
+	LOG-FORMAT	text
+	LOG-FILE	
+```
+
+#### Flags
+
 
 ```
       --dry-run           Show what would be changed without making changes (use with --fix)
@@ -44,7 +59,7 @@ backlog doctor [flags]
 ### Options inherited from parent commands
 
 ```
-      --auto-commit         Auto-committing changes to git repository (default true)
+      --auto-commit         Auto-committing changes to git repository
       --folder string       Directory for backlog tasks (default ".backlog")
       --log-file string     Log file path (defaults to stderr)
       --log-format string   Log format (json, text) (default "text")

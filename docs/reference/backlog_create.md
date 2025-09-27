@@ -76,7 +76,22 @@ backlog create "Build the new reporting feature" \
 	
 ```
 
+
 ### Options
+
+#### Environment Variables
+
+```
+	(name)		(default)
+	FOLDER		.backlog
+	AUTO-COMMIT	false
+	LOG-LEVEL	info
+	LOG-FORMAT	text
+	LOG-FILE	
+```
+
+#### Flags
+
 
 ```
       --ac strings           Acceptance criterion (can be specified multiple times)
@@ -94,7 +109,7 @@ backlog create "Build the new reporting feature" \
 ### Options inherited from parent commands
 
 ```
-      --auto-commit         Auto-committing changes to git repository (default true)
+      --auto-commit         Auto-committing changes to git repository
       --folder string       Directory for backlog tasks (default ".backlog")
       --log-file string     Log file path (defaults to stderr)
       --log-format string   Log format (json, text) (default "text")

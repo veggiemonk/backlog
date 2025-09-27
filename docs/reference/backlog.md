@@ -16,10 +16,25 @@ Backlog helps you manage tasks within your git repository.
 backlog [flags]
 ```
 
+
 ### Options
 
+#### Environment Variables
+
 ```
-      --auto-commit         Auto-committing changes to git repository (default true)
+	(name)		(default)
+	FOLDER		.backlog
+	AUTO-COMMIT	false
+	LOG-LEVEL	info
+	LOG-FORMAT	text
+	LOG-FILE	
+```
+
+#### Flags
+
+
+```
+      --auto-commit         Auto-committing changes to git repository
       --folder string       Directory for backlog tasks (default ".backlog")
   -h, --help                help for backlog
       --log-file string     Log file path (defaults to stderr)
