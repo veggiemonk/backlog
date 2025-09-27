@@ -78,11 +78,11 @@ backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
 
 ```
 	(name)		(default)
-	FOLDER		.backlog
 	AUTO-COMMIT	false
-	LOG-LEVEL	info
-	LOG-FORMAT	text
+	FOLDER		.backlog
 	LOG-FILE	
+	LOG-FORMAT	text
+	LOG-LEVEL	info
 ```
 
 #### Flags

@@ -198,7 +198,7 @@ Backlog supports configuration through command-line flags and environment variab
 | Configuration       | Flag            | Environment Variable  | Default    | Description                               |
 | ------------------- | --------------- | --------------------- | ---------- | ----------------------------------------- |
 | **Tasks Directory** | `--folder`      | `BACKLOG_FOLDER`      | `.backlog` | Directory for backlog tasks               |
-| **Auto Commit**     | `--auto-commit` | `BACKLOG_AUTO_COMMIT` | `true`     | Auto-committing changes to git repository |
+| **Auto Commit**     | `--auto-commit` | `BACKLOG_AUTO_COMMIT` | `false`     | Auto-committing changes to git repository |
 | **Log Level**       | `--log-level`   | `BACKLOG_LOG_LEVEL`   | `info`     | Log level (debug, info, warn, error)      |
 | **Log Format**      | `--log-format`  | `BACKLOG_LOG_FORMAT`  | `text`     | Log format (json, text)                   |
 | **Log File**        | `--log-file`    | `BACKLOG_LOG_FILE`    | `""`       | Log file path (defaults to stderr)        |

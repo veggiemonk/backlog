@@ -8,6 +8,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -63,11 +64,12 @@ func addEnvVars() error {
 	buf.WriteString("\n#### Environment Variables\n\n")
 	buf.WriteString("```\n")
 	buf.WriteString("\t(name)\t\t(default)\n")
-	for k, v := range viper.AllSettings() {
+	m := viper.AllSettings()
+	for _, k := range slices.Sorted(maps.Keys(m)) {
 		if len(k) < 8 {
-			buf.WriteString(fmt.Sprintf("\t%s\t\t%v\n", strings.ToUpper(k), v))
+			buf.WriteString(fmt.Sprintf("\t%s\t\t%v\n", strings.ToUpper(k), m[k]))
 		} else {
-			buf.WriteString(fmt.Sprintf("\t%s\t%v\n", strings.ToUpper(k), v))
+			buf.WriteString(fmt.Sprintf("\t%s\t%v\n", strings.ToUpper(k), m[k]))
 		}
 	}
 	buf.WriteString("```\n")

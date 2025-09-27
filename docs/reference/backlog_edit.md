@@ -110,11 +110,11 @@ backlog edit 42 --deps "T15" --deps "T18" --deps "T20"
 
 ```
 	(name)		(default)
-	FOLDER		.backlog
 	AUTO-COMMIT	false
-	LOG-LEVEL	info
-	LOG-FORMAT	text
+	FOLDER		.backlog
 	LOG-FILE	
+	LOG-FORMAT	text
+	LOG-LEVEL	info
 ```
 
 #### Flags

@@ -32,11 +32,11 @@ backlog mcp                    # Start the MCP server using stdio transport
 
 ```
 	(name)		(default)
-	FOLDER		.backlog
 	AUTO-COMMIT	false
-	LOG-LEVEL	info
-	LOG-FORMAT	text
+	FOLDER		.backlog
 	LOG-FILE	
+	LOG-FORMAT	text
+	LOG-LEVEL	info
 ```
 
 #### Flags
