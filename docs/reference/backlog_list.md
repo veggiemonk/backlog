@@ -3,21 +3,38 @@ layout: page
 title: backlog list
 ---
 
-## backlog list
+# NAME
 
-List all tasks
+list - List all tasks
 
-### Synopsis
+# SYNOPSIS
+
+list
+
+```
+[--assigned|-a]=[value]
+[--depended-on|-d]
+[--has-dependency|-c]
+[--hide-extra|-e]
+[--json|-j]
+[--labels|-l]=[value]
+[--limit]=[value]
+[--markdown|-m]
+[--offset]=[value]
+[--parent|-p]=[value]
+[--priority]=[value]
+[--query|-q]=[value]
+[--reverse|-r]
+[--sort]=[value]
+[--status|-s]=[value]
+[--unassigned|-u]
+```
+
+# DESCRIPTION
 
 Lists all tasks in the backlog except archived tasks.
 
-```
-backlog list [flags]
-```
-
-### Examples
-
-```
+Examples:
 
 # List all tasks
 backlog list                                    # List all tasks with all columns
@@ -52,9 +69,9 @@ backlog list --sort "status,created"            # Sort tasks by status, then cre
 backlog list --reverse                          # Reverse the order of tasks
 backlog list --sort "priority" --reverse        # Sort by priority in reverse order
 backlog list --status "todo" \
-	--priority "medium"  \
-	--sort "priority"    \
-	--reverse                               # Combine all options
+    --priority "medium"  \
+    --sort "priority"    \
+    --reverse                               # Combine all options
 
 # output format
 backlog list -m                                 # List tasks in markdown format
@@ -68,57 +85,45 @@ backlog list --limit 10                         # List first 10 tasks
 backlog list --limit 5 --offset 10              # List 5 tasks starting from 11th task
 backlog list --status "todo" --limit 3          # List first 3 "todo" tasks
 backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
-	
-```
 
 
-### Options
-
-#### Environment Variables
+**Usage**:
 
 ```
-	(name)		(default)
-	AUTO-COMMIT	false
-	FOLDER		.backlog
-	LOG-FILE	
-	LOG-FORMAT	text
-	LOG-LEVEL	info
+list [GLOBAL OPTIONS] [command [COMMAND OPTIONS]] [ARGUMENTS...]
 ```
 
-#### Flags
+# GLOBAL OPTIONS
 
+**--assigned, -a**="": Filter tasks by assigned names (default: [])
 
-```
-  -a, --assigned strings   Filter tasks by assigned names
-  -d, --depended-on        Filter tasks that are depended on by other tasks
-  -c, --has-dependency     Filter tasks that have dependencies
-  -h, --help               help for list
-  -e, --hide-extra         Hide extra fields (labels, priority, assigned)
-  -j, --json               Print JSON output
-  -l, --labels strings     Filter tasks by labels
-      --limit int          Maximum number of tasks to return (0 means no limit)
-  -m, --markdown           print markdown table
-      --offset int         Number of tasks to skip from the beginning
-  -p, --parent string      Filter tasks by parent ID
-      --priority string    Filter tasks by priority
-  -q, --query string       Search query to filter tasks by
-  -r, --reverse            Reverse the order of tasks
-      --sort string        Sort tasks by comma-separated fields (id, title, status, priority, created, updated)
-  -s, --status strings     Filter tasks by status
-  -u, --unassigned         Filter tasks that have no one assigned
-```
+**--depended-on, -d**: Filter tasks that are depended on by other tasks
 
-### Options inherited from parent commands
+**--has-dependency, -c**: Filter tasks that have dependencies
 
-```
-      --auto-commit         Auto-committing changes to git repository
-      --folder string       Directory for backlog tasks (default ".backlog")
-      --log-file string     Log file path (defaults to stderr)
-      --log-format string   Log format (json, text) (default "text")
-      --log-level string    Log level (debug, info, warn, error) (default "info")
-```
+**--hide-extra, -e**: Hide extra fields (labels, priority, assigned)
 
-### SEE ALSO
+**--json, -j**: Print JSON output
 
-* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+**--labels, -l**="": Filter tasks by labels (default: [])
+
+**--limit**="": Maximum number of tasks to return (0 means no limit) (default: 0)
+
+**--markdown, -m**: Print markdown table
+
+**--offset**="": Number of tasks to skip from the beginning (default: 0)
+
+**--parent, -p**="": Filter tasks by parent ID
+
+**--priority**="": Filter tasks by priority
+
+**--query, -q**="": Search query to filter tasks by
+
+**--reverse, -r**: Reverse the order of tasks
+
+**--sort**="": Sort tasks by comma-separated fields (id, title, status, priority, created, updated)
+
+**--status, -s**="": Filter tasks by status (default: [])
+
+**--unassigned, -u**: Filter tasks that have no one assigned
 

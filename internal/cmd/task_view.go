@@ -1,51 +1,57 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
-	"github.com/spf13/cobra"
-	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
+	"github.com/urfave/cli/v3"
 )
 
-var viewJSON bool
-
-// viewCmd represents the view command
-var viewCmd = &cobra.Command{
-	Use:   "view <id>",
-	Short: "View a task by providing its ID",
-	Long: `View a task by providing its ID. You can output in markdown or JSON format.
-
-Examples:
+const viewExamples = `
   backlog view T01           # View task T01 in markdown format
   backlog view T01 --json    # View task T01 in JSON format
-  backlog view T01 -j        # View task T01 in JSON format (short flag)`,
-	Args: cobra.ExactArgs(1),
-	RunE: view,
-}
+  backlog view T01 -j        # View task T01 in JSON format (short flag)
+`
 
-func view(cmd *cobra.Command, args []string) error {
-	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)
-	t, err := store.Get(args[0])
-	if err != nil {
-		return fmt.Errorf("failed to view task %q: %w", args[0], err)
+func newViewCommand(rt *runtime) *cli.Command {
+	return &cli.Command{
+		Name:      "view",
+		Usage:     "View a task by providing its ID",
+		UsageText: "backlog view <id>",
+		ArgsUsage: "<id>",
+		Description: "View a task by providing its ID. You can output in markdown or JSON format.\n\nExamples:\n" +
+			viewExamples,
+		Flags: []cli.Flag{
+			&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Usage: "Print JSON output"},
+		},
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			if cmd.Args().Len() != 1 {
+				return cli.Exit("view requires exactly one <id> argument", 1)
+			}
+
+			store := rt.store
+			if store == nil {
+				return fmt.Errorf("task store not initialized")
+			}
+
+			taskID := cmd.Args().First()
+			task, err := store.Get(taskID)
+			if err != nil {
+				return fmt.Errorf("failed to view task %q: %w", taskID, err)
+			}
+
+			if cmd.Bool("json") {
+				if err := json.NewEncoder(cmd.Root().Writer).Encode(task); err != nil {
+					return fmt.Errorf("failed to encode JSON for task %q: %w", taskID, err)
+				}
+				return nil
+			}
+
+			if _, err := fmt.Fprintf(cmd.Root().Writer, "%s\n", string(task.Bytes())); err != nil {
+				return fmt.Errorf("failed to write task %q contents: %w", taskID, err)
+			}
+			return nil
+		},
 	}
-
-	if viewJSON {
-		if err := json.NewEncoder(cmd.OutOrStdout()).Encode(t); err != nil {
-			return fmt.Errorf("failed to encode JSON for task %q: %w", args[0], err)
-		}
-	} else {
-		fmt.Printf("%s\n", string(t.Bytes()))
-	}
-	return nil
-}
-
-func setViewFlags(cmd *cobra.Command) {
-	cmd.Flags().BoolVarP(&viewJSON, "json", "j", false, "Print JSON output")
-}
-
-func init() {
-	rootCmd.AddCommand(viewCmd)
-	setViewFlags(viewCmd)
 }

@@ -3,11 +3,22 @@ layout: page
 title: backlog doctor
 ---
 
-## backlog doctor
+# NAME
 
-Diagnose and fix task ID conflicts
+doctor - Diagnose and fix task ID conflicts
 
-### Synopsis
+# SYNOPSIS
+
+doctor
+
+```
+[--dry-run]
+[--fix]
+[--json|-j]
+[--strategy]=[value]
+```
+
+# DESCRIPTION
 
 Diagnose and fix task ID conflicts that can occur when creating tasks
 in separate Git branches. Conflicts arise when multiple branches generate the same task IDs.
@@ -20,6 +31,7 @@ Conflict types detected:
 - Orphaned children (tasks with non-existent parents)
 - Invalid hierarchy (parent-child ID mismatch)
 
+
 Examples:
   backlog doctor                    # Detect conflicts in text format
   backlog doctor --json             # Detect conflicts in JSON format
@@ -27,46 +39,20 @@ Examples:
   backlog doctor --fix --dry-run    # Show what would be fixed without making changes
   backlog doctor --fix --strategy=auto    # Use auto-renumbering strategy
 
-```
-backlog doctor [flags]
-```
 
-
-### Options
-
-#### Environment Variables
+**Usage**:
 
 ```
-	(name)		(default)
-	AUTO-COMMIT	false
-	FOLDER		.backlog
-	LOG-FILE	
-	LOG-FORMAT	text
-	LOG-LEVEL	info
+doctor [GLOBAL OPTIONS] [command [COMMAND OPTIONS]] [ARGUMENTS...]
 ```
 
-#### Flags
+# GLOBAL OPTIONS
 
+**--dry-run**: Show what would be changed without making changes (use with --fix)
 
-```
-      --dry-run           Show what would be changed without making changes (use with --fix)
-      --fix               Automatically fix detected conflicts
-  -h, --help              help for doctor
-  -j, --json              Output in JSON format
-      --strategy string   Resolution strategy when using --fix (chronological|auto|manual) (default "chronological")
-```
+**--fix**: Automatically fix detected conflicts
 
-### Options inherited from parent commands
+**--json, -j**: Output in JSON format
 
-```
-      --auto-commit         Auto-committing changes to git repository
-      --folder string       Directory for backlog tasks (default ".backlog")
-      --log-file string     Log file path (defaults to stderr)
-      --log-format string   Log format (json, text) (default "text")
-      --log-level string    Log level (debug, info, warn, error) (default "info")
-```
-
-### SEE ALSO
-
-* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+**--strategy**="": Resolution strategy when using --fix (chronological|auto|manual) (default: chronological)
 

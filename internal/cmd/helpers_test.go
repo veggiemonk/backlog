@@ -8,54 +8,35 @@ import (
 	"testing"
 
 	"github.com/spf13/afero"
-	"github.com/spf13/cobra"
 	"github.com/veggiemonk/backlog/internal/core"
 	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
-type runFunc func(cmd *cobra.Command, args []string) error
-
-func exec(t *testing.T, use string, run runFunc, args ...string) ([]byte, error) {
+func exec(t *testing.T, command string, args ...string) ([]byte, error) {
 	t.Helper()
-	if use == "" {
-		return nil, fmt.Errorf("'use' cannot be empty: %v", args)
+	if command == "" {
+		return nil, fmt.Errorf("command cannot be empty: %v", args)
 	}
+
 	fs := afero.NewMemMapFs()
 	tasksDir := ".backlog"
 	store := core.NewFileTaskStore(fs, tasksDir)
 	createTestTasks(t, store)
-	// Create fresh command to avoid state pollution
-	testRootCmd := &cobra.Command{Use: "backlog"}
-	testRootCmd.PersistentPreRun = func(cmd *cobra.Command, args []string) {
-		cmd.SetContext(context.WithValue(cmd.Context(), ctxKeyStore, store))
-	}
-	testCmd := &cobra.Command{Use: use, RunE: run}
 
-	setRootPersistentFlags(testRootCmd)
-	testRootCmd.AddCommand(testCmd)
-	switch use {
-	case "list":
-		setListFlags(testCmd)
-	case "edit":
-		setEditFlags(testCmd)
-	case "mcp":
-		setMCPFlags(testCmd)
-	default:
-		t.Fatalf("no command called %s", use)
-	}
-	args = slices.Insert(args, 0, use)
-	return execute(t, testRootCmd, args...)
-}
-
-func execute(t *testing.T, c *cobra.Command, args ...string) ([]byte, error) {
-	t.Helper()
-
+	cmd := NewCommand(
+		WithFilesystem(fs),
+		WithStore(store),
+		WithTasksDir(tasksDir),
+		WithSkipLogging(true),
+	)
 	buf := new(bytes.Buffer)
-	c.SetOut(buf)
-	c.SetErr(buf)
-	c.SetArgs(args)
+	cmd.Writer = buf
+	cmd.ErrWriter = buf
 
-	err := c.Execute()
+	cliArgs := slices.Insert(args, 0, command)
+	cliArgs = slices.Insert(cliArgs, 0, "backlog")
+
+	err := cmd.Run(context.Background(), cliArgs)
 	return bytes.TrimSpace(buf.Bytes()), err
 }
 

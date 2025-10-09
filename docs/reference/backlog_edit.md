@@ -3,21 +3,38 @@ layout: page
 title: backlog edit
 ---
 
-## backlog edit
+# NAME
 
-Edit an existing task
+edit - Edit an existing task
 
-### Synopsis
+# SYNOPSIS
+
+edit
+
+```
+[--ac]=[value]
+[--assigned|-a]=[value]
+[--check-ac]=[value]
+[--deps]=[value]
+[--description|-d]=[value]
+[--labels|-l]=[value]
+[--notes]=[value]
+[--parent|-p]=[value]
+[--plan]=[value]
+[--priority]=[value]
+[--remove-ac]=[value]
+[--remove-assigned|-A]=[value]
+[--remove-labels|-L]=[value]
+[--status|-s]=[value]
+[--title|-t]=[value]
+[--uncheck-ac]=[value]
+```
+
+# DESCRIPTION
 
 Edit an existing task by providing its ID and flags for the fields to update.
 
-```
-backlog edit <id> [flags]
-```
-
-### Examples
-
-```
+Examples:
 
 # Edit tasks using the "backlog edit" command with its different flags.
 # Let's assume you have a task with ID "42" that you want to modify.
@@ -84,7 +101,7 @@ backlog edit 42 \
 
 # 11. Updating the Implementation Plan
 # Use the --plan flag to add or update the implementation plan for the task.
-backlog edit 42 --plan "1. Refactor login button\n2. Test on mobile\n3. Review with team"
+backlog edit 42 --plan "1. Refactor login button\\n2. Test on mobile\\n3. Review with team"
 
 # 12. Adding Dependencies
 # Use the --deps flag to add one or more task dependencies.
@@ -100,57 +117,47 @@ backlog edit 42 --deps "T15"
 # You can make a task depend on multiple other tasks:
 backlog edit 42 --deps "T15" --deps "T18" --deps "T20"
 # This makes task 42 dependent on tasks T15, T18, and T20.
-	
-```
+# 15. Editing the construction plan
+backlog edit 42 --plan "1. Dig hole 2. Pour foundation"
 
 
-### Options
-
-#### Environment Variables
+**Usage**:
 
 ```
-	(name)		(default)
-	AUTO-COMMIT	false
-	FOLDER		.backlog
-	LOG-FILE	
-	LOG-FORMAT	text
-	LOG-LEVEL	info
+backlog edit <id>
 ```
 
-#### Flags
+# GLOBAL OPTIONS
 
+**--ac**="": Add a new acceptance criterion (can be used multiple times) (default: [])
 
-```
-      --ac strings                Add a new acceptance criterion (can be used multiple times)
-  -a, --assigned strings          Add assigned names for the task (can be used multiple times)
-      --check-ac ints             Check an acceptance criterion by its index
-      --deps strings              Set dependencies (can be used multiple times)
-  -d, --description string        New description for the task
-  -h, --help                      help for edit
-  -l, --labels strings            Add labels for the task (can be used multiple times)
-      --notes string              New implementation notes for the task
-  -p, --parent string             New parent for the task
-      --plan string               New implementation plan for the task
-      --priority string           New priority for the task
-      --remove-ac ints            Remove an acceptance criterion by its index
-  -A, --remove-assigned strings   Assigned names to remove from the task (can be used multiple times)
-  -L, --remove-labels strings     Labels to remove from the task (can be used multiple times)
-  -s, --status string             New status for the task
-  -t, --title string              New title for the task
-      --uncheck-ac ints           Uncheck an acceptance criterion by its index
-```
+**--assigned, -a**="": Add assigned names for the task (can be used multiple times) (default: [])
 
-### Options inherited from parent commands
+**--check-ac**="": Check an acceptance criterion by its index (default: [])
 
-```
-      --auto-commit         Auto-committing changes to git repository
-      --folder string       Directory for backlog tasks (default ".backlog")
-      --log-file string     Log file path (defaults to stderr)
-      --log-format string   Log format (json, text) (default "text")
-      --log-level string    Log level (debug, info, warn, error) (default "info")
-```
+**--deps**="": Set dependencies (can be used multiple times) (default: [])
 
-### SEE ALSO
+**--description, -d**="": New description for the task
 
-* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+**--labels, -l**="": Add labels for the task (can be used multiple times) (default: [])
+
+**--notes**="": New implementation notes for the task
+
+**--parent, -p**="": New parent for the task
+
+**--plan**="": New implementation plan for the task
+
+**--priority**="": New priority for the task
+
+**--remove-ac**="": Remove an acceptance criterion by its index (default: [])
+
+**--remove-assigned, -A**="": Assigned names to remove from the task (can be used multiple times) (default: [])
+
+**--remove-labels, -L**="": Labels to remove from the task (can be used multiple times) (default: [])
+
+**--status, -s**="": New status for the task
+
+**--title, -t**="": New title for the task
+
+**--uncheck-ac**="": Uncheck an acceptance criterion by its index (default: [])
 

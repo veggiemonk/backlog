@@ -3,17 +3,19 @@ layout: page
 title: backlog version
 ---
 
-## backlog version
+# NAME
 
-Print the version information
+version - Print the version information
 
-```
-backlog version [flags]
-```
+# SYNOPSIS
 
-### Examples
+version
 
-```
+# DESCRIPTION
+
+Print the version information.
+
+Examples:
 
 backlog version # Print the version information
 
@@ -25,40 +27,9 @@ backlog version # Print the version information
 # BuildTime: 2025-09-07T19:36:24Z
 # Dirty: false
 
-```
 
-
-### Options
-
-#### Environment Variables
+**Usage**:
 
 ```
-	(name)		(default)
-	AUTO-COMMIT	false
-	FOLDER		.backlog
-	LOG-FILE	
-	LOG-FORMAT	text
-	LOG-LEVEL	info
+version [GLOBAL OPTIONS] [command [COMMAND OPTIONS]] [ARGUMENTS...]
 ```
-
-#### Flags
-
-
-```
-  -h, --help   help for version
-```
-
-### Options inherited from parent commands
-
-```
-      --auto-commit         Auto-committing changes to git repository
-      --folder string       Directory for backlog tasks (default ".backlog")
-      --log-file string     Log file path (defaults to stderr)
-      --log-format string   Log format (json, text) (default "text")
-      --log-level string    Log level (debug, info, warn, error) (default "info")
-```
-
-### SEE ALSO
-
-* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
-

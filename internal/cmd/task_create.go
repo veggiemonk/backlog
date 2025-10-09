@@ -1,22 +1,16 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/urfave/cli/v3"
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
-	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
-var createCmd = &cobra.Command{
-	Use:   "create <title>",
-	Short: "Create a new task",
-	Long:  `Creates a new task in the backlog.`,
-	Args:  cobra.ExactArgs(1),
-	Example: `
+const createExamples = `
 # Create tasks using the "backlog create" command with its different flags.
 # Here are some examples of how to use this command effectively:
 # 1. Basic Task Creation
@@ -26,10 +20,10 @@ backlog create "Fix the login button styling"
 # 2. Task with a Description. Use the -d or --description flag to add more detailed information about the task.
 backlog create "Implement password reset" -d "Users should be able to request a password reset link via their email. This involves creating a new API endpoint and a front-end form."
 
-# 3. Assigning a Task. You can assign a task to one or more team members using the -a or --assigned flag. 
-# Assign to a single person: 
+# 3. Assigning a Task. You can assign a task to one or more team members using the -a or --assigned flag.
+# Assign to a single person:
 backlog create "Design the new dashboard" -a "alex"
-# Assign to multiple people: 
+# Assign to multiple people:
 backlog create "Code review for the payment gateway" -a "jordan" -a "casey"
 
 # 4. Adding Labels. Use the -l or --labels flag to categorize the task with comma-separated labels.
@@ -70,67 +64,67 @@ backlog create "Build the new reporting feature" \
   --ac "Report generation logic is accurate." \
   --ac "Users can select a date range for the report." \
   --ac "The exported PDF has the correct branding and layout." \
-  -p "23"	
-	`,
-	RunE: runCreate,
-}
+  -p "23"
+`
 
-var (
-	description  string
-	parent       string
-	priority     string
-	assigned     []string
-	labels       []string
-	dependencies []string
-	ac           []string
-	plan         string
-	notes        string
-)
+func newCreateCommand(rt *runtime) *cli.Command {
+	return &cli.Command{
+		Name:      "create",
+		Usage:     "Create a new task",
+		UsageText: "backlog create <title>",
+		ArgsUsage: "<title>",
+		Description: "Creates a new task in the backlog.\n\nExamples:\n" +
+			createExamples,
+		Flags: []cli.Flag{
+			&cli.StringFlag{Name: "description", Aliases: []string{"d"}, Usage: "Description of the task"},
+			&cli.StringFlag{Name: "parent", Aliases: []string{"p"}, Usage: "Parent task ID"},
+			&cli.StringFlag{Name: "priority", Usage: "Priority of the task (low, medium, high, critical)", Value: "medium"},
+			&cli.StringSliceFlag{Name: "assigned", Aliases: []string{"a"}, Usage: "Assignee for the task (can be specified multiple times)"},
+			&cli.StringSliceFlag{Name: "labels", Aliases: []string{"l"}, Usage: "Comma-separated labels for the task"},
+			&cli.StringSliceFlag{Name: "deps", Usage: "Add a dependency (can be used multiple times)"},
+			&cli.StringSliceFlag{Name: "ac", Usage: "Acceptance criterion (can be specified multiple times)"},
+			&cli.StringFlag{Name: "plan", Usage: "Implementation plan for the task"},
+			&cli.StringFlag{Name: "notes", Usage: "Additional notes for the task"},
+		},
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			if cmd.Args().Len() != 1 {
+				return cli.Exit("create requires exactly one <title> argument", 1)
+			}
 
-func init() {
-	rootCmd.AddCommand(createCmd)
+			store := rt.store
+			if store == nil {
+				return fmt.Errorf("task store not initialized")
+			}
 
-	createCmd.Flags().StringVarP(&description, "description", "d", "", "Description of the task")
-	createCmd.Flags().StringVarP(&parent, "parent", "p", "", "Parent task ID")
-	createCmd.Flags().StringVar(&priority, "priority", "medium", "Priority of the task (low, medium, high, critical)")
-	createCmd.Flags().StringSliceVarP(&assigned, "assigned", "a", []string{}, "Assignee for the task (can be specified multiple times)")
-	createCmd.Flags().StringSliceVarP(&labels, "labels", "l", []string{}, "Comma-separated labels for the task")
-	createCmd.Flags().StringSliceVar(&dependencies, "deps", []string{}, "Add a dependency (can be used multiple times)")
-	createCmd.Flags().StringSliceVar(&ac, "ac", []string{}, "Acceptance criterion (can be specified multiple times)")
-	createCmd.Flags().StringVar(&plan, "plan", "", "Implementation plan for the task")
-	createCmd.Flags().StringVar(&notes, "notes", "", "Additional notes for the task")
-}
+			params := core.CreateTaskParams{
+				Title:        cmd.Args().First(),
+				Description:  cmd.String("description"),
+				Parent:       cmd.String("parent"),
+				Priority:     cmd.String("priority"),
+				Assigned:     cmd.StringSlice("assigned"),
+				Labels:       cmd.StringSlice("labels"),
+				Dependencies: cmd.StringSlice("deps"),
+				AC:           cmd.StringSlice("ac"),
+				Plan:         cmd.String("plan"),
+				Notes:        cmd.String("notes"),
+			}
 
-func runCreate(cmd *cobra.Command, args []string) error {
-	params := core.CreateTaskParams{
-		Title:        args[0],
-		Description:  description,
-		Parent:       parent,
-		Priority:     priority,
-		Assigned:     assigned,
-		Labels:       labels,
-		Dependencies: dependencies,
-		AC:           ac,
-		Plan:         plan,
-		Notes:        notes,
+			newTask, err := store.Create(params)
+			if err != nil {
+				return fmt.Errorf("failed to create task: %w", err)
+			}
+
+			logging.Info("task created successfully", "task_id", newTask.ID)
+
+			if !rt.autoCommit {
+				return nil
+			}
+
+			commitMsg := fmt.Sprintf("feat(task): create %s - \"%s\"", newTask.ID, newTask.Title)
+			if err := commit.Add(store.Path(newTask), "", commitMsg); err != nil {
+				logging.Warn("auto-commit failed", "task_id", newTask.ID, "error", err)
+			}
+			return nil
+		},
 	}
-
-	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)
-	newTask, err := store.Create(params)
-	if err != nil {
-		return fmt.Errorf("failed to create task: %w", err)
-	}
-
-	logging.Info("task created successfully", "task_id", newTask.ID)
-
-	if !viper.GetBool(configAutoCommit) {
-		return nil // Auto-commit is disabled
-	}
-	// Auto-commit the change if enabled
-	filePath := store.Path(newTask)
-	commitMsg := fmt.Sprintf("feat(task): create %s - \"%s\"", newTask.ID, newTask.Title)
-	if err := commit.Add(filePath, "", commitMsg); err != nil {
-		logging.Warn("auto-commit failed", "task_id", newTask.ID, "error", err)
-	}
-	return nil
 }

@@ -1,16 +1,14 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/imjasonh/version"
-	"github.com/spf13/cobra"
+	"github.com/urfave/cli/v3"
 )
 
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Print the version information",
-	Example: `
+const versionExamples = `
 backlog version # Print the version information
 
 # Example output:
@@ -20,14 +18,16 @@ backlog version # Print the version information
 # Version: v0.0.2-0.20250907193624-7c989dabd2c6
 # BuildTime: 2025-09-07T19:36:24Z
 # Dirty: false
-`,
+`
 
-	RunE: func(_ *cobra.Command, _ []string) error {
-		fmt.Printf("Backlog version:\n%s\n", version.Get().String())
-		return nil
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(versionCmd)
+func newVersionCommand() *cli.Command {
+	return &cli.Command{
+		Name:        "version",
+		Usage:       "Print the version information",
+		Description: "Print the version information.\n\nExamples:\n" + versionExamples,
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			fmt.Fprintf(cmd.Root().Writer, "Backlog version:\n%s\n", version.Get().String())
+			return nil
+		},
+	}
 }

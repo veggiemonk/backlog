@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,16 +10,11 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/olekukonko/tablewriter/renderer"
 	"github.com/olekukonko/tablewriter/tw"
-	"github.com/spf13/cobra"
+	"github.com/urfave/cli/v3"
 	"github.com/veggiemonk/backlog/internal/core"
-	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
-var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List all tasks",
-	Long:  `Lists all tasks in the backlog except archived tasks.`,
-	Example: `
+const listExamples = `
 # List all tasks
 backlog list                                    # List all tasks with all columns
 backlog list --status "todo"                    # List tasks with status "todo"
@@ -52,9 +48,9 @@ backlog list --sort "status,created"            # Sort tasks by status, then cre
 backlog list --reverse                          # Reverse the order of tasks
 backlog list --sort "priority" --reverse        # Sort by priority in reverse order
 backlog list --status "todo" \
-	--priority "medium"  \
-	--sort "priority"    \
-	--reverse                               # Combine all options
+    --priority "medium"  \
+    --sort "priority"    \
+    --reverse                               # Combine all options
 
 # output format
 backlog list -m                                 # List tasks in markdown format
@@ -68,91 +64,68 @@ backlog list --limit 10                         # List first 10 tasks
 backlog list --limit 5 --offset 10              # List 5 tasks starting from 11th task
 backlog list --status "todo" --limit 3          # List first 3 "todo" tasks
 backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
-	`,
-	RunE: runList,
-}
+`
 
-var (
-	filterParent     string
-	filterPriority   string
-	filterStatus     []string
-	filterAssigned   []string
-	filterLabels     []string
-	query            string
-	filterUnassigned bool
-	hasDependency    bool
-	dependedon       bool
-	// sorting
-	sortFields   string
-	reverseOrder bool
-	// column visibility
-	hideExtraFields bool
-	// output format
-	markdownOutput bool
-	jsonOutput     bool
-	// pagination
-	limitFlag  int
-	offsetFlag int
-)
+func newListCommand(rt *runtime) *cli.Command {
+	return &cli.Command{
+		Name:        "list",
+		Usage:       "List all tasks",
+		Description: "Lists all tasks in the backlog except archived tasks.\n\nExamples:\n" + listExamples,
+		Flags: []cli.Flag{
+			&cli.StringFlag{Name: "parent", Aliases: []string{"p"}, Usage: "Filter tasks by parent ID"},
+			&cli.StringFlag{Name: "priority", Usage: "Filter tasks by priority"},
+			&cli.StringSliceFlag{Name: "status", Aliases: []string{"s"}, Usage: "Filter tasks by status"},
+			&cli.StringSliceFlag{Name: "assigned", Aliases: []string{"a"}, Usage: "Filter tasks by assigned names"},
+			&cli.StringSliceFlag{Name: "labels", Aliases: []string{"l"}, Usage: "Filter tasks by labels"},
+			&cli.StringFlag{Name: "query", Aliases: []string{"q"}, Usage: "Search query to filter tasks by"},
+			&cli.BoolFlag{Name: "unassigned", Aliases: []string{"u"}, Usage: "Filter tasks that have no one assigned"},
+			&cli.BoolFlag{Name: "has-dependency", Aliases: []string{"c"}, Usage: "Filter tasks that have dependencies"},
+			&cli.BoolFlag{Name: "depended-on", Aliases: []string{"d"}, Usage: "Filter tasks that are depended on by other tasks"},
+			&cli.StringFlag{Name: "sort", Usage: "Sort tasks by comma-separated fields (id, title, status, priority, created, updated)"},
+			&cli.BoolFlag{Name: "reverse", Aliases: []string{"r"}, Usage: "Reverse the order of tasks"},
+			&cli.BoolFlag{Name: "hide-extra", Aliases: []string{"e"}, Usage: "Hide extra fields (labels, priority, assigned)"},
+			&cli.BoolFlag{Name: "markdown", Aliases: []string{"m"}, Usage: "Print markdown table"},
+			&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Usage: "Print JSON output"},
+			&cli.IntFlag{Name: "limit", Usage: "Maximum number of tasks to return (0 means no limit)"},
+			&cli.IntFlag{Name: "offset", Usage: "Number of tasks to skip from the beginning"},
+		},
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			if cmd.Args().Len() > 0 {
+				return cli.Exit("list does not accept positional arguments", 1)
+			}
 
-func init() {
-	rootCmd.AddCommand(listCmd)
-	setListFlags(listCmd)
-}
+			store := rt.store
+			if store == nil {
+				return fmt.Errorf("task store not initialized")
+			}
 
-func setListFlags(cmd *cobra.Command) {
-	// filtering
-	cmd.Flags().StringVarP(&filterParent, "parent", "p", "", "Filter tasks by parent ID")
-	cmd.Flags().StringVar(&filterPriority, "priority", "", "Filter tasks by priority")
-	cmd.Flags().StringSliceVarP(&filterStatus, "status", "s", nil, "Filter tasks by status")
-	cmd.Flags().StringSliceVarP(&filterAssigned, "assigned", "a", nil, "Filter tasks by assigned names")
-	cmd.Flags().StringSliceVarP(&filterLabels, "labels", "l", nil, "Filter tasks by labels")
-	cmd.Flags().StringVarP(&query, "query", "q", "", "Search query to filter tasks by")
-	cmd.Flags().BoolVarP(&filterUnassigned, "unassigned", "u", false, "Filter tasks that have no one assigned")
-	cmd.Flags().BoolVarP(&hasDependency, "has-dependency", "c", false, "Filter tasks that have dependencies")
-	cmd.Flags().BoolVarP(&dependedon, "depended-on", "d", false, "Filter tasks that are depended on by other tasks")
-	// sorting
-	cmd.Flags().StringVar(&sortFields, "sort", "", "Sort tasks by comma-separated fields (id, title, status, priority, created, updated)")
-	cmd.Flags().BoolVarP(&reverseOrder, "reverse", "r", false, "Reverse the order of tasks")
-	// column visibility
-	cmd.Flags().BoolVarP(&hideExtraFields, "hide-extra", "e", false, "Hide extra fields (labels, priority, assigned)")
-	// output format
-	cmd.Flags().BoolVarP(&markdownOutput, "markdown", "m", false, "print markdown table")
-	cmd.Flags().BoolVarP(&jsonOutput, "json", "j", false, "Print JSON output")
-	// pagination
-	cmd.Flags().IntVar(&limitFlag, "limit", 0, "Maximum number of tasks to return (0 means no limit)")
-	cmd.Flags().IntVar(&offsetFlag, "offset", 0, "Number of tasks to skip from the beginning")
-}
+			params := core.ListTasksParams{
+				Parent:        cmd.String("parent"),
+				Priority:      cmd.String("priority"),
+				Status:        cmd.StringSlice("status"),
+				Assigned:      cmd.StringSlice("assigned"),
+				Labels:        cmd.StringSlice("labels"),
+				Query:         cmd.String("query"),
+				Unassigned:    cmd.Bool("unassigned"),
+				HasDependency: cmd.Bool("has-dependency"),
+				DependedOn:    cmd.Bool("depended-on"),
+				Sort:          parseSortFields(cmd.String("sort")),
+				Reverse:       cmd.Bool("reverse"),
+				Limit:         cmd.Int("limit"),
+				Offset:        cmd.Int("offset"),
+			}
 
-func runList(cmd *cobra.Command, args []string) error {
-	sortFieldsSlice := parseSortFields(sortFields)
-	params := core.ListTasksParams{
-		Parent:        filterParent,
-		Priority:      filterPriority,
-		Status:        filterStatus,
-		Assigned:      filterAssigned,
-		Labels:        filterLabels,
-		Query:         query,
-		Unassigned:    filterUnassigned,
-		HasDependency: hasDependency,
-		DependedOn:    dependedon,
-		Sort:          sortFieldsSlice,
-		Reverse:       reverseOrder,
-		Limit:         limitFlag,
-		Offset:        offsetFlag,
+			listResult, err := store.List(params)
+			if err != nil {
+				return fmt.Errorf("failed to list tasks: %w", err)
+			}
+
+			if err := renderTaskResultsWithPagination(cmd.Root().Writer, listResult, cmd.Bool("json"), cmd.Bool("markdown"), cmd.Bool("hide-extra"), ""); err != nil {
+				return fmt.Errorf("failed to render task results: %w", err)
+			}
+			return nil
+		},
 	}
-
-	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)
-
-	listResult, err := store.List(params)
-	if err != nil {
-		return fmt.Errorf("failed to list tasks: %w", err)
-	}
-
-	if err := renderTaskResultsWithPagination(cmd.OutOrStdout(), listResult, jsonOutput, markdownOutput, hideExtraFields, ""); err != nil {
-		return fmt.Errorf("failed to render task results: %w", err)
-	}
-	return nil
 }
 
 // parseSortFields parses a comma-separated string of sort fields
@@ -201,7 +174,6 @@ func renderTaskResultsWithPagination(w io.Writer, listResult core.ListResult, js
 
 // renderTaskResults renders a slice of tasks using the specified output format
 func renderTaskResults(w io.Writer, tasks []core.Task, jsonOutput, markdownOutput, hideExtraFields bool, messagePrefix string) error {
-	// Handle empty task list
 	if len(tasks) == 0 {
 		switch {
 		case jsonOutput:
@@ -220,7 +192,6 @@ func renderTaskResults(w io.Writer, tasks []core.Task, jsonOutput, markdownOutpu
 		return nil
 	}
 
-	// Handle JSON output
 	if jsonOutput {
 		if err := json.NewEncoder(w).Encode(tasks); err != nil {
 			return fmt.Errorf("failed to encode JSON: %w", err)
@@ -228,14 +199,12 @@ func renderTaskResults(w io.Writer, tasks []core.Task, jsonOutput, markdownOutpu
 		return nil
 	}
 
-	// Print message prefix if provided
 	if messagePrefix != "" {
 		if _, err := fmt.Fprintf(w, "%s\n", messagePrefix); err != nil {
 			return fmt.Errorf("writer: %v", err)
 		}
 	}
 
-	// Set table header based on hidden columns
 	header := []string{"ID", "Status", "Title", "Dependencies"}
 	if !hideExtraFields {
 		header = append(header, "Labels", "Priority", "Assigned")
@@ -278,12 +247,10 @@ func tableWriter(w io.Writer, md bool) *tablewriter.Table {
 				AutoWrap:   int(tw.Off),
 			},
 		},
-		// MaxWidth: 150,
 		Row: tw.CellConfig{Alignment: tw.CellAlignment{Global: tw.AlignLeft}},
 	}
 
-	opts := []tablewriter.Option{}
-	opts = append(opts, tablewriter.WithConfig(cfg))
+	opts := []tablewriter.Option{tablewriter.WithConfig(cfg)}
 	if md {
 		opts = append(opts,
 			tablewriter.WithConfig(tablewriter.Config{
@@ -295,6 +262,5 @@ func tableWriter(w io.Writer, md bool) *tablewriter.Table {
 			tablewriter.WithRowAutoWrap(tw.WrapNone),
 		)
 	}
-	table := tablewriter.NewTable(w, opts...)
-	return table
+	return tablewriter.NewTable(w, opts...)
 }

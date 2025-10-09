@@ -1,6 +1,3 @@
-// Package main provides documentation generation utilities for the backlog CLI.
-// It generates markdown, man pages, or restructured text documentation from
-// cobra commands.
 package main
 
 import (
@@ -8,15 +5,14 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"maps"
 	"os"
 	"path/filepath"
 	"slices"
 	"strings"
 	"unicode"
 
-	"github.com/spf13/cobra/doc"
-	"github.com/spf13/viper"
+	docs "github.com/urfave/cli-docs/v3"
+	"github.com/urfave/cli/v3"
 	"github.com/veggiemonk/backlog/internal/cmd"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
@@ -41,7 +37,7 @@ var (
 )
 
 func main() {
-	format := flag.String("format", "markdown", "markdown|man|rest")
+	format := flag.String("format", "markdown", "markdown")
 	flag.Parse()
 
 	checkErr(func() error { return os.MkdirAll(dirDocs, 0o750) })
@@ -51,58 +47,52 @@ func main() {
 	checkErr(addPromptMCP)
 	checkErr(addAGENTSmd)
 	checkErr(addIndex)
-	checkErr(addEnvVars)
 }
 
-func addEnvVars() error {
-	files, err := os.ReadDir(dirRef)
-	if err != nil {
+func genReference(out, format string) error {
+	if format != "markdown" {
+		return fmt.Errorf("unknown format: %s", format)
+	}
+
+	if err := os.MkdirAll(out, 0o750); err != nil {
 		return err
 	}
-	sep := "### Options"
-	var buf strings.Builder
-	buf.WriteString("\n#### Environment Variables\n\n")
-	buf.WriteString("```\n")
-	buf.WriteString("\t(name)\t\t(default)\n")
-	m := viper.AllSettings()
-	for _, k := range slices.Sorted(maps.Keys(m)) {
-		if len(k) < 8 {
-			buf.WriteString(fmt.Sprintf("\t%s\t\t%v\n", strings.ToUpper(k), m[k]))
-		} else {
-			buf.WriteString(fmt.Sprintf("\t%s\t%v\n", strings.ToUpper(k), m[k]))
-		}
+
+	root := cmd.NewCommand(cmd.WithSkipLogging(true))
+
+	if err := writeMarkdownDoc(out, "backlog.md", "backlog", root); err != nil {
+		return err
 	}
-	buf.WriteString("```\n")
-	buf.WriteString("\n#### Flags\n")
-	for _, f := range files {
-		if filepath.Ext(f.Name()) != ".md" {
+
+	for _, sub := range root.Commands {
+		if sub.Hidden {
 			continue
 		}
-		path := filepath.Join(dirRef, f.Name())
-		b, err := os.ReadFile(path)
-		if err != nil {
+		filename := fmt.Sprintf("backlog_%s.md", sub.Name)
+		title := fmt.Sprintf("backlog %s", sub.Name)
+		if err := writeMarkdownDoc(out, filename, title, sub); err != nil {
 			return err
 		}
-
-		before, after, found := strings.Cut(string(b), sep)
-		if !found {
-			continue
-		}
-		results := fmt.Sprintf("%s\n%s\n%s%s", before, sep, buf.String(), after)
-
-		if err := os.WriteFile(path, []byte(results), os.ModePerm); err != nil {
-			return err
-		}
-
 	}
 
 	return nil
 }
 
-func checkErr(f func() error) {
-	if err := f(); err != nil {
-		log.Fatal(err)
+func writeMarkdownDoc(outDir, filename, title string, command *cli.Command) error {
+	md, err := docs.ToMarkdown(command)
+	if err != nil {
+		return err
 	}
+
+	var buf bytes.Buffer
+	buf.WriteString("---\n")
+	buf.WriteString("layout: page\n")
+	buf.WriteString(fmt.Sprintf("title: %s\n", title))
+	buf.WriteString("---\n\n")
+	buf.WriteString(md)
+
+	path := filepath.Join(outDir, filename)
+	return os.WriteFile(path, buf.Bytes(), 0o644)
 }
 
 func addIndex() error {
@@ -189,19 +179,16 @@ func addAGENTSmd() error {
 }
 
 func splitReadMe() error {
-	// 1. Parse README markdown
 	b, err := os.ReadFile("README.md")
 	if err != nil {
 		return err
 	}
 	p := goldmark.DefaultParser()
 	doc := p.Parse(text.NewReader(b))
-	// 2. Split sections by headings
 	sections := extractSections(doc, b)
-	// 3. Write each section to ./docs/name_of_section.md
 	for _, section := range sections {
 		if section.Title == "" {
-			continue // Skip sections without titles
+			continue
 		}
 		slug := slugify(section.Title)
 		log.Println("section", slug)
@@ -226,7 +213,6 @@ func extractSections(doc ast.Node, source []byte) []Section {
 	var sections []Section
 	var headings []*ast.Heading
 
-	// First pass: collect all headings
 	err := ast.Walk(doc, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
 		if entering {
 			if heading, ok := n.(*ast.Heading); ok {
@@ -241,20 +227,16 @@ func extractSections(doc ast.Node, source []byte) []Section {
 		log.Fatal(err)
 	}
 
-	// Second pass: extract content between headings
 	for i, heading := range headings {
 		title := extractHeadingText(heading, source)
-
-		// Find the start and end positions for this section
 		startPos := heading.Lines().At(heading.Lines().Len() - 1).Stop
 		var endPos int
-		if i+1 == len(headings) { // last heading
+		if i+1 == len(headings) {
 			endPos = len(source)
 		} else {
 			endPos = headings[i+1].Lines().At(0).Start - 1
 		}
 
-		// Extract the section content
 		buf := strings.Builder{}
 		buf.WriteString("# " + title + "\n\n")
 		if startPos < endPos && startPos < len(source) {
@@ -289,11 +271,9 @@ func extractHeadingText(heading *ast.Heading, source []byte) string {
 }
 
 func slugify(s string) string {
-	// Convert to lowercase and replace spaces and special characters with underscores
 	s = strings.ToLower(s)
 	s = strings.ReplaceAll(s, " ", "_")
 	s = strings.ReplaceAll(s, "-", "_")
-	// Remove or replace other special characters
 	var result strings.Builder
 	for _, r := range s {
 		if unicode.IsLetter(r) || unicode.IsNumber(r) || r == '_' {
@@ -303,43 +283,8 @@ func slugify(s string) string {
 	return result.String()
 }
 
-func genReference(out, format string) error {
-	if err := os.MkdirAll(out, 0o750); err != nil {
-		return err
+func checkErr(f func() error) {
+	if err := f(); err != nil {
+		log.Fatal(err)
 	}
-
-	root := cmd.Root()
-	root.DisableAutoGenTag = true // stable, reproducible files (no timestamp footer)
-
-	switch format {
-	case "markdown":
-		prep := func(filename string) string {
-			base := filepath.Base(filename)
-			name := strings.TrimSuffix(base, filepath.Ext(base))
-			title := strings.ReplaceAll(name, "_", " ")
-			var buf bytes.Buffer
-			buf.WriteString("---\n")
-			buf.WriteString("layout: page\n")
-			buf.WriteString("title: " + title + "\n")
-			buf.WriteString("---\n\n")
-			return buf.String()
-		}
-		link := func(name string) string { return strings.ToLower(name) }
-		if err := doc.GenMarkdownTreeCustom(root, out, prep, link); err != nil {
-			return err
-		}
-		return nil
-	case "man":
-		hdr := &doc.GenManHeader{Title: strings.ToUpper(root.Name()), Section: "1"}
-		if err := doc.GenManTree(root, hdr, out); err != nil {
-			return err
-		}
-	case "rest":
-		if err := doc.GenReSTTree(root, out); err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("unknown format: %s", format)
-	}
-	return nil
 }

@@ -1,31 +1,33 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
 
 	"github.com/spf13/afero"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/urfave/cli/v3"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
 	"github.com/veggiemonk/backlog/internal/paths"
 )
 
-var (
-	doctorJSON     bool
-	doctorStrategy string
-	doctorDryRun   bool
-	doctorFix      bool
-)
+const doctorExamples = `
+Examples:
+  backlog doctor                    # Detect conflicts in text format
+  backlog doctor --json             # Detect conflicts in JSON format
+  backlog doctor --fix              # Detect and automatically fix conflicts
+  backlog doctor --fix --dry-run    # Show what would be fixed without making changes
+  backlog doctor --fix --strategy=auto    # Use auto-renumbering strategy
+`
 
-// doctorCmd represents the doctor command
-var doctorCmd = &cobra.Command{
-	Use:   "doctor",
-	Short: "Diagnose and fix task ID conflicts",
-	Long: `Diagnose and fix task ID conflicts that can occur when creating tasks
+func newDoctorCommand(rt *runtime) *cli.Command {
+	return &cli.Command{
+		Name:  "doctor",
+		Usage: "Diagnose and fix task ID conflicts",
+		Description: `Diagnose and fix task ID conflicts that can occur when creating tasks
 in separate Git branches. Conflicts arise when multiple branches generate the same task IDs.
 
 This command provides conflict detection and resolution capabilities to maintain
@@ -36,44 +38,29 @@ Conflict types detected:
 - Orphaned children (tasks with non-existent parents)
 - Invalid hierarchy (parent-child ID mismatch)
 
-Examples:
-  backlog doctor                    # Detect conflicts in text format
-  backlog doctor --json             # Detect conflicts in JSON format
-  backlog doctor --fix              # Detect and automatically fix conflicts
-  backlog doctor --fix --dry-run    # Show what would be fixed without making changes
-  backlog doctor --fix --strategy=auto    # Use auto-renumbering strategy`,
-	RunE: runDoctor,
-}
+` + doctorExamples,
+		Flags: []cli.Flag{
+			&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Usage: "Output in JSON format"},
+			&cli.BoolFlag{Name: "fix", Usage: "Automatically fix detected conflicts"},
+			&cli.StringFlag{Name: "strategy", Value: "chronological", Usage: "Resolution strategy when using --fix (chronological|auto|manual)"},
+			&cli.BoolFlag{Name: "dry-run", Usage: "Show what would be changed without making changes (use with --fix)"},
+		},
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			fs := afero.NewOsFs()
+			tasksDir := rt.tasksDir
+			if tasksDir == "" {
+				tasksDir = cmd.String(configFolder)
+			}
 
-func setDoctorFlags(_ *cobra.Command) {
-	// Doctor command flags
-	doctorCmd.Flags().BoolVarP(&doctorJSON, "json", "j", false, "Output in JSON format")
-	doctorCmd.Flags().BoolVar(&doctorFix, "fix", false, "Automatically fix detected conflicts")
-	doctorCmd.Flags().StringVar(&doctorStrategy, "strategy", "chronological", "Resolution strategy when using --fix (chronological|auto|manual)")
-	doctorCmd.Flags().BoolVar(&doctorDryRun, "dry-run", false, "Show what would be changed without making changes (use with --fix)")
-}
-
-func init() {
-	// Set flags
-	setDoctorFlags(doctorCmd)
-
-	// Add to root
-	rootCmd.AddCommand(doctorCmd)
-}
-
-func runDoctor(cmd *cobra.Command, args []string) error {
-	fs := afero.NewOsFs()
-	tasksDir := viper.GetString("folder")
-	if doctorFix {
-		// If --fix flag is provided, run resolve instead of detect
-		return resolveConflicts(fs, tasksDir)
+			if cmd.Bool("fix") {
+				return resolveConflicts(fs, tasksDir, cmd.String("strategy"), cmd.Bool("dry-run"))
+			}
+			return detectConflicts(cmd.Root().Writer, fs, tasksDir, cmd.Bool("json"))
+		},
 	}
-	// Otherwise, just detect conflicts
-	return detectConflicts(cmd.OutOrStdout(), fs, tasksDir)
 }
 
-func detectConflicts(w io.Writer, fs afero.Fs, tasksDir string) error {
-	// Get tasks directory using the same approach as other commands
+func detectConflicts(w io.Writer, fs afero.Fs, tasksDir string, jsonOutput bool) error {
 	var err error
 	tasksDir, err = paths.ResolveTasksDir(fs, tasksDir)
 	if err != nil {
@@ -82,13 +69,12 @@ func detectConflicts(w io.Writer, fs afero.Fs, tasksDir string) error {
 
 	detector := core.NewConflictDetector(fs, tasksDir)
 
-	// Detect conflicts
 	conflicts, err := detector.DetectConflicts()
 	if err != nil {
 		return fmt.Errorf("failed to detect conflicts: %w", err)
 	}
 
-	if doctorJSON {
+	if jsonOutput {
 		output := map[string]any{
 			"conflicts": conflicts,
 			"summary":   core.SummarizeConflicts(conflicts),
@@ -99,7 +85,6 @@ func detectConflicts(w io.Writer, fs afero.Fs, tasksDir string) error {
 		return nil
 	}
 
-	// Text output
 	summary := core.SummarizeConflicts(conflicts)
 	if summary.TotalConflicts == 0 {
 		logging.Info("no task ID conflicts detected")
@@ -136,8 +121,7 @@ func detectConflicts(w io.Writer, fs afero.Fs, tasksDir string) error {
 	return nil
 }
 
-func resolveConflicts(fs afero.Fs, tasksDir string) error {
-	// Get tasks directory using the same approach as other commands
+func resolveConflicts(fs afero.Fs, tasksDir string, strategyName string, dryRun bool) error {
 	var err error
 	tasksDir, err = paths.ResolveTasksDir(fs, tasksDir)
 	if err != nil {
@@ -146,7 +130,6 @@ func resolveConflicts(fs afero.Fs, tasksDir string) error {
 
 	detector := core.NewConflictDetector(fs, tasksDir)
 
-	// Detect conflicts first
 	conflicts, err := detector.DetectConflicts()
 	if err != nil {
 		return fmt.Errorf("failed to detect conflicts: %w", err)
@@ -157,13 +140,11 @@ func resolveConflicts(fs afero.Fs, tasksDir string) error {
 		return nil
 	}
 
-	// Create resolver
 	store := core.NewFileTaskStore(fs, tasksDir)
 	resolver := core.NewConflictResolver(detector, store)
 
-	// Parse strategy
 	var strategy core.ResolutionStrategy
-	switch doctorStrategy {
+	switch strategyName {
 	case "chronological":
 		strategy = core.ResolutionStrategyChronological
 	case "auto":
@@ -171,22 +152,20 @@ func resolveConflicts(fs afero.Fs, tasksDir string) error {
 	case "manual":
 		strategy = core.ResolutionStrategyManual
 	default:
-		return fmt.Errorf("invalid strategy: %s", doctorStrategy)
+		return fmt.Errorf("invalid strategy: %s", strategyName)
 	}
 
-	// Create resolution plan
 	plan, err := resolver.CreateResolutionPlan(conflicts, strategy)
 	if err != nil {
 		return fmt.Errorf("failed to create resolution plan: %w", err)
 	}
 
-	logging.Info("resolution plan", "strategy", doctorStrategy, "plan", plan.Summary)
+	logging.Info("resolution plan", "strategy", strategyName, "plan", plan.Summary)
 	if len(plan.Actions) == 0 {
 		logging.Info("no actions required")
 		return nil
 	}
 
-	// Show planned actions
 	for i, action := range plan.Actions {
 		logging.Info(fmt.Sprintf("%d. %s\n", i+1, action.Description))
 		if action.Type == "manual" {
@@ -205,7 +184,7 @@ func resolveConflicts(fs afero.Fs, tasksDir string) error {
 		}
 	}
 
-	if doctorDryRun {
+	if dryRun {
 		logging.Info("DRY RUN - No changes were made")
 		return nil
 	}
@@ -216,14 +195,12 @@ func resolveConflicts(fs afero.Fs, tasksDir string) error {
 		return nil
 	}
 
-	// Execute the plan with reference updates
 	logging.Info("executing resolution plan")
 	results, err := resolver.ExecuteResolutionPlanWithReferences(plan, false)
 	if err != nil {
 		return fmt.Errorf("failed to execute resolution plan: %w", err)
 	}
 
-	// Show results
 	for _, result := range results {
 		logging.Info(result)
 	}

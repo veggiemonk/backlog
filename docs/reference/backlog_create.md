@@ -3,21 +3,31 @@ layout: page
 title: backlog create
 ---
 
-## backlog create
+# NAME
 
-Create a new task
+create - Create a new task
 
-### Synopsis
+# SYNOPSIS
+
+create
+
+```
+[--ac]=[value]
+[--assigned|-a]=[value]
+[--deps]=[value]
+[--description|-d]=[value]
+[--labels|-l]=[value]
+[--notes]=[value]
+[--parent|-p]=[value]
+[--plan]=[value]
+[--priority]=[value]
+```
+
+# DESCRIPTION
 
 Creates a new task in the backlog.
 
-```
-backlog create <title> [flags]
-```
-
-### Examples
-
-```
+Examples:
 
 # Create tasks using the "backlog create" command with its different flags.
 # Here are some examples of how to use this command effectively:
@@ -28,10 +38,10 @@ backlog create "Fix the login button styling"
 # 2. Task with a Description. Use the -d or --description flag to add more detailed information about the task.
 backlog create "Implement password reset" -d "Users should be able to request a password reset link via their email. This involves creating a new API endpoint and a front-end form."
 
-# 3. Assigning a Task. You can assign a task to one or more team members using the -a or --assigned flag. 
-# Assign to a single person: 
+# 3. Assigning a Task. You can assign a task to one or more team members using the -a or --assigned flag.
+# Assign to a single person:
 backlog create "Design the new dashboard" -a "alex"
-# Assign to multiple people: 
+# Assign to multiple people:
 backlog create "Code review for the payment gateway" -a "jordan" -a "casey"
 
 # 4. Adding Labels. Use the -l or --labels flag to categorize the task with comma-separated labels.
@@ -72,51 +82,32 @@ backlog create "Build the new reporting feature" \
   --ac "Report generation logic is accurate." \
   --ac "Users can select a date range for the report." \
   --ac "The exported PDF has the correct branding and layout." \
-  -p "23"	
-	
-```
+  -p "23"
 
 
-### Options
-
-#### Environment Variables
+**Usage**:
 
 ```
-	(name)		(default)
-	AUTO-COMMIT	false
-	FOLDER		.backlog
-	LOG-FILE	
-	LOG-FORMAT	text
-	LOG-LEVEL	info
+backlog create <title>
 ```
 
-#### Flags
+# GLOBAL OPTIONS
 
+**--ac**="": Acceptance criterion (can be specified multiple times) (default: [])
 
-```
-      --ac strings           Acceptance criterion (can be specified multiple times)
-  -a, --assigned strings     Assignee for the task (can be specified multiple times)
-      --deps strings         Add a dependency (can be used multiple times)
-  -d, --description string   Description of the task
-  -h, --help                 help for create
-  -l, --labels strings       Comma-separated labels for the task
-      --notes string         Additional notes for the task
-  -p, --parent string        Parent task ID
-      --plan string          Implementation plan for the task
-      --priority string      Priority of the task (low, medium, high, critical) (default "medium")
-```
+**--assigned, -a**="": Assignee for the task (can be specified multiple times) (default: [])
 
-### Options inherited from parent commands
+**--deps**="": Add a dependency (can be used multiple times) (default: [])
 
-```
-      --auto-commit         Auto-committing changes to git repository
-      --folder string       Directory for backlog tasks (default ".backlog")
-      --log-file string     Log file path (defaults to stderr)
-      --log-format string   Log format (json, text) (default "text")
-      --log-level string    Log level (debug, info, warn, error) (default "info")
-```
+**--description, -d**="": Description of the task
 
-### SEE ALSO
+**--labels, -l**="": Comma-separated labels for the task (default: [])
 
-* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+**--notes**="": Additional notes for the task
+
+**--parent, -p**="": Parent task ID
+
+**--plan**="": Implementation plan for the task
+
+**--priority**="": Priority of the task (low, medium, high, critical) (default: medium)
 

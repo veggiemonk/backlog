@@ -1,22 +1,16 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+	"github.com/urfave/cli/v3"
 	"github.com/veggiemonk/backlog/internal/commit"
 	"github.com/veggiemonk/backlog/internal/core"
 	"github.com/veggiemonk/backlog/internal/logging"
-	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
-var editCmd = &cobra.Command{
-	Use:   "edit <id>",
-	Short: "Edit an existing task",
-	Long:  `Edit an existing task by providing its ID and flags for the fields to update.`,
-	Args:  cobra.ExactArgs(1),
-	Example: `
+const editExamples = `
 # Edit tasks using the "backlog edit" command with its different flags.
 # Let's assume you have a task with ID "42" that you want to modify.
 # Here are some examples of how to use this command effectively:
@@ -82,7 +76,7 @@ backlog edit 42 \
 
 # 11. Updating the Implementation Plan
 # Use the --plan flag to add or update the implementation plan for the task.
-backlog edit 42 --plan "1. Refactor login button\n2. Test on mobile\n3. Review with team"
+backlog edit 42 --plan "1. Refactor login button\\n2. Test on mobile\\n3. Review with team"
 
 # 12. Adding Dependencies
 # Use the --deps flag to add one or more task dependencies.
@@ -98,138 +92,124 @@ backlog edit 42 --deps "T15"
 # You can make a task depend on multiple other tasks:
 backlog edit 42 --deps "T15" --deps "T18" --deps "T20"
 # This makes task 42 dependent on tasks T15, T18, and T20.
-	`,
-	RunE: runEdit,
-}
+# 15. Editing the construction plan
+backlog edit 42 --plan "1. Dig hole 2. Pour foundation"
+`
 
-var (
-	newTitle        string
-	newDescription  string
-	newStatus       string
-	newPriority     string
-	newParent       string
-	addAssigned     []string
-	removeAssigned  []string
-	addLabels       []string
-	removeLabels    []string
-	newDependencies []string
-	newNotes        string
-	newPlan         string
-	addAC           []string
-	checkAC         []int
-	uncheckAC       []int
-	removeAC        []int
-)
+func newEditCommand(rt *runtime) *cli.Command {
+	return &cli.Command{
+		Name:      "edit",
+		Usage:     "Edit an existing task",
+		UsageText: "backlog edit <id>",
+		ArgsUsage: "<id>",
+		Description: "Edit an existing task by providing its ID and flags for the fields to update.\n\nExamples:\n" +
+			editExamples,
+		Flags: []cli.Flag{
+			&cli.StringFlag{Name: "title", Aliases: []string{"t"}, Usage: "New title for the task"},
+			&cli.StringFlag{Name: "description", Aliases: []string{"d"}, Usage: "New description for the task"},
+			&cli.StringFlag{Name: "status", Aliases: []string{"s"}, Usage: "New status for the task"},
+			&cli.StringFlag{Name: "priority", Usage: "New priority for the task"},
+			&cli.StringFlag{Name: "parent", Aliases: []string{"p"}, Usage: "New parent for the task"},
+			&cli.StringSliceFlag{Name: "assigned", Aliases: []string{"a"}, Usage: "Add assigned names for the task (can be used multiple times)"},
+			&cli.StringSliceFlag{Name: "remove-assigned", Aliases: []string{"A"}, Usage: "Assigned names to remove from the task (can be used multiple times)"},
+			&cli.StringSliceFlag{Name: "labels", Aliases: []string{"l"}, Usage: "Add labels for the task (can be used multiple times)"},
+			&cli.StringSliceFlag{Name: "remove-labels", Aliases: []string{"L"}, Usage: "Labels to remove from the task (can be used multiple times)"},
+			&cli.StringSliceFlag{Name: "deps", Usage: "Set dependencies (can be used multiple times)"},
+			&cli.StringFlag{Name: "notes", Usage: "New implementation notes for the task"},
+			&cli.StringFlag{Name: "plan", Usage: "New implementation plan for the task"},
+			&cli.StringSliceFlag{Name: "ac", Usage: "Add a new acceptance criterion (can be used multiple times)"},
+			&cli.IntSliceFlag{Name: "check-ac", Usage: "Check an acceptance criterion by its index"},
+			&cli.IntSliceFlag{Name: "uncheck-ac", Usage: "Uncheck an acceptance criterion by its index"},
+			&cli.IntSliceFlag{Name: "remove-ac", Usage: "Remove an acceptance criterion by its index"},
+		},
+		Action: func(ctx context.Context, cmd *cli.Command) error {
+			if cmd.Args().Len() != 1 {
+				return cli.Exit("edit requires exactly one <id> argument", 1)
+			}
 
-func init() {
-	rootCmd.AddCommand(editCmd)
-	setEditFlags(editCmd)
-}
+			store := rt.store
+			if store == nil {
+				return fmt.Errorf("task store not initialized")
+			}
 
-func setEditFlags(cmd *cobra.Command) {
-	cmd.Flags().StringVarP(&newTitle, "title", "t", "", "New title for the task")
-	cmd.Flags().StringVarP(&newDescription, "description", "d", "", "New description for the task")
-	cmd.Flags().StringVarP(&newStatus, "status", "s", "", "New status for the task")
-	cmd.Flags().StringVar(&newPriority, "priority", "", "New priority for the task")
-	cmd.Flags().StringVarP(&newParent, "parent", "p", "", "New parent for the task")
-	cmd.Flags().StringSliceVarP(&addAssigned, "assigned", "a", nil, "Add assigned names for the task (can be used multiple times)")
-	cmd.Flags().StringSliceVarP(&removeAssigned, "remove-assigned", "A", nil, "Assigned names to remove from the task (can be used multiple times)")
-	cmd.Flags().StringSliceVarP(&addLabels, "labels", "l", nil, "Add labels for the task (can be used multiple times)")
-	cmd.Flags().StringSliceVarP(&removeLabels, "remove-labels", "L", nil, "Labels to remove from the task (can be used multiple times)")
-	cmd.Flags().StringSliceVar(&newDependencies, "deps", nil, "Set dependencies (can be used multiple times)")
-	cmd.Flags().StringVar(&newNotes, "notes", "", "New implementation notes for the task")
-	cmd.Flags().StringVar(&newPlan, "plan", "", "New implementation plan for the task")
+			params := core.EditTaskParams{ID: cmd.Args().First()}
 
-	// Acceptance Criteria flags
-	cmd.Flags().StringSliceVar(&addAC, "ac", nil, "Add a new acceptance criterion (can be used multiple times)")
-	cmd.Flags().IntSliceVar(&checkAC, "check-ac", nil, "Check an acceptance criterion by its index")
-	cmd.Flags().IntSliceVar(&uncheckAC, "uncheck-ac", nil, "Uncheck an acceptance criterion by its index")
-	cmd.Flags().IntSliceVar(&removeAC, "remove-ac", nil, "Remove an acceptance criterion by its index")
-}
+			if cmd.IsSet("title") {
+				v := cmd.String("title")
+				params.NewTitle = &v
+			}
+			if cmd.IsSet("description") {
+				v := cmd.String("description")
+				params.NewDescription = &v
+			}
+			if cmd.IsSet("status") {
+				v := cmd.String("status")
+				params.NewStatus = &v
+			}
+			if cmd.IsSet("priority") {
+				v := cmd.String("priority")
+				params.NewPriority = &v
+			}
+			if cmd.IsSet("parent") {
+				v := cmd.String("parent")
+				params.NewParent = &v
+			}
+			if cmd.IsSet("deps") {
+				params.NewDependencies = cmd.StringSlice("deps")
+			}
+			if cmd.IsSet("assigned") {
+				params.AddAssigned = cmd.StringSlice("assigned")
+			}
+			if cmd.IsSet("remove-assigned") {
+				params.RemoveAssigned = cmd.StringSlice("remove-assigned")
+			}
+			if cmd.IsSet("labels") {
+				params.AddLabels = cmd.StringSlice("labels")
+			}
+			if cmd.IsSet("remove-labels") {
+				params.RemoveLabels = cmd.StringSlice("remove-labels")
+			}
+			if cmd.IsSet("notes") {
+				v := cmd.String("notes")
+				params.NewNotes = &v
+			}
+			if cmd.IsSet("plan") {
+				v := cmd.String("plan")
+				params.NewPlan = &v
+			}
 
-func runEdit(cmd *cobra.Command, args []string) error {
-	params := core.EditTaskParams{ID: args[0]}
+			params.AddAC = cmd.StringSlice("ac")
+			params.CheckAC = cmd.IntSlice("check-ac")
+			params.UncheckAC = cmd.IntSlice("uncheck-ac")
+			params.RemoveAC = cmd.IntSlice("remove-ac")
 
-	// Set optional pointers for fields that were changed
-	if cmd.Flags().Changed("title") {
-		params.NewTitle = &newTitle
-	}
-	if cmd.Flags().Changed("description") {
-		params.NewDescription = &newDescription
-	}
-	if cmd.Flags().Changed("status") {
-		params.NewStatus = &newStatus
-	}
-	if cmd.Flags().Changed("priority") {
-		params.NewPriority = &newPriority
-	}
-	if cmd.Flags().Changed("parent") {
-		params.NewParent = &newParent
-	}
-	if cmd.Flags().Changed("deps") {
-		params.NewDependencies = newDependencies
-	}
-	if cmd.Flags().Changed("assigned") {
-		params.AddAssigned = addAssigned
-	}
-	if cmd.Flags().Changed("remove-assigned") {
-		params.RemoveAssigned = removeAssigned
-	}
-	// New labels
-	if cmd.Flags().Changed("labels") {
-		params.AddLabels = addLabels
-	}
-	// Remove labels
-	if cmd.Flags().Changed("remove-labels") {
-		params.RemoveLabels = removeLabels
-	}
-	// Other optional fields
-	if cmd.Flags().Changed("notes") {
-		params.NewNotes = &newNotes
-	}
-	if cmd.Flags().Changed("plan") {
-		params.NewPlan = &newPlan
-	}
+			task, err := store.Get(params.ID)
+			if err != nil {
+				return fmt.Errorf("failed to retrieve task %q: %w", params.ID, err)
+			}
 
-	// AC params
-	params.AddAC = addAC
-	params.CheckAC = checkAC
-	params.UncheckAC = uncheckAC
-	params.RemoveAC = removeAC
+			oldFilePath := store.Path(task)
 
-	// get store from context
-	store := cmd.Context().Value(ctxKeyStore).(mcpserver.TaskStore)
+			if err := store.Update(&task, params); err != nil {
+				return fmt.Errorf("failed to update task %q: %w", params.ID, err)
+			}
 
-	// current task
-	task, err := store.Get(params.ID)
-	if err != nil {
-		return fmt.Errorf("failed to retrieve task %q: %w", params.ID, err)
+			logging.Info("task updated successfully", "task_id", task.ID)
+
+			if !rt.autoCommit {
+				return nil
+			}
+
+			currentFilePath := store.Path(task)
+			if oldFilePath == currentFilePath {
+				oldFilePath = ""
+			}
+
+			commitMsg := fmt.Sprintf("feat(task): edit %s - \"%s\"", task.ID, task.Title)
+			if err := commit.Add(currentFilePath, oldFilePath, commitMsg); err != nil {
+				logging.Warn("auto-commit failed", "task_id", task.ID, "error", err)
+			}
+			return nil
+		},
 	}
-	// save the old path in case of a rename
-	oldFilePath := store.Path(task)
-
-	if err := store.Update(&task, params); err != nil {
-		return fmt.Errorf("failed to update task %q: %w", params.ID, err)
-	}
-
-	defer func() {
-		logging.Info("task updated successfully", "task_id", task.ID)
-		// fmt.Printf("Task %s updated successfully.\n", updatedTask.ID)
-	}()
-
-	if !viper.GetBool(configAutoCommit) {
-		return nil // autocommit is disabled
-	}
-
-	// paths to commit
-	currentFilePath := store.Path(task)
-	if oldFilePath == currentFilePath {
-		oldFilePath = ""
-	}
-	// autocommit the change if enabled
-	commitMsg := fmt.Sprintf("feat(task): edit %s - \"%s\"", task.ID, task.Title)
-	if err := commit.Add(currentFilePath, oldFilePath, commitMsg); err != nil {
-		logging.Warn("auto-commit failed", "task_id", task.ID, "error", err)
-	}
-	return nil
 }
