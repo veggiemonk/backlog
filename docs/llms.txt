@@ -1,0 +1,663 @@
+## backlog
+
+Backlog is a git-native, markdown-based task manager
+
+### Synopsis
+
+A Git-native, Markdown-based task manager for developers and AI agents.
+Backlog helps you manage tasks within your git repository.
+
+```
+backlog [flags]
+```
+
+### Options
+
+```
+      --auto-commit         Auto-committing changes to git repository
+      --folder string       Directory for backlog tasks (default ".backlog")
+  -h, --help                help for backlog
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
+```
+
+### SEE ALSO
+
+* [backlog archive](backlog_archive.md)	 - Archive a task
+* [backlog create](backlog_create.md)	 - Create a new task
+* [backlog doctor](backlog_doctor.md)	 - Diagnose and fix task ID conflicts
+* [backlog edit](backlog_edit.md)	 - Edit an existing task
+* [backlog instructions](backlog_instructions.md)	 - instructions for agents to learn to use backlog
+* [backlog list](backlog_list.md)	 - List all tasks
+* [backlog mcp](backlog_mcp.md)	 - Start the MCP server
+* [backlog version](backlog_version.md)	 - Print the version information
+* [backlog view](backlog_view.md)	 - View a task by providing its ID
+
+## backlog archive
+
+Archive a task
+
+### Synopsis
+
+Archives a task, moving it to the archived directory.
+
+```
+backlog archive <task-id> [flags]
+```
+
+### Examples
+
+```
+
+backlog archive 10  # archive task 10
+
+```
+
+### Options
+
+```
+  -h, --help   help for archive
+```
+
+### Options inherited from parent commands
+
+```
+      --auto-commit         Auto-committing changes to git repository
+      --folder string       Directory for backlog tasks (default ".backlog")
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
+```
+
+### SEE ALSO
+
+* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+
+## backlog create
+
+Create a new task
+
+### Synopsis
+
+Creates a new task in the backlog.
+
+```
+backlog create <title> [flags]
+```
+
+### Examples
+
+```
+
+# Create tasks using the "backlog create" command with its different flags.
+# Here are some examples of how to use this command effectively:
+# 1. Basic Task Creation
+# This is the simplest way to create a task, providing only a title.
+backlog create "Fix the login button styling"
+
+# 2. Task with a Description. Use the -d or --description flag to add more detailed information about the task.
+backlog create "Implement password reset" -d "Users should be able to request a password reset link via their email. This involves creating a new API endpoint and a front-end form."
+
+# 3. Assigning a Task. You can assign a task to one or more team members using the -a or --assigned flag. 
+# Assign to a single person: 
+backlog create "Design the new dashboard" -a "alex"
+# Assign to multiple people: 
+backlog create "Code review for the payment gateway" -a "jordan" -a "casey"
+
+# 4. Adding Labels. Use the -l or --labels flag to categorize the task with comma-separated labels.
+backlog create "Update third-party dependencies" -l "bug,backend,security"
+
+# 5. Setting a Priority
+# Specify the task's priority with the --priority flag. The default is "medium".
+backlog create "Hotfix: Production database is down" --priority "high"
+backlog create "Refactor the old user model" --priority "low"
+
+# 6. Defining Acceptance Criteria
+# Use the --ac flag multiple times to list the conditions that must be met for the task to be considered complete.
+backlog create "Develop user profile page" \
+  --ac "Users can view their own profile information." \
+  --ac "Users can upload a new profile picture." \
+  --ac "The page is responsive on mobile devices."
+
+# 7. Creating a Sub-task. Link a new task to a parent task using the -p or --parent flag. This is useful for breaking down larger tasks.
+# First, create the parent task
+backlog create "Implement User Authentication"
+# Now, create a sub-task (assuming the parent task ID is 15)
+backlog create "Add Google OAuth login" -p "15"
+
+# 8. Setting Task Dependencies
+# Use the --deps flag to specify that this task depends on other tasks being completed first.
+# Single dependency:
+backlog create "Deploy user authentication" --deps "T15"
+# Multiple dependencies:
+backlog create "Integration testing" --deps "T15" --deps "T18" --deps "T20"
+# This means the task cannot be started until tasks T15, T18, and T20 are completed.
+
+# 9. Complex Example (Combining Multiple Flags). Here is a comprehensive example that uses several flags at once to create a very detailed task.
+backlog create "Build the new reporting feature" \
+  -d "Create a new section in the app that allows users to generate and export monthly performance reports in PDF format." \
+  -a "drew" \
+  -l "feature,frontend,backend" \
+  --priority "high" \
+  --ac "Report generation logic is accurate." \
+  --ac "Users can select a date range for the report." \
+  --ac "The exported PDF has the correct branding and layout." \
+  -p "23"	
+
+```
+
+### Options
+
+```
+      --ac strings           Acceptance criterion (can be specified multiple times)
+  -a, --assigned strings     Assignee for the task (can be specified multiple times)
+      --deps strings         Add a dependency (can be used multiple times)
+  -d, --description string   Description of the task
+  -h, --help                 help for create
+  -l, --labels strings       Comma-separated labels for the task
+      --notes string         Additional notes for the task
+  -p, --parent string        Parent task ID
+      --plan string          Implementation plan for the task
+      --priority string      Priority of the task (low, medium, high, critical) (default "medium")
+```
+
+### Options inherited from parent commands
+
+```
+      --auto-commit         Auto-committing changes to git repository
+      --folder string       Directory for backlog tasks (default ".backlog")
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
+```
+
+### SEE ALSO
+
+* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+
+## backlog doctor
+
+Diagnose and fix task ID conflicts
+
+### Synopsis
+
+
+Diagnose and fix task ID conflicts that can occur when creating tasks
+in separate Git branches. Conflicts arise when multiple branches generate the same task IDs.
+
+This command provides conflict detection and resolution capabilities to maintain
+task ID uniqueness and data integrity.
+
+Conflict types detected:
+- Duplicate IDs (same ID in multiple files)
+- Orphaned children (tasks with non-existent parents)
+- Invalid hierarchy (parent-child ID mismatch)
+
+
+```
+backlog doctor [flags]
+```
+
+### Examples
+
+```
+
+ backlog doctor                    # Detect conflicts in text format
+ backlog doctor --json             # Detect conflicts in JSON format
+ backlog doctor --fix              # Detect and automatically fix conflicts
+ backlog doctor --fix --dry-run    # Show what would be fixed without making changes
+ backlog doctor --fix --strategy=auto    # Use auto-renumbering strategy
+
+```
+
+### Options
+
+```
+      --dry-run           Show what would be changed without making changes (use with --fix)
+      --fix               Automatically fix detected conflicts
+  -h, --help              help for doctor
+  -j, --json              Output in JSON format
+      --strategy string   Resolution strategy when using --fix (chronological|auto|manual) (default "chronological")
+```
+
+### Options inherited from parent commands
+
+```
+      --auto-commit         Auto-committing changes to git repository
+      --folder string       Directory for backlog tasks (default ".backlog")
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
+```
+
+### SEE ALSO
+
+* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+
+## backlog edit
+
+Edit an existing task
+
+### Synopsis
+
+Edit an existing task by providing its ID and flags for the fields to update.
+
+```
+backlog edit <id> [flags]
+```
+
+### Examples
+
+```
+
+# Edit tasks using the "backlog edit" command with its different flags.
+# Let's assume you have a task with ID "42" that you want to modify.
+# Here are some examples of how to use this command effectively:
+
+# 1. Changing the Title
+# Use the -t or --title flag to give the task a new title.
+backlog edit 42 -t "Fix the main login button styling"
+
+# 2. Updating the Description
+# Use the -d or --description flag to replace the existing description with a new one.
+backlog edit 42 -d "The login button on the homepage is misaligned on mobile devices. It should be centered."
+
+# 3. Changing the Status
+# Update the task's progress by changing its status with the -s or --status flag.
+backlog edit 42 -s "in-progress"
+
+# 4. Re-assigning a Task
+# You can add or remove assigned names for a task using the -a (--assigned) and -A (--remove-assigned) flags.
+# Add a single assignee:
+backlog edit 42 -a "jordan"
+# Add multiple assignees:
+backlog edit 42 -a "jordan" -a "casey"
+# Remove an assignee:
+backlog edit 42 -A "casey"
+
+# 5. Updating Labels
+# Use the -l (--labels) and -L (--remove-labels) flags to add or remove labels.
+# Add a single label:
+backlog edit 42 -l "bug"
+# Add multiple labels:
+backlog edit 42 -l "frontend" -l "bug"
+# Remove a label:
+backlog edit 42 -L "bug"
+
+
+# 6. Changing the Priority
+# Adjust the task's priority with the --priority flag.
+backlog edit 42 --priority "high"
+
+# 7. Managing Acceptance Criteria
+# You can add, check, uncheck, or remove acceptance criteria.
+# Add a new AC:
+backlog edit 42 --ac "The button is centered on screens smaller than 576px."
+# Check the first AC (assuming it's at index 1):
+backlog edit 42 --check-ac 1
+# Uncheck the first AC:
+backlog edit 42 --uncheck-ac 1
+# Remove the second AC (at index 2):
+backlog edit 42 --remove-ac 2
+
+# 8. Changing the Parent Task
+# Move a task to be a sub-task of a different parent using the -p or --parent flag.
+backlog edit 42 -p "18"
+# To remove a parent, pass an empty string:
+backlog edit 42 -p ""
+
+# 9. Adding Implementation Notes
+# Use the --notes flag to add or update technical notes for implementation.
+backlog edit 42 --notes "The issue is in the 'main.css' file, specifically in the '.login-container' class. Need to adjust the media query."
+
+# 10. Complex Example (Combining Multiple Flags)
+# You can combine several flags to make multiple changes at once.
+backlog edit 42 \
+  -s "in-review" \
+  -a "alex" \
+  --priority "critical" \
+  --notes "The fix is ready for review. Please check on both iOS and Android." \
+  --check-ac 1 \
+  --check-ac 2
+
+# 11. Updating the Implementation Plan
+# Use the --plan flag to add or update the implementation plan for the task.
+backlog edit 42 --plan "1. Refactor login button\n2. Test on mobile\n3. Review with team"
+
+# 12. Setting Dependencies
+# Use the --deps flag to set the dependencies for a task.
+# This will replace all existing dependencies with the new ones.
+backlog edit 42 --deps "T1,T2"
+
+# 13. Setting a Single Dependency
+# If you want to make a task depend on another specific task:
+backlog edit 42 --deps "T15"
+# This makes task 42 dependent on task T15, meaning T15 must be completed before T42 can be started.
+
+# 14. Setting Multiple Dependencies
+# You can make a task depend on multiple other tasks:
+backlog edit 42 --deps "T15,T18,T20"
+# This makes task 42 dependent on tasks T15, T18, and T20.
+
+```
+
+### Options
+
+```
+      --ac strings                Add a new acceptance criterion (can be used multiple times)
+  -a, --assigned strings          Add assigned names for the task (can be specified multiple times)
+      --check-ac ints             Check an acceptance criterion by its index
+      --deps strings              Set dependencies, replacing existing ones (can be used multiple times)
+  -d, --description string        New description for the task
+  -h, --help                      help for edit
+  -l, --labels strings            Add labels for the task (can be specified multiple times)
+      --notes string              New implementation notes for the task
+  -p, --parent string             New parent for the task
+      --plan string               New implementation plan for the task
+      --priority string           New priority for the task
+      --remove-ac ints            Remove an acceptance criterion by its index
+  -A, --remove-assigned strings   Assigned names to remove from the task (can be specified multiple times)
+  -L, --remove-labels strings     Labels to remove from the task (can be specified multiple times)
+  -s, --status string             New status for the task
+  -t, --title string              New title for the task
+      --uncheck-ac ints           Uncheck an acceptance criterion by its index
+```
+
+### Options inherited from parent commands
+
+```
+      --auto-commit         Auto-committing changes to git repository
+      --folder string       Directory for backlog tasks (default ".backlog")
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
+```
+
+### SEE ALSO
+
+* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+
+## backlog instructions
+
+instructions for agents to learn to use backlog
+
+### Synopsis
+
+Instructions for agents to learn to use backlog by including them into a prompt.
+
+```
+backlog instructions [flags]
+```
+
+### Examples
+
+```
+
+backlog instructions               # outputs the instructions for agents to use the cli.
+backlog instructions --mode cli    # outputs the instructions for agents to use the cli.
+backlog instructions --mode mcp    # outputs the instructions for agents to use MCP.
+backlog instructions >> AGENTS.md  # add instructions to agent base prompt.
+
+```
+
+### Options
+
+```
+  -h, --help          help for instructions
+      --mode string   which mode the agent will use backlog: (cli|mcp) (default "cli")
+```
+
+### Options inherited from parent commands
+
+```
+      --auto-commit         Auto-committing changes to git repository
+      --folder string       Directory for backlog tasks (default ".backlog")
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
+```
+
+### SEE ALSO
+
+* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+
+## backlog list
+
+List all tasks
+
+### Synopsis
+
+Lists all tasks in the backlog except archived tasks.
+
+```
+backlog list [flags]
+```
+
+### Examples
+
+```
+
+# List all tasks
+backlog list                                    # List all tasks with all columns
+backlog list --status "todo"                    # List tasks with status "todo"
+backlog list --status "todo,in-progress"        # List tasks with status "todo" or "in-progress"
+backlog list --status "done"                    # List tasks with status "done"
+backlog list --parent "12345"                   # List tasks that are sub-tasks of the task with ID "12345"
+backlog list --status "todo" --parent "12345"   # List "todo" sub-tasks of task "12345"
+backlog list --assigned "alice"                 # List tasks assigned to alice
+backlog list --unassigned                       # List tasks that have no one assigned
+backlog list --labels "bug"                     # List tasks containing the label "bug"
+backlog list --labels "bug,feature"             # List tasks containing either "bug" or "feature" labels
+backlog list --priority "high"                  # List all high priority tasks
+
+# Search
+backlog list --query "refactor"                 # Search for tasks with the word "refactor" in them
+
+# dependency filters
+backlog list --has-dependency                   # List tasks that have at least one dependency
+backlog list --depended-on                      # List tasks that are depended on by other tasks
+backlog list --depended-on --status "todo"      # List all the blocking tasks.
+
+# column visibility
+backlog list --hide-extra                       # Hide extra fields (labels, priority, assigned)
+backlog list -e                                 # Hide extra fields (labels, priority, assigned)
+backlog list --status "todo" --hide-extra       # List "todo" tasks with minimal columns
+
+# sorting
+backlog list --sort "priority"                  # Sort tasks by priority
+backlog list --sort "updated,priority"          # Sort tasks by updated date, then priority
+backlog list --sort "status,created"            # Sort tasks by status, then creation date
+backlog list --reverse                          # Reverse the order of tasks
+backlog list --sort "priority" --reverse        # Sort by priority in reverse order
+backlog list --status "todo" \
+	--priority "medium"  \
+	--sort "priority"    \
+	--reverse                               # Combine all options
+
+# output format
+backlog list -m                                 # List tasks in markdown format
+backlog list --markdown                         # List tasks in markdown format
+backlog list --json                             # List tasks in JSON format
+backlog list -j                                 # List tasks in JSON format
+backlog list --status "todo" --json             # List "todo" tasks in JSON format
+
+# pagination
+backlog list --limit 10                         # List first 10 tasks
+backlog list --limit 5 --offset 10              # List 5 tasks starting from 11th task
+backlog list --status "todo" --limit 3          # List first 3 "todo" tasks
+backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
+
+```
+
+### Options
+
+```
+  -a, --assigned strings   Filter tasks by assigned names
+  -d, --depended-on        Filter tasks that are depended on by other tasks
+  -c, --has-dependency     Filter tasks that have dependencies
+  -h, --help               help for list
+  -e, --hide-extra         Hide extra fields (labels, priority, assigned)
+  -j, --json               Print JSON output
+  -l, --labels strings     Filter tasks by labels
+      --limit int          Maximum number of tasks to return (0 means no limit)
+  -m, --markdown           print markdown table
+      --offset int         Number of tasks to skip from the beginning
+  -p, --parent string      Filter tasks by parent ID
+      --priority string    Filter tasks by priority
+  -q, --query string       Search query to filter tasks by
+  -r, --reverse            Reverse the order of tasks
+      --sort string        Sort tasks by comma-separated fields (id, title, status, priority, created, updated)
+  -s, --status strings     Filter tasks by status
+  -u, --unassigned         Filter tasks that have no one assigned
+```
+
+### Options inherited from parent commands
+
+```
+      --auto-commit         Auto-committing changes to git repository
+      --folder string       Directory for backlog tasks (default ".backlog")
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
+```
+
+### SEE ALSO
+
+* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+
+## backlog mcp
+
+Start the MCP server
+
+### Synopsis
+
+Starts an MCP server to provide programmatic access to backlog tasks.
+
+```
+backlog mcp [flags]
+```
+
+### Examples
+
+```
+
+backlog mcp --http             # Start the MCP server using HTTP transport on default port 8106
+backlog mcp --http --port 4321 # Start the MCP server using HTTP transport on port 4321
+backlog mcp                    # Start the MCP server using stdio transport
+
+```
+
+### Options
+
+```
+  -h, --help       help for mcp
+      --http       Use HTTP transport instead of stdio
+      --port int   Port for the MCP server (HTTP transport) (default 8106)
+```
+
+### Options inherited from parent commands
+
+```
+      --auto-commit         Auto-committing changes to git repository
+      --folder string       Directory for backlog tasks (default ".backlog")
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
+```
+
+### SEE ALSO
+
+* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+
+## backlog version
+
+Print the version information
+
+### Synopsis
+
+Print the version information
+
+```
+backlog version [flags]
+```
+
+### Examples
+
+```
+
+backlog version # Print the version information
+
+# Example output:
+#
+# Backlog version:
+# Revision: 7c989dabd2c61a063a23788c18eb39eca408f6a7
+# Version: v0.0.2-0.20250907193624-7c989dabd2c6
+# BuildTime: 2025-09-07T19:36:24Z
+# Dirty: false
+
+```
+
+### Options
+
+```
+  -h, --help   help for version
+```
+
+### Options inherited from parent commands
+
+```
+      --auto-commit         Auto-committing changes to git repository
+      --folder string       Directory for backlog tasks (default ".backlog")
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
+```
+
+### SEE ALSO
+
+* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+
+## backlog view
+
+View a task by providing its ID
+
+### Synopsis
+
+View a task by providing its ID. You can output in markdown or JSON format.
+
+```
+backlog view <id> [flags]
+```
+
+### Examples
+
+```
+
+  backlog view T01           # View task T01 in markdown format
+  backlog view T01 --json    # View task T01 in JSON format
+  backlog view T01 -j        # View task T01 in JSON format (short flag)
+
+```
+
+### Options
+
+```
+  -h, --help   help for view
+  -j, --json   Print JSON output
+```
+
+### Options inherited from parent commands
+
+```
+      --auto-commit         Auto-committing changes to git repository
+      --folder string       Directory for backlog tasks (default ".backlog")
+      --log-file string     Log file path (defaults to stderr)
+      --log-format string   Log format (json, text) (default "text")
+      --log-level string    Log level (debug, info, warn, error) (default "info")
+```
+
+### SEE ALSO
+
+* [backlog](backlog.md)	 - Backlog is a git-native, markdown-based task manager
+

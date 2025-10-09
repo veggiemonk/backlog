@@ -9,6 +9,7 @@ Diagnose and fix task ID conflicts
 
 ### Synopsis
 
+
 Diagnose and fix task ID conflicts that can occur when creating tasks
 in separate Git branches. Conflicts arise when multiple branches generate the same task IDs.
 
@@ -20,15 +21,21 @@ Conflict types detected:
 - Orphaned children (tasks with non-existent parents)
 - Invalid hierarchy (parent-child ID mismatch)
 
-Examples:
-  backlog doctor                    # Detect conflicts in text format
-  backlog doctor --json             # Detect conflicts in JSON format
-  backlog doctor --fix              # Detect and automatically fix conflicts
-  backlog doctor --fix --dry-run    # Show what would be fixed without making changes
-  backlog doctor --fix --strategy=auto    # Use auto-renumbering strategy
 
 ```
 backlog doctor [flags]
+```
+
+### Examples
+
+```
+
+ backlog doctor                    # Detect conflicts in text format
+ backlog doctor --json             # Detect conflicts in JSON format
+ backlog doctor --fix              # Detect and automatically fix conflicts
+ backlog doctor --fix --dry-run    # Show what would be fixed without making changes
+ backlog doctor --fix --strategy=auto    # Use auto-renumbering strategy
+
 ```
 
 
@@ -37,12 +44,12 @@ backlog doctor [flags]
 #### Environment Variables
 
 ```
-	(name)		(default)
-	AUTO-COMMIT	false
-	FOLDER		.backlog
-	LOG-FILE	
-	LOG-FORMAT	text
-	LOG-LEVEL	info
+	(name)				(default)
+	BACKLOG_AUTO_COMMIT	false
+	BACKLOG_FOLDER		.backlog
+	BACKLOG_LOG_FILE	
+	BACKLOG_LOG_FORMAT	text
+	BACKLOG_LOG_LEVEL	info
 ```
 
 #### Flags

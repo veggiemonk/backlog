@@ -12,11 +12,15 @@ import (
 )
 
 var createCmd = &cobra.Command{
-	Use:   "create <title>",
-	Short: "Create a new task",
-	Long:  `Creates a new task in the backlog.`,
-	Args:  cobra.ExactArgs(1),
-	Example: `
+	Use:     "create <title>",
+	Short:   "Create a new task",
+	Long:    `Creates a new task in the backlog.`,
+	Args:    cobra.ExactArgs(1),
+	Example: createExample,
+	RunE:    runCreate,
+}
+
+var createExample = `
 # Create tasks using the "backlog create" command with its different flags.
 # Here are some examples of how to use this command effectively:
 # 1. Basic Task Creation
@@ -71,9 +75,7 @@ backlog create "Build the new reporting feature" \
   --ac "Users can select a date range for the report." \
   --ac "The exported PDF has the correct branding and layout." \
   -p "23"	
-	`,
-	RunE: runCreate,
-}
+`
 
 var (
 	description  string

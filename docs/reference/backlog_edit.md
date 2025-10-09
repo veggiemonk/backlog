@@ -36,16 +36,23 @@ backlog edit 42 -d "The login button on the homepage is misaligned on mobile dev
 backlog edit 42 -s "in-progress"
 
 # 4. Re-assigning a Task
-# You can change the assigned names for a task using the -a or --assignee flag.
-# This will replace the current list of assigned names.
-# Assign to a single person:
+# You can add or remove assigned names for a task using the -a (--assigned) and -A (--remove-assigned) flags.
+# Add a single assignee:
 backlog edit 42 -a "jordan"
-# Assign to multiple people:
+# Add multiple assignees:
 backlog edit 42 -a "jordan" -a "casey"
+# Remove an assignee:
+backlog edit 42 -A "casey"
 
 # 5. Updating Labels
-# Use the -l or --labels flag to replace the existing labels.
-backlog edit 42 -l "bug,frontend"
+# Use the -l (--labels) and -L (--remove-labels) flags to add or remove labels.
+# Add a single label:
+backlog edit 42 -l "bug"
+# Add multiple labels:
+backlog edit 42 -l "frontend" -l "bug"
+# Remove a label:
+backlog edit 42 -L "bug"
+
 
 # 6. Changing the Priority
 # Adjust the task's priority with the --priority flag.
@@ -86,10 +93,10 @@ backlog edit 42 \
 # Use the --plan flag to add or update the implementation plan for the task.
 backlog edit 42 --plan "1. Refactor login button\n2. Test on mobile\n3. Review with team"
 
-# 12. Adding Dependencies
-# Use the --deps flag to add one or more task dependencies.
+# 12. Setting Dependencies
+# Use the --deps flag to set the dependencies for a task.
 # This will replace all existing dependencies with the new ones.
-backlog edit 42 --deps "T1" --deps "T2"
+backlog edit 42 --deps "T1,T2"
 
 # 13. Setting a Single Dependency
 # If you want to make a task depend on another specific task:
@@ -98,9 +105,9 @@ backlog edit 42 --deps "T15"
 
 # 14. Setting Multiple Dependencies
 # You can make a task depend on multiple other tasks:
-backlog edit 42 --deps "T15" --deps "T18" --deps "T20"
+backlog edit 42 --deps "T15,T18,T20"
 # This makes task 42 dependent on tasks T15, T18, and T20.
-	
+
 ```
 
 
@@ -109,12 +116,12 @@ backlog edit 42 --deps "T15" --deps "T18" --deps "T20"
 #### Environment Variables
 
 ```
-	(name)		(default)
-	AUTO-COMMIT	false
-	FOLDER		.backlog
-	LOG-FILE	
-	LOG-FORMAT	text
-	LOG-LEVEL	info
+	(name)				(default)
+	BACKLOG_AUTO_COMMIT	false
+	BACKLOG_FOLDER		.backlog
+	BACKLOG_LOG_FILE	
+	BACKLOG_LOG_FORMAT	text
+	BACKLOG_LOG_LEVEL	info
 ```
 
 #### Flags
@@ -122,19 +129,19 @@ backlog edit 42 --deps "T15" --deps "T18" --deps "T20"
 
 ```
       --ac strings                Add a new acceptance criterion (can be used multiple times)
-  -a, --assigned strings          Add assigned names for the task (can be used multiple times)
+  -a, --assigned strings          Add assigned names for the task (can be specified multiple times)
       --check-ac ints             Check an acceptance criterion by its index
-      --deps strings              Set dependencies (can be used multiple times)
+      --deps strings              Set dependencies, replacing existing ones (can be used multiple times)
   -d, --description string        New description for the task
   -h, --help                      help for edit
-  -l, --labels strings            Add labels for the task (can be used multiple times)
+  -l, --labels strings            Add labels for the task (can be specified multiple times)
       --notes string              New implementation notes for the task
   -p, --parent string             New parent for the task
       --plan string               New implementation plan for the task
       --priority string           New priority for the task
       --remove-ac ints            Remove an acceptance criterion by its index
-  -A, --remove-assigned strings   Assigned names to remove from the task (can be used multiple times)
-  -L, --remove-labels strings     Labels to remove from the task (can be used multiple times)
+  -A, --remove-assigned strings   Assigned names to remove from the task (can be specified multiple times)
+  -L, --remove-labels strings     Labels to remove from the task (can be specified multiple times)
   -s, --status string             New status for the task
   -t, --title string              New title for the task
       --uncheck-ac ints           Uncheck an acceptance criterion by its index

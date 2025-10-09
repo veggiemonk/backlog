@@ -11,13 +11,18 @@ View a task by providing its ID
 
 View a task by providing its ID. You can output in markdown or JSON format.
 
-Examples:
+```
+backlog view <id> [flags]
+```
+
+### Examples
+
+```
+
   backlog view T01           # View task T01 in markdown format
   backlog view T01 --json    # View task T01 in JSON format
   backlog view T01 -j        # View task T01 in JSON format (short flag)
 
-```
-backlog view <id> [flags]
 ```
 
 
@@ -26,12 +31,12 @@ backlog view <id> [flags]
 #### Environment Variables
 
 ```
-	(name)		(default)
-	AUTO-COMMIT	false
-	FOLDER		.backlog
-	LOG-FILE	
-	LOG-FORMAT	text
-	LOG-LEVEL	info
+	(name)				(default)
+	BACKLOG_AUTO_COMMIT	false
+	BACKLOG_FOLDER		.backlog
+	BACKLOG_LOG_FILE	
+	BACKLOG_LOG_FORMAT	text
+	BACKLOG_LOG_LEVEL	info
 ```
 
 #### Flags

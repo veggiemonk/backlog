@@ -10,18 +10,20 @@ import (
 
 var viewJSON bool
 
-// viewCmd represents the view command
-var viewCmd = &cobra.Command{
-	Use:   "view <id>",
-	Short: "View a task by providing its ID",
-	Long: `View a task by providing its ID. You can output in markdown or JSON format.
-
-Examples:
+var viewExample = `
   backlog view T01           # View task T01 in markdown format
   backlog view T01 --json    # View task T01 in JSON format
-  backlog view T01 -j        # View task T01 in JSON format (short flag)`,
-	Args: cobra.ExactArgs(1),
-	RunE: view,
+  backlog view T01 -j        # View task T01 in JSON format (short flag)
+`
+
+// viewCmd represents the view command
+var viewCmd = &cobra.Command{
+	Use:     "view <id>",
+	Short:   "View a task by providing its ID",
+	Long:    `View a task by providing its ID. You can output in markdown or JSON format.`,
+	Example: viewExample,
+	Args:    cobra.ExactArgs(1),
+	RunE:    view,
 }
 
 func view(cmd *cobra.Command, args []string) error {
