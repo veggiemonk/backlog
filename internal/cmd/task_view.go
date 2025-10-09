@@ -8,20 +8,28 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-const viewExamples = `
+const viewDescription = `
+View a task by providing its ID. You can output in markdown or JSON format.
+
+Examples: 
+` +
+	"```" +
+	`
+
   backlog view T01           # View task T01 in markdown format
   backlog view T01 --json    # View task T01 in JSON format
   backlog view T01 -j        # View task T01 in JSON format (short flag)
-`
+
+` + "```"
 
 func newViewCommand(rt *runtime) *cli.Command {
 	return &cli.Command{
-		Name:      "view",
-		Usage:     "View a task by providing its ID",
-		UsageText: "backlog view <id>",
-		ArgsUsage: "<id>",
-		Description: "View a task by providing its ID. You can output in markdown or JSON format.\n\nExamples:\n" +
-			viewExamples,
+		Name:                  "view",
+		Usage:                 "View a task by providing its ID",
+		UsageText:             "backlog view <id>",
+		ArgsUsage:             "<id>",
+		EnableShellCompletion: true,
+		Description:           viewDescription,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Usage: "Print JSON output"},
 		},

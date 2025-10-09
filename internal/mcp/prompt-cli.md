@@ -139,7 +139,7 @@ Summary of what was done.
 | Remove AC #1            | `backlog edit 42 --remove-ac 1`                   |
 | Add Plan                | `backlog edit 42 --plan "1. Step one\n2. Step two"` |
 | Add Notes               | `backlog edit 42 --notes "What I did"`            |
-| Remove Assigned User    | `backlog edit 42 --unassign "@sara"`              |
+| Remove Assigned User    | `backlog edit 42 --remove-assigned "@sara"`       |
 | Remove Labels           | `backlog edit 42 --remove-labels "backend,api"`   |
 
 ---
@@ -339,92 +339,50 @@ A task is **Done** only when **ALL** of the following are complete:
 
 ---
 
-## 9. Complete CLI Command Reference
+## 9. CLI Command Reference
 
-### `backlog create`
+For the complete and authoritative CLI reference, see the auto-generated documentation in the repository.
 
-Creates a new task.
+**Quick Command Reference:**
 
+| Task | Command Example |
+|------|----------------|
+| **Create task** | `backlog create "Title" --description "..." --ac "criterion"` |
+| **Edit task** | `backlog edit 42 --status "in-progress" --assigned "@you"` |
+| **Check AC** | `backlog edit 42 --check-ac 1` |
+| **Add AC** | `backlog edit 42 --add-ac "New criterion"` |
+| **Remove AC** | `backlog edit 42 --remove-ac 1` |
+| **Add assignee** | `backlog edit 42 --assigned "@alice"` |
+| **Remove assignee** | `backlog edit 42 --remove-assigned "@alice"` |
+| **Add labels** | `backlog edit 42 --labels "bug,urgent"` |
+| **Remove labels** | `backlog edit 42 --remove-labels "bug"` |
+| **List tasks** | `backlog list --status "todo" --assigned "alice"` |
+| **View task** | `backlog view 42` |
+| **Archive task** | `backlog archive 42` |
+
+**Get detailed help for any command:**
 ```bash
-backlog create "TITLE" [flags]
+backlog --help              # Global help
+backlog create --help       # Create command help
+backlog edit --help         # Edit command help
+backlog list --help         # List command help
 ```
 
-| Flag            | Type     | Description                               |
-| --------------- | -------- | ----------------------------------------- |
-| `--description` | `string` | A detailed description of the task        |
-| `--parent`      | `string` | The ID of the parent task (task must exists!)   |
-| `--ac`          | `string` | Acceptance criteria (can be used multiple times) |
-| `--assigned`    | `string` | Assigned users (can be used multiple times) |
-| `--labels`      | `string` | Comma-separated labels                    |
-| `--priority`    | `string` | The priority of the task                  |
-| `--deps`        | `string` | Task dependencies (can be used multiple times) |
+**Common Flag Patterns:**
 
-### `backlog edit`
+- **Repeatable flags**: Use multiple times for multiple values
+  - `--assigned "alice" --assigned "bob"` (adds both)
+  - `--ac "First criterion" --ac "Second criterion"` (adds both)
 
-Edits an existing task.
+- **Comma-separated**: Alternative for some flags
+  - `--labels "bug,feature,urgent"` (adds all three labels)
+  - `--status "todo,in-progress"` (filters by both statuses)
 
-```bash
-backlog edit ID [flags]
-```
-
-| Flag             | Type     | Description                                       |
-| ---------------- | -------- | ------------------------------------------------- |
-| `--title`        | `string` | A new title for the task                          |
-| `--description`  | `string` | A new description for the task                    |
-| `--status`       | `string` | A new status (e.g., "in-progress", "done")       |
-| `--deps`         | `string` | Set dependencies (replaces existing, comma-separated) |
-| `--parent`       | `string` | A new parent task ID                              |
-| `--assigned`     | `string` | Assign users (can be used multiple times)        |
-| `--unassign`     | `string` | Remove assigned users (can be used multiple times) |
-| `--labels`       | `string` | Set labels (replaces existing, comma-separated)  |
-| `--remove-labels`| `string` | Remove labels (comma-separated)                   |
-| `--priority`     | `string` | A new priority                                    |
-| `--add-ac`       | `string` | Add acceptance criteria (can be used multiple times) |
-| `--remove-ac`    | `int`    | Remove AC by 1-based index (can be used multiple times) |
-| `--check-ac`     | `int`    | Check AC by 1-based index (can be used multiple times) |
-| `--uncheck-ac`   | `int`    | Uncheck AC by 1-based index (can be used multiple times) |
-| `--plan`         | `string` | Set implementation plan                           |
-| `--notes`        | `string` | Set implementation notes                          |
-
-### `backlog list`
-
-Lists tasks with optional filtering, sorting, and pagination.
-
-```bash
-backlog list [flags]
-```
-
-| Flag             | Type     | Description                                                   |
-| ---------------- | -------- | -----------------------------------------------------         |
-| `--status`       | `string` | Filter by status (comma-separated for multiple)               |
-| `--parent`       | `string` | Filter by parent task ID                                      |
-| `--assigned`     | `string` | Filter by assigned user (comma-separated for multiple)        |
-| `--unassigned`   | `bool`   | Filter tasks that have no assigned users                      |
-| `--labels`       | `string` | Filter by labels (comma-separated for multiple)               |
-| `--has-dependency`| `bool`  | Filter tasks that have dependencies                           |
-| `--depended-on`  | `bool`   | Filter tasks that are depended on by other tasks              |
-| `--hide-extra`   | `bool`   | Hide extra fields (labels, priority, assigned)                |
-| `--sort`         | `string` | Sort by field (id, title, status, priority, created, updated) |
-| `--reverse`      | `bool`   | Reverse the sort order                                        |
-| `--limit`        | `int`    | Maximum number of tasks to return (0 means no limit)          |
-| `--offset`       | `int`    | Number of tasks to skip from the beginning                    |
-| `--query`        | `string` | Search query to filter tasks by                               |
-
-### `backlog view`
-
-Retrieves and displays the details of a single task.
-
-```bash
-backlog view ID
-```
-
-### `backlog archive`
-
-Archives a task by moving it to the archived directory and setting status to archived.
-
-```bash
-backlog archive ID
-```
+- **Add vs Remove**: Many fields have both operations
+  - `--assigned "@alice"` adds alice
+  - `--remove-assigned "@alice"` removes alice
+  - `--labels "bug,urgent"` sets labels (replaces all)
+  - `--remove-labels "bug"` removes specific labels
 
 ---
 

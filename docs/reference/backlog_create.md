@@ -25,65 +25,57 @@ create
 
 # DESCRIPTION
 
+
 Creates a new task in the backlog.
 
 Examples:
+```
 
-# Create tasks using the "backlog create" command with its different flags.
-# Here are some examples of how to use this command effectively:
-# 1. Basic Task Creation
-# This is the simplest way to create a task, providing only a title.
-backlog create "Fix the login button styling"
+  # Basic task
+  backlog create "Fix the login button styling"
 
-# 2. Task with a Description. Use the -d or --description flag to add more detailed information about the task.
-backlog create "Implement password reset" -d "Users should be able to request a password reset link via their email. This involves creating a new API endpoint and a front-end form."
+  # Task with description
+  backlog create "Implement password reset" \
+    -d "Users should be able to request a password reset link via email"
 
-# 3. Assigning a Task. You can assign a task to one or more team members using the -a or --assigned flag.
-# Assign to a single person:
-backlog create "Design the new dashboard" -a "alex"
-# Assign to multiple people:
-backlog create "Code review for the payment gateway" -a "jordan" -a "casey"
+  # Assign to team members
+  backlog create "Design the new dashboard" -a "alex"
+  backlog create "Code review" -a "jordan" -a "casey"    # Multiple assignees
 
-# 4. Adding Labels. Use the -l or --labels flag to categorize the task with comma-separated labels.
-backlog create "Update third-party dependencies" -l "bug,backend,security"
+  # Add labels
+  backlog create "Update dependencies" -l "bug,backend,security"
 
-# 5. Setting a Priority
-# Specify the task's priority with the --priority flag. The default is "medium".
-backlog create "Hotfix: Production database is down" --priority "high"
-backlog create "Refactor the old user model" --priority "low"
+  # Set priority (low, medium, high, critical)
+  backlog create "Hotfix: Database down" --priority "high"
+  backlog create "Refactor old code" --priority "low"
 
-# 6. Defining Acceptance Criteria
-# Use the --ac flag multiple times to list the conditions that must be met for the task to be considered complete.
-backlog create "Develop user profile page" \
-  --ac "Users can view their own profile information." \
-  --ac "Users can upload a new profile picture." \
-  --ac "The page is responsive on mobile devices."
+  # Define acceptance criteria
+  backlog create "Develop user profile page" \
+    --ac "Users can view their profile" \
+    --ac "Users can upload a profile picture" \
+    --ac "Page is responsive on mobile"
 
-# 7. Creating a Sub-task. Link a new task to a parent task using the -p or --parent flag. This is useful for breaking down larger tasks.
-# First, create the parent task
-backlog create "Implement User Authentication"
-# Now, create a sub-task (assuming the parent task ID is 15)
-backlog create "Add Google OAuth login" -p "15"
+  # Create sub-task with parent
+  backlog create "Implement User Authentication"           # Creates T01
+  backlog create "Add Google OAuth" -p "T01"               # Creates T01.01
 
-# 8. Setting Task Dependencies
-# Use the --deps flag to specify that this task depends on other tasks being completed first.
-# Single dependency:
-backlog create "Deploy user authentication" --deps "T15"
-# Multiple dependencies:
-backlog create "Integration testing" --deps "T15" --deps "T18" --deps "T20"
-# This means the task cannot be started until tasks T15, T18, and T20 are completed.
+  # Set dependencies
+  backlog create "Deploy to production" --deps "T15"       # Single dependency
+  backlog create "Integration testing" \
+    --deps "T15" --deps "T18" --deps "T20"                 # Multiple dependencies
 
-# 9. Complex Example (Combining Multiple Flags). Here is a comprehensive example that uses several flags at once to create a very detailed task.
-backlog create "Build the new reporting feature" \
-  -d "Create a new section in the app that allows users to generate and export monthly performance reports in PDF format." \
-  -a "drew" \
-  -l "feature,frontend,backend" \
-  --priority "high" \
-  --ac "Report generation logic is accurate." \
-  --ac "Users can select a date range for the report." \
-  --ac "The exported PDF has the correct branding and layout." \
-  -p "23"
+  # Complex example with multiple flags
+  backlog create "Build reporting feature" \
+    -d "Monthly performance reports in PDF format" \
+    -a "drew" \
+    -l "feature,frontend,backend" \
+    --priority "high" \
+    --ac "Report generation logic is accurate" \
+    --ac "Users can select date range" \
+    --ac "PDF has correct branding" \
+    -p "23"
 
+```
 
 **Usage**:
 

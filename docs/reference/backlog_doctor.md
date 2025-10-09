@@ -31,14 +31,19 @@ Conflict types detected:
 - Orphaned children (tasks with non-existent parents)
 - Invalid hierarchy (parent-child ID mismatch)
 
-
 Examples:
-  backlog doctor                    # Detect conflicts in text format
-  backlog doctor --json             # Detect conflicts in JSON format
-  backlog doctor --fix              # Detect and automatically fix conflicts
-  backlog doctor --fix --dry-run    # Show what would be fixed without making changes
-  backlog doctor --fix --strategy=auto    # Use auto-renumbering strategy
+```
 
+  backlog doctor                          # Detect conflicts in text format
+  backlog doctor --json                   # Detect conflicts in JSON format
+  backlog doctor -j                       # Detect conflicts in JSON format (short flag)
+
+  backlog doctor --fix                    # Auto-fix using chronological strategy
+  backlog doctor --fix --dry-run          # Preview changes without applying
+  backlog doctor --fix --strategy=auto    # Use auto-renumbering strategy
+  backlog doctor --fix --strategy=manual  # Create manual resolution plan
+
+```
 
 **Usage**:
 

@@ -32,60 +32,52 @@ list
 
 # DESCRIPTION
 
+
 Lists all tasks in the backlog except archived tasks.
 
 Examples:
+```
 
-# List all tasks
-backlog list                                    # List all tasks with all columns
-backlog list --status "todo"                    # List tasks with status "todo"
-backlog list --status "todo,in-progress"        # List tasks with status "todo" or "in-progress"
-backlog list --status "done"                    # List tasks with status "done"
-backlog list --parent "12345"                   # List tasks that are sub-tasks of the task with ID "12345"
-backlog list --status "todo" --parent "12345"   # List "todo" sub-tasks of task "12345"
-backlog list --assigned "alice"                 # List tasks assigned to alice
-backlog list --unassigned                       # List tasks that have no one assigned
-backlog list --labels "bug"                     # List tasks containing the label "bug"
-backlog list --labels "bug,feature"             # List tasks containing either "bug" or "feature" labels
-backlog list --priority "high"                  # List all high priority tasks
+  # List all tasks
+  backlog list                                    # All tasks with all columns
+  backlog list --status "todo"                    # Tasks with status "todo"
+  backlog list --status "todo,in-progress"        # Tasks with status "todo" OR "in-progress"
+  backlog list --parent "12345"                   # Sub-tasks of task "12345"
+  backlog list --assigned "alice"                 # Tasks assigned to alice
+  backlog list --unassigned                       # Tasks with no assignee
+  backlog list --labels "bug"                     # Tasks with "bug" label
+  backlog list --priority "high"                  # High priority tasks
 
-# Search
-backlog list --query "refactor"                 # Search for tasks with the word "refactor" in them
+  # Search
+  backlog list --query "refactor"                 # Search for "refactor"
 
-# dependency filters
-backlog list --has-dependency                   # List tasks that have at least one dependency
-backlog list --depended-on                      # List tasks that are depended on by other tasks
-backlog list --depended-on --status "todo"      # List all the blocking tasks.
+  # Dependency filters
+  backlog list --has-dependency                   # Tasks with dependencies
+  backlog list --depended-on                      # Tasks depended on by others
+  backlog list --depended-on --status "todo"      # Blocking tasks
 
-# column visibility
-backlog list --hide-extra                       # Hide extra fields (labels, priority, assigned)
-backlog list -e                                 # Hide extra fields (labels, priority, assigned)
-backlog list --status "todo" --hide-extra       # List "todo" tasks with minimal columns
+  # Column visibility
+  backlog list --hide-extra                       # Minimal columns
+  backlog list -e                                 # Minimal columns (short flag)
 
-# sorting
-backlog list --sort "priority"                  # Sort tasks by priority
-backlog list --sort "updated,priority"          # Sort tasks by updated date, then priority
-backlog list --sort "status,created"            # Sort tasks by status, then creation date
-backlog list --reverse                          # Reverse the order of tasks
-backlog list --sort "priority" --reverse        # Sort by priority in reverse order
-backlog list --status "todo" \
-    --priority "medium"  \
-    --sort "priority"    \
-    --reverse                               # Combine all options
+  # Sorting
+  backlog list --sort "priority"                  # Sort by priority
+  backlog list --sort "updated,priority"          # Sort by updated, then priority
+  backlog list --reverse                          # Reverse order
+  backlog list --sort "priority" --reverse        # Sort by priority, reversed
 
-# output format
-backlog list -m                                 # List tasks in markdown format
-backlog list -markdown                          # List tasks in markdown format
-backlog list --json                             # List tasks in JSON format
-backlog list -j                                 # List tasks in JSON format
-backlog list --status "todo" --json             # List "todo" tasks in JSON format
+  # Output format
+  backlog list --markdown                         # Markdown table
+  backlog list -m                                 # Markdown table (short flag)
+  backlog list --json                             # JSON output
+  backlog list -j                                 # JSON output (short flag)
 
-# pagination
-backlog list --limit 10                         # List first 10 tasks
-backlog list --limit 5 --offset 10              # List 5 tasks starting from 11th task
-backlog list --status "todo" --limit 3          # List first 3 "todo" tasks
-backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
+  # Pagination
+  backlog list --limit 10                         # First 10 tasks
+  backlog list --limit 5 --offset 10              # Tasks 11-15
+  backlog list --status "todo" --limit 3          # First 3 todo tasks
 
+```
 
 **Usage**:
 

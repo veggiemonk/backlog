@@ -14,20 +14,7 @@ import (
 	"github.com/veggiemonk/backlog/internal/paths"
 )
 
-const doctorExamples = `
-Examples:
-  backlog doctor                    # Detect conflicts in text format
-  backlog doctor --json             # Detect conflicts in JSON format
-  backlog doctor --fix              # Detect and automatically fix conflicts
-  backlog doctor --fix --dry-run    # Show what would be fixed without making changes
-  backlog doctor --fix --strategy=auto    # Use auto-renumbering strategy
-`
-
-func newDoctorCommand(rt *runtime) *cli.Command {
-	return &cli.Command{
-		Name:  "doctor",
-		Usage: "Diagnose and fix task ID conflicts",
-		Description: `Diagnose and fix task ID conflicts that can occur when creating tasks
+const doctorDescription = `Diagnose and fix task ID conflicts that can occur when creating tasks
 in separate Git branches. Conflicts arise when multiple branches generate the same task IDs.
 
 This command provides conflict detection and resolution capabilities to maintain
@@ -38,7 +25,27 @@ Conflict types detected:
 - Orphaned children (tasks with non-existent parents)
 - Invalid hierarchy (parent-child ID mismatch)
 
-` + doctorExamples,
+Examples:
+` +
+	"```" +
+	`
+
+  backlog doctor                          # Detect conflicts in text format
+  backlog doctor --json                   # Detect conflicts in JSON format
+  backlog doctor -j                       # Detect conflicts in JSON format (short flag)
+
+  backlog doctor --fix                    # Auto-fix using chronological strategy
+  backlog doctor --fix --dry-run          # Preview changes without applying
+  backlog doctor --fix --strategy=auto    # Use auto-renumbering strategy
+  backlog doctor --fix --strategy=manual  # Create manual resolution plan
+
+` + "```"
+
+func newDoctorCommand(rt *runtime) *cli.Command {
+	return &cli.Command{
+		Name:  "doctor",
+		Usage: "Diagnose and fix task ID conflicts",
+		Description: doctorDescription,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{Name: "json", Aliases: []string{"j"}, Usage: "Output in JSON format"},
 			&cli.BoolFlag{Name: "fix", Usage: "Automatically fix detected conflicts"},

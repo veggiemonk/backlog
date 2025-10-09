@@ -55,7 +55,6 @@ Archive a task
 
 Create a new task
 
->backlog create <title>
 
 **--ac**="": Acceptance criterion (can be specified multiple times) (default: [])
 

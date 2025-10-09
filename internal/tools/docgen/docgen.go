@@ -54,6 +54,8 @@ func genReference(out, format string) error {
 		return fmt.Errorf("unknown format: %s", format)
 	}
 
+	// Ensure output directory exists
+	// Note: README.md in this directory is preserved by the Makefile
 	if err := os.MkdirAll(out, 0o750); err != nil {
 		return err
 	}
@@ -79,7 +81,7 @@ func genReference(out, format string) error {
 }
 
 func writeMarkdownDoc(outDir, filename, title string, command *cli.Command) error {
-	md, err := docs.ToMarkdown(command)
+	md, err := docs.ToTabularMarkdown(command, title)
 	if err != nil {
 		return err
 	}

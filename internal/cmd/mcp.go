@@ -17,9 +17,10 @@ backlog mcp                    # Start the MCP server using stdio transport
 
 func newMCPCommand(rt *runtime) *cli.Command {
 	return &cli.Command{
-		Name:        "mcp",
-		Usage:       "Start the MCP server",
-		Description: "Starts an MCP server to provide programmatic access to backlog tasks.\n\nExamples:\n" + mcpExamples,
+		Name:                  "mcp",
+		Usage:                 "Start the MCP server",
+		Description:           "Starts an MCP server to provide programmatic access to backlog tasks.\n\nExamples:\n" + mcpExamples,
+		EnableShellCompletion: true,
 		Flags: []cli.Flag{
 			&cli.IntFlag{Name: "port", Value: 8106, Usage: "Port for the MCP server (HTTP transport)"},
 			&cli.BoolFlag{Name: "http", Usage: "Use HTTP transport instead of stdio"},

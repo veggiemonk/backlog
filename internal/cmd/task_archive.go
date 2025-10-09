@@ -11,11 +11,22 @@ import (
 
 func newArchiveCommand(rt *runtime) *cli.Command {
 	return &cli.Command{
-		Name:        "archive",
-		Usage:       "Archive a task",
-		UsageText:   "backlog archive <task-id>",
-		ArgsUsage:   "<task-id>",
-		Description: "Archives a task, moving it to the archived directory.",
+		Name:                  "archive",
+		Usage:                 "Archive a task",
+		UsageText:             "backlog archive <task-id>",
+		ArgsUsage:             "<task-id>",
+		EnableShellCompletion: true,
+		Description: `Archives a task, moving it to the archived directory.
+
+Examples:
+` +
+			"```" +
+			`
+
+  backlog archive T01           # Archive task T01
+  backlog archive 42            # Archive task 42
+
+` + "```",
 		Action: func(ctx context.Context, cmd *cli.Command) error {
 			if cmd.Args().Len() != 1 {
 				return cli.Exit("archive requires exactly one <task-id> argument", 1)

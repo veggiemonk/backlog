@@ -32,8 +32,8 @@ tidy: ## Run go mod tidy on all modules
 	go mod tidy
 	
 docs: ## Generate documentation
-	rm -rf ./docs/reference
-	rm -f ./docs/*.md
+	# @find ./docs/reference -type f -name "backlog*.md" -delete 2>/dev/null || true
+	# rm -f ./docs/*.md
 	go generate -x ./...
 
 clean: ## Clean up build artifacts

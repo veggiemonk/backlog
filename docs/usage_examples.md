@@ -2,6 +2,8 @@
 
 
 
+> 📚 **For complete CLI reference documentation**, see [docs/reference/backlog.md](docs/reference/backlog.md) or run `backlog --help` for any command.
+
 ### AI Integration (MCP Server)
 
 ```bash
@@ -105,7 +107,7 @@ backlog list --query "bug" --limit 3 --offset 5       # Search results 6-8
 backlog view T01.02
 
 # Edit task
-backlog edit T01 --status "in-progress" --assignee "alex"
+backlog edit T01 --status "in-progress" --assigned "alex"
 ```
 
 ### Conflict Management
