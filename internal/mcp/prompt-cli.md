@@ -9,13 +9,14 @@ Efficiently manage all project tasks, status, and documentation using the Backlo
 ### Core Capabilities
 
 - ✅ **Task Management**: Create, edit, assign, prioritize, and track tasks with full metadata
+- ✅ **Search**: Search across tasks with `backlog list --query "search_query"`
 - ✅ **Acceptance Criteria**: Granular control with add/remove/check/uncheck operations
-- ✅ **Git Integration**: Automatic tracking of task states across branches
+- ✅ **Git Integration**: Automatic commit of the task if option is set
 - ✅ **Dependencies**: Task relationships and subtask hierarchies
 - ✅ **Export**: Generate Markdown or JSON
 - ✅ **CLI-Optimized**: Commands return structured output in plain text, perfect for AI processing
 
-### Why This Matters to You (AI Agent)
+### Why This Matters to You (AI Agent/Assistant)
 
 1.  **Comprehensive system** - Full project management capabilities through CLI commands.
 2.  **The CLI is the interface** - All operations go through `backlog` commands.
@@ -163,9 +164,19 @@ backlog create "Task title" \
 
 Replace "agent-cli" with your name.
 
+### Title (one liner)
+
+Use a clear brief title that summarizes the task.
+
+### Description (The "why")
+
+Provide a concise summary of the task purpose and its goal. Explains the context without implementation details.
+
 ### Acceptance Criteria (The "what")
 
 **Managing Acceptance Criteria via CLI:**
+
+**IMPORTANT: How AC Commands Work**
 
 - **Adding criteria** uses the `--ac` flag with criterion text.
 - **Checking/unchecking/removing** use `--check-ac`, `--uncheck-ac`, `--remove-ac` flags with 1-based indices.
@@ -194,6 +205,23 @@ backlog edit 42 \
   --remove-ac 3 \
   --ac "New criterion"
 ```
+
+**Key Principles for Good Acceptance Criteria:**
+
+- **Outcome-Oriented:** Focus on the result, not the method.
+- **Testable/Verifiable:** Each criterion should be objectively testable
+- **Clear and Concise:** Unambiguous language
+- **Complete:** Collectively cover the task scope
+- **User-Focused:** Frame from end-user or system behavior perspective
+
+Good Examples:
+- "User can successfully log in with valid credentials"
+- "System processes 1000 requests per second without errors"
+- "CLI preserves literal newlines in description/plan/notes; `\\n` sequences are not auto‑converted"
+
+Bad Example (Implementation Step):
+- "Add a new function `func handleLogin() error` in auth.go"
+- "Define expected behavior and document supported input patterns"
 
 ### Task Breakdown Strategy
 1. Identify foundational components first
@@ -242,10 +270,22 @@ backlog edit 42 --notes "Implemented using pattern X because of Reason Y. Modifi
 ```
 
 **IMPORTANT**: Do NOT include an Implementation Plan when creating a task. The plan is added only after you start the implementation.
+
 - Creation phase: provide Title, Description, Acceptance Criteria, and optionally labels/priority/assigned.
 - When you begin work, switch to edit, set the task in progress and assign to yourself `backlog edit <id> --status "in-progress" --assigned "..."`.
 - Think about how you would solve the task and add the plan: `backlog edit <id> --plan "..."`.
 - Add Implementation Notes only after completing the work: `backlog edit <id> --notes "..."` (replace with the full text you need).
+
+### 5.4 Phase discipline: What goes where
+
+- Creation: Title, Description, Acceptance Criteria, labels/priority/assignee.
+- Implementation: Implementation Plan (after moving to In Progress and assigning to yourself).
+- Wrap-up: Implementation Notes (Like a PR description), AC and Definition of Done checks.
+
+**IMPORTANT**: Only implement what's in the Acceptance Criteria. If you need to do more, either:
+
+1. Update the AC first: `backlog task edit 42 --ac "New requirement"`
+2. Or create a new follow up task: `backlog task create "Additional feature"`
 
 ---
 
@@ -562,6 +602,7 @@ The CLI preserves input literally. Shells do not convert `\n` inside normal quot
   - `backlog edit 42 --notes "Line1`nLine2"`
 
 Do not expect `"...\\n..."` to become a newline. That passes the literal backslash + n to the CLI by design.
+Descriptions support literal newlines; shell examples may show escaped `\\n`, but enter a single `\n` to create a newline.
 
 ---
 
@@ -592,5 +633,7 @@ backlog edit 42 --notes $'- Added new API endpoint\n- Updated tests\n- TODO: mon
 
 **🎯 If you want to change ANYTHING in a task, use the `backlog edit` command.**
 **📖 Use `backlog view` and `backlog list` to read tasks. Never write to files directly.**
+
+Full help available: `backlog --help`
 
 ---
