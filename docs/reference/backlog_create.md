@@ -73,7 +73,7 @@ backlog create "Build the new reporting feature" \
   --ac "Users can select a date range for the report." \
   --ac "The exported PDF has the correct branding and layout." \
   -p "23"	
-	
+
 ```
 
 
@@ -82,12 +82,12 @@ backlog create "Build the new reporting feature" \
 #### Environment Variables
 
 ```
-	(name)		(default)
-	AUTO-COMMIT	false
-	FOLDER		.backlog
-	LOG-FILE	
-	LOG-FORMAT	text
-	LOG-LEVEL	info
+	(name)				(default)
+	BACKLOG_AUTO_COMMIT	false
+	BACKLOG_FOLDER		.backlog
+	BACKLOG_LOG_FILE	
+	BACKLOG_LOG_FORMAT	text
+	BACKLOG_LOG_LEVEL	info
 ```
 
 #### Flags

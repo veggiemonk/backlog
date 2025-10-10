@@ -10,6 +10,7 @@ import (
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version information",
+	Long:  "Print the version information",
 	Example: `
 backlog version # Print the version information
 

@@ -10,12 +10,17 @@ import (
 	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
+var archiveExample = `
+backlog archive 10  # archive task 10
+`
+
 var archiveCmd = &cobra.Command{
-	Use:   "archive <task-id>",
-	Short: "Archive a task",
-	Long:  `Archives a task, moving it to the archived directory.`,
-	Args:  cobra.ExactArgs(1),
-	RunE:  runArchive,
+	Use:     "archive <task-id>",
+	Short:   "Archive a task",
+	Long:    `Archives a task, moving it to the archived directory.`,
+	Example: archiveExample,
+	Args:    cobra.ExactArgs(1),
+	RunE:    runArchive,
 }
 
 func init() {
@@ -38,7 +43,6 @@ func runArchive(cmd *cobra.Command, args []string) error {
 	}
 
 	logging.Info("task archived successfully", "task_id", task.ID)
-	// fmt.Printf("Task %s archived successfully.\n", archivedTask.ID)
 
 	if !viper.GetBool(configAutoCommit) {
 		return nil // Auto-commit is disabled

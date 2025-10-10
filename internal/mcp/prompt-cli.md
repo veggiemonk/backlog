@@ -133,13 +133,13 @@ Summary of what was done.
 | Assigned                | `backlog edit 42 --assigned "@sara"`                |
 | Labels                  | `backlog edit 42 --labels "backend,api"`          |
 | Description             | `backlog edit 42 --description "New description"` |
-| Add AC                  | `backlog edit 42 --add-ac "New criterion"`        |
+| Add AC                  | `backlog edit 42 --ac "New criterion"`            |
 | Check AC #1             | `backlog edit 42 --check-ac 1`                    |
 | Uncheck AC #2           | `backlog edit 42 --uncheck-ac 2`                  |
 | Remove AC #1            | `backlog edit 42 --remove-ac 1`                   |
-| Add Plan                | `backlog edit 42 --plan "1. Step one\n2. Step two"` |
+| Add Plan                | `backlog edit 42 --plan $'1. Step one\n2. Step two'` |
 | Add Notes               | `backlog edit 42 --notes "What I did"`            |
-| Remove Assigned User    | `backlog edit 42 --unassign "@sara"`              |
+| Remove Assigned User    | `backlog edit 42 --remove-assigned "@sara"`       |
 | Remove Labels           | `backlog edit 42 --remove-labels "backend,api"`   |
 
 ---
@@ -157,8 +157,6 @@ backlog create "Task title" \
   --assigned "agent-cli" \
   --labels "feature,documentation" \
   --priority "medium" \
-  --plan "1. Step1\n2. Step 2\n3. Step 3\n" \
-  --notes "what I did" \
   --ac "First criterion" \
   --ac "Second criterion"
 ```
@@ -169,7 +167,7 @@ Replace "agent-cli" with your name.
 
 **Managing Acceptance Criteria via CLI:**
 
-- **Adding criteria** uses `--add-ac` flag with criterion text.
+- **Adding criteria** uses the `--ac` flag with criterion text.
 - **Checking/unchecking/removing** use `--check-ac`, `--uncheck-ac`, `--remove-ac` flags with 1-based indices.
 - You can perform multiple operations by using flags multiple times.
 
@@ -177,7 +175,7 @@ Replace "agent-cli" with your name.
 # Examples
 
 # Add new criteria
-backlog edit 42 --add-ac "User can login" --add-ac "Session persists"
+backlog edit 42 --ac "User can login" --ac "Session persists"
 
 # Check multiple criteria by index
 backlog edit 42 --check-ac 1 --check-ac 2 --check-ac 3
@@ -194,7 +192,7 @@ backlog edit 42 \
   --check-ac 1 \
   --uncheck-ac 2 \
   --remove-ac 3 \
-  --add-ac "New criterion"
+  --ac "New criterion"
 ```
 
 ### Task Breakdown Strategy
@@ -236,7 +234,7 @@ backlog edit 42 --plan "1. Research codebase for references
 
 ### 5.3. Implementation Notes (PR description)
 
-When you are done implementing a task, write a clean description in the task notes, as if it were a PR description. Append notes progressively during implementation using `--append-notes`.
+When you are done implementing a task, write a clean description in the task notes, as if it were a PR description. Update notes progressively during implementation using `--notes` (rerun the command with the complete text you want recorded).
 
 ```bash
 # Example
@@ -247,7 +245,7 @@ backlog edit 42 --notes "Implemented using pattern X because of Reason Y. Modifi
 - Creation phase: provide Title, Description, Acceptance Criteria, and optionally labels/priority/assigned.
 - When you begin work, switch to edit, set the task in progress and assign to yourself `backlog edit <id> --status "in-progress" --assigned "..."`.
 - Think about how you would solve the task and add the plan: `backlog edit <id> --plan "..."`.
-- Add Implementation Notes only after completing the work: `backlog edit <id> --notes "..."` (replace) or append progressively using `--append-notes`.
+- Add Implementation Notes only after completing the work: `backlog edit <id> --notes "..."` (replace with the full text you need).
 
 ---
 
@@ -277,9 +275,7 @@ backlog view 42
 backlog edit 42 --status "in-progress" --assigned "@myself"
 
 # 4. Add implementation plan
-backlog edit 42 "1. Analyze
-2. Refactor
-3. Test"
+backlog edit 42 --plan $'1. Analyze\n2. Refactor\n3. Test'
 
 # 5. Work on the task (write code, test, etc.)
 
@@ -334,7 +330,7 @@ A task is **Done** only when **ALL** of the following are complete:
 | Check AC      | Use `backlog edit 42 --check-ac 1`             | Change `- [ ]` to `- [x]` in file  |
 | Add notes     | Use `backlog edit 42 --notes "..."`            | Type notes into .md file           |
 | Change status | Use `backlog edit 42 --status "done"`          | Edit status in frontmatter         |
-| Add AC        | Use `backlog edit 42 --add-ac "New"`           | Add `- [ ] New` to file            |
+| Add AC        | Use `backlog edit 42 --ac "New"`               | Add `- [ ] New` to file            |
 | Archive task  | Use `backlog archive 42`                       | Manually move files to archive folder |
 
 ---
@@ -358,6 +354,10 @@ backlog create "TITLE" [flags]
 | `--labels`      | `string` | Comma-separated labels                    |
 | `--priority`    | `string` | The priority of the task                  |
 | `--deps`        | `string` | Task dependencies (can be used multiple times) |
+| `--plan`        | `string` | Implementation plan for the task          |
+| `--notes`       | `string` | Implementation notes for the task         |
+
+> Best practice: even though `--plan` and `--notes` are accepted at creation time, defer setting them until you actually start and complete the work (see Section 5).
 
 ### `backlog edit`
 
@@ -374,12 +374,12 @@ backlog edit ID [flags]
 | `--status`       | `string` | A new status (e.g., "in-progress", "done")       |
 | `--deps`         | `string` | Set dependencies (replaces existing, comma-separated) |
 | `--parent`       | `string` | A new parent task ID                              |
-| `--assigned`     | `string` | Assign users (can be used multiple times)        |
-| `--unassign`     | `string` | Remove assigned users (can be used multiple times) |
-| `--labels`       | `string` | Set labels (replaces existing, comma-separated)  |
+| `--assigned`     | `string` | Add assigned users (can be used multiple times)  |
+| `--remove-assigned` | `string` | Remove assigned users (can be used multiple times) |
+| `--labels`       | `string` | Add labels (can be used multiple times)          |
 | `--remove-labels`| `string` | Remove labels (comma-separated)                   |
 | `--priority`     | `string` | A new priority                                    |
-| `--add-ac`       | `string` | Add acceptance criteria (can be used multiple times) |
+| `--ac`           | `string` | Add acceptance criteria (can be used multiple times) |
 | `--remove-ac`    | `int`    | Remove AC by 1-based index (can be used multiple times) |
 | `--check-ac`     | `int`    | Check AC by 1-based index (can be used multiple times) |
 | `--uncheck-ac`   | `int`    | Uncheck AC by 1-based index (can be used multiple times) |
@@ -401,6 +401,7 @@ backlog list [flags]
 | `--assigned`     | `string` | Filter by assigned user (comma-separated for multiple)        |
 | `--unassigned`   | `bool`   | Filter tasks that have no assigned users                      |
 | `--labels`       | `string` | Filter by labels (comma-separated for multiple)               |
+| `--priority`     | `string` | Filter by priority                                           |
 | `--has-dependency`| `bool`  | Filter tasks that have dependencies                           |
 | `--depended-on`  | `bool`   | Filter tasks that are depended on by other tasks              |
 | `--hide-extra`   | `bool`   | Hide extra fields (labels, priority, assigned)                |
@@ -409,6 +410,8 @@ backlog list [flags]
 | `--limit`        | `int`    | Maximum number of tasks to return (0 means no limit)          |
 | `--offset`       | `int`    | Number of tasks to skip from the beginning                    |
 | `--query`        | `string` | Search query to filter tasks by                               |
+| `--markdown`     | `bool`   | Render output as a Markdown table                             |
+| `--json`         | `bool`   | Render output as JSON (affects pagination output)             |
 
 ### `backlog view`
 
@@ -417,6 +420,8 @@ Retrieves and displays the details of a single task.
 ```bash
 backlog view ID
 ```
+
+Pass `--json` (or `-j`) to output the task as JSON instead of Markdown.
 
 ### `backlog archive`
 
@@ -550,7 +555,7 @@ The CLI preserves input literally. Shells do not convert `\n` inside normal quot
   - Description: `backlog edit 42 --description $'Line1\nLine2\n\nFinal'`
   - Plan: `backlog edit 42 --plan $'1. A\n2. B'`
   - Notes: `backlog edit 42 --notes $'Done A\nDoing B'`
-  - Append notes: `backlog edit 42 --append-notes $'Progress update line 1\nLine 2'`
+  - To append information, rerun `--notes` with both the existing content and your update.
 - POSIX portable (printf):
   - `backlog edit 42 --notes "$(printf 'Line1\nLine2')"`
 - PowerShell (backtick n):

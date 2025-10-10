@@ -7,6 +7,10 @@ title: backlog version
 
 Print the version information
 
+### Synopsis
+
+Print the version information
+
 ```
 backlog version [flags]
 ```
@@ -33,12 +37,12 @@ backlog version # Print the version information
 #### Environment Variables
 
 ```
-	(name)		(default)
-	AUTO-COMMIT	false
-	FOLDER		.backlog
-	LOG-FILE	
-	LOG-FORMAT	text
-	LOG-LEVEL	info
+	(name)				(default)
+	BACKLOG_AUTO_COMMIT	false
+	BACKLOG_FOLDER		.backlog
+	BACKLOG_LOG_FILE	
+	BACKLOG_LOG_FORMAT	text
+	BACKLOG_LOG_LEVEL	info
 ```
 
 #### Flags

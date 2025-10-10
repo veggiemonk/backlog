@@ -11,12 +11,7 @@ import (
 	mcpserver "github.com/veggiemonk/backlog/internal/mcp"
 )
 
-var editCmd = &cobra.Command{
-	Use:   "edit <id>",
-	Short: "Edit an existing task",
-	Long:  `Edit an existing task by providing its ID and flags for the fields to update.`,
-	Args:  cobra.ExactArgs(1),
-	Example: `
+var editExample = `
 # Edit tasks using the "backlog edit" command with its different flags.
 # Let's assume you have a task with ID "42" that you want to modify.
 # Here are some examples of how to use this command effectively:
@@ -34,16 +29,23 @@ backlog edit 42 -d "The login button on the homepage is misaligned on mobile dev
 backlog edit 42 -s "in-progress"
 
 # 4. Re-assigning a Task
-# You can change the assigned names for a task using the -a or --assignee flag.
-# This will replace the current list of assigned names.
-# Assign to a single person:
+# You can add or remove assigned names for a task using the -a (--assigned) and -A (--remove-assigned) flags.
+# Add a single assignee:
 backlog edit 42 -a "jordan"
-# Assign to multiple people:
+# Add multiple assignees:
 backlog edit 42 -a "jordan" -a "casey"
+# Remove an assignee:
+backlog edit 42 -A "casey"
 
 # 5. Updating Labels
-# Use the -l or --labels flag to replace the existing labels.
-backlog edit 42 -l "bug,frontend"
+# Use the -l (--labels) and -L (--remove-labels) flags to add or remove labels.
+# Add a single label:
+backlog edit 42 -l "bug"
+# Add multiple labels:
+backlog edit 42 -l "frontend" -l "bug"
+# Remove a label:
+backlog edit 42 -L "bug"
+
 
 # 6. Changing the Priority
 # Adjust the task's priority with the --priority flag.
@@ -84,10 +86,10 @@ backlog edit 42 \
 # Use the --plan flag to add or update the implementation plan for the task.
 backlog edit 42 --plan "1. Refactor login button\n2. Test on mobile\n3. Review with team"
 
-# 12. Adding Dependencies
-# Use the --deps flag to add one or more task dependencies.
+# 12. Setting Dependencies
+# Use the --deps flag to set the dependencies for a task.
 # This will replace all existing dependencies with the new ones.
-backlog edit 42 --deps "T1" --deps "T2"
+backlog edit 42 --deps "T1,T2"
 
 # 13. Setting a Single Dependency
 # If you want to make a task depend on another specific task:
@@ -96,10 +98,17 @@ backlog edit 42 --deps "T15"
 
 # 14. Setting Multiple Dependencies
 # You can make a task depend on multiple other tasks:
-backlog edit 42 --deps "T15" --deps "T18" --deps "T20"
+backlog edit 42 --deps "T15,T18,T20"
 # This makes task 42 dependent on tasks T15, T18, and T20.
-	`,
-	RunE: runEdit,
+`
+
+var editCmd = &cobra.Command{
+	Use:     "edit <id>",
+	Short:   "Edit an existing task",
+	Long:    `Edit an existing task by providing its ID and flags for the fields to update.`,
+	Args:    cobra.ExactArgs(1),
+	Example: editExample,
+	RunE:    runEdit,
 }
 
 var (
@@ -132,11 +141,11 @@ func setEditFlags(cmd *cobra.Command) {
 	cmd.Flags().StringVarP(&newStatus, "status", "s", "", "New status for the task")
 	cmd.Flags().StringVar(&newPriority, "priority", "", "New priority for the task")
 	cmd.Flags().StringVarP(&newParent, "parent", "p", "", "New parent for the task")
-	cmd.Flags().StringSliceVarP(&addAssigned, "assigned", "a", nil, "Add assigned names for the task (can be used multiple times)")
-	cmd.Flags().StringSliceVarP(&removeAssigned, "remove-assigned", "A", nil, "Assigned names to remove from the task (can be used multiple times)")
-	cmd.Flags().StringSliceVarP(&addLabels, "labels", "l", nil, "Add labels for the task (can be used multiple times)")
-	cmd.Flags().StringSliceVarP(&removeLabels, "remove-labels", "L", nil, "Labels to remove from the task (can be used multiple times)")
-	cmd.Flags().StringSliceVar(&newDependencies, "deps", nil, "Set dependencies (can be used multiple times)")
+	cmd.Flags().StringSliceVarP(&addAssigned, "assigned", "a", nil, "Add assigned names for the task (can be specified multiple times)")
+	cmd.Flags().StringSliceVarP(&removeAssigned, "remove-assigned", "A", nil, "Assigned names to remove from the task (can be specified multiple times)")
+	cmd.Flags().StringSliceVarP(&addLabels, "labels", "l", nil, "Add labels for the task (can be specified multiple times)")
+	cmd.Flags().StringSliceVarP(&removeLabels, "remove-labels", "L", nil, "Labels to remove from the task (can be specified multiple times)")
+	cmd.Flags().StringSliceVar(&newDependencies, "deps", nil, "Set dependencies, replacing existing ones (can be used multiple times)")
 	cmd.Flags().StringVar(&newNotes, "notes", "", "New implementation notes for the task")
 	cmd.Flags().StringVar(&newPlan, "plan", "", "New implementation plan for the task")
 

@@ -58,7 +58,7 @@ backlog list --status "todo" \
 
 # output format
 backlog list -m                                 # List tasks in markdown format
-backlog list -markdown                          # List tasks in markdown format
+backlog list --markdown                         # List tasks in markdown format
 backlog list --json                             # List tasks in JSON format
 backlog list -j                                 # List tasks in JSON format
 backlog list --status "todo" --json             # List "todo" tasks in JSON format
@@ -68,7 +68,7 @@ backlog list --limit 10                         # List first 10 tasks
 backlog list --limit 5 --offset 10              # List 5 tasks starting from 11th task
 backlog list --status "todo" --limit 3          # List first 3 "todo" tasks
 backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
-	
+
 ```
 
 
@@ -77,12 +77,12 @@ backlog list --sort "priority" --limit 10       # List top 10 tasks by priority
 #### Environment Variables
 
 ```
-	(name)		(default)
-	AUTO-COMMIT	false
-	FOLDER		.backlog
-	LOG-FILE	
-	LOG-FORMAT	text
-	LOG-LEVEL	info
+	(name)				(default)
+	BACKLOG_AUTO_COMMIT	false
+	BACKLOG_FOLDER		.backlog
+	BACKLOG_LOG_FILE	
+	BACKLOG_LOG_FORMAT	text
+	BACKLOG_LOG_LEVEL	info
 ```
 
 #### Flags

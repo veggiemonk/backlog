@@ -25,19 +25,17 @@ import (
 
 var (
 	dirDocs           = filepath.Join(".", "docs")
+	llmstxtPath       = filepath.Join(dirDocs, "llms.txt")
 	dirRef            = filepath.Join(dirDocs, "reference")
 	sectionsToExtract = []string{"usage_examples", "quick_start", "ai_agent_integration"}
+	cliPromptPath     = "internal/mcp/prompt-cli.md"
+	mcpPromptPath     = "internal/mcp/prompt-mcp.md"
 )
 
 var dirReplacer = strings.NewReplacer(
 	"(./.backlog)", "(https://github.com/veggiemonk/backlog/tree/main/.backlog)",
 	"(./.gemini)", "(https://github.com/veggiemonk/backlog/tree/main/.gemini)",
 	"(./.claude)", "(https://github.com/veggiemonk/backlog/tree/main/.claude)",
-)
-
-var (
-	cliPromptPath = "internal/mcp/prompt-cli.md"
-	mcpPromptPath = "internal/mcp/prompt-mcp.md"
 )
 
 func main() {
@@ -54,22 +52,85 @@ func main() {
 	checkErr(addEnvVars)
 }
 
+func genReference(out, format string) error {
+	if err := os.MkdirAll(out, 0o750); err != nil {
+		return err
+	}
+
+	root := cmd.Root()
+	root.DisableAutoGenTag = true // stable, reproducible files (no timestamp footer)
+
+	switch format {
+	case "markdown":
+		prep := func(filename string) string {
+			base := filepath.Base(filename)
+			name := strings.TrimSuffix(base, filepath.Ext(base))
+			title := strings.ReplaceAll(name, "_", " ")
+			var buf bytes.Buffer
+			buf.WriteString("---\n")
+			buf.WriteString("layout: page\n")
+			buf.WriteString("title: " + title + "\n")
+			buf.WriteString("---\n\n")
+			return buf.String()
+		}
+		link := func(name string) string { return strings.ToLower(name) }
+		if err := doc.GenMarkdownTreeCustom(root, out, prep, link); err != nil {
+			return err
+		}
+		if err := os.Remove(llmstxtPath); err != nil {
+			return err
+		}
+		f, err := os.Create(llmstxtPath)
+		if err != nil {
+			return err
+		}
+		if err := doc.GenMarkdown(root, f); err != nil {
+			return err
+		}
+		for _, c := range root.Commands() {
+			if !c.IsAvailableCommand() || c.IsAdditionalHelpTopicCommand() {
+				continue
+			}
+			if err := doc.GenMarkdown(c, f); err != nil {
+				return err
+			}
+		}
+		return nil
+	case "man":
+		hdr := &doc.GenManHeader{Title: strings.ToUpper(root.Name()), Section: "1"}
+		if err := doc.GenManTree(root, hdr, out); err != nil {
+			return err
+		}
+	case "rest":
+		if err := doc.GenReSTTree(root, out); err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("unknown format: %s", format)
+	}
+	return nil
+}
+
 func addEnvVars() error {
 	files, err := os.ReadDir(dirRef)
 	if err != nil {
 		return err
 	}
+	root := cmd.Root()
+	envPrefix := strings.ToUpper(root.Name())
 	sep := "### Options"
 	var buf strings.Builder
 	buf.WriteString("\n#### Environment Variables\n\n")
 	buf.WriteString("```\n")
-	buf.WriteString("\t(name)\t\t(default)\n")
+	buf.WriteString("\t(name)\t\t\t\t(default)\n")
 	m := viper.AllSettings()
 	for _, k := range slices.Sorted(maps.Keys(m)) {
-		if len(k) < 8 {
-			buf.WriteString(fmt.Sprintf("\t%s\t\t%v\n", strings.ToUpper(k), m[k]))
+		envKey := strings.ToUpper(strings.ReplaceAll(strings.ReplaceAll(k, "-", "_"), ".", "_"))
+		envVar := fmt.Sprintf("%s_%s", envPrefix, envKey)
+		if len(envVar) == len("BACKLOG_FOLDER") {
+			buf.WriteString(fmt.Sprintf("\t%s\t\t%v\n", envVar, m[k]))
 		} else {
-			buf.WriteString(fmt.Sprintf("\t%s\t%v\n", strings.ToUpper(k), m[k]))
+			buf.WriteString(fmt.Sprintf("\t%s\t%v\n", envVar, m[k]))
 		}
 	}
 	buf.WriteString("```\n")
@@ -89,13 +150,10 @@ func addEnvVars() error {
 			continue
 		}
 		results := fmt.Sprintf("%s\n%s\n%s%s", before, sep, buf.String(), after)
-
 		if err := os.WriteFile(path, []byte(results), os.ModePerm); err != nil {
 			return err
 		}
-
 	}
-
 	return nil
 }
 
@@ -301,45 +359,4 @@ func slugify(s string) string {
 		}
 	}
 	return result.String()
-}
-
-func genReference(out, format string) error {
-	if err := os.MkdirAll(out, 0o750); err != nil {
-		return err
-	}
-
-	root := cmd.Root()
-	root.DisableAutoGenTag = true // stable, reproducible files (no timestamp footer)
-
-	switch format {
-	case "markdown":
-		prep := func(filename string) string {
-			base := filepath.Base(filename)
-			name := strings.TrimSuffix(base, filepath.Ext(base))
-			title := strings.ReplaceAll(name, "_", " ")
-			var buf bytes.Buffer
-			buf.WriteString("---\n")
-			buf.WriteString("layout: page\n")
-			buf.WriteString("title: " + title + "\n")
-			buf.WriteString("---\n\n")
-			return buf.String()
-		}
-		link := func(name string) string { return strings.ToLower(name) }
-		if err := doc.GenMarkdownTreeCustom(root, out, prep, link); err != nil {
-			return err
-		}
-		return nil
-	case "man":
-		hdr := &doc.GenManHeader{Title: strings.ToUpper(root.Name()), Section: "1"}
-		if err := doc.GenManTree(root, hdr, out); err != nil {
-			return err
-		}
-	case "rest":
-		if err := doc.GenReSTTree(root, out); err != nil {
-			return err
-		}
-	default:
-		return fmt.Errorf("unknown format: %s", format)
-	}
-	return nil
 }

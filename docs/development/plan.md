@@ -176,7 +176,7 @@ backlog create "Implement OAuth" \
   --ac "Token validation implemented"
 
 # List with filters
-backlog list --status "in-progress" --assignee "alice" --parent "T01"
+backlog list --status "in-progress" --assigned "alice" --parent "T01"
 
 # Edit with add/remove operations
 backlog edit T01.02 \

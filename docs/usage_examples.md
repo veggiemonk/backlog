@@ -105,7 +105,7 @@ backlog list --query "bug" --limit 3 --offset 5       # Search results 6-8
 backlog view T01.02
 
 # Edit task
-backlog edit T01 --status "in-progress" --assignee "alex"
+backlog edit T01 --status "in-progress" --assigned "alex"
 ```
 
 ### Conflict Management
