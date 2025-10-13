@@ -76,6 +76,9 @@ Efficiently manage all project tasks, status, and documentation using the Backlo
 ```bash
 # DO THIS INSTEAD:
 
+# Create a task
+backlog create "title" --description "the description of the task" --plan "the plan of implementing the task"
+
 # Mark AC #1 as complete
 backlog edit 7 --check-ac 1
 
