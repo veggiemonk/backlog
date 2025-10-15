@@ -20,7 +20,7 @@ Backlog includes an MCP server that exposes task management capabilities as stru
 
 To make these tools available to an agent:
 
-1. Instruct your AI tools with  `backlog instructions --mcp`
+1. Instruct your AI tools with `backlog instructions --mcp`
 2. Start the MCP server
 
 ```bash
