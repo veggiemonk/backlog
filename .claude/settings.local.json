@@ -34,7 +34,8 @@
     ]
   },
   "enabledMcpjsonServers": [
-    "gopls"
+    "gopls",
+    "backlog"
   ],
   "outputStyle": "default"
 }

@@ -90,8 +90,17 @@ func (f *FileTaskStore) Update(task *Task, params EditTaskParams) error {
 			return fmt.Errorf("invalid new parent task ID '%s': %w", *params.NewParent, err)
 		}
 		if !task.Parent.Equals(newParent) {
+			if oldFilePath == "" {
+				oldFilePath = f.Path(*task) // Save old file path before ID changes
+			}
 			RecordChange(task, fmt.Sprintf("Parent changed from %q to %q", task.Parent.String(), newParent.String()))
 			task.Parent = newParent
+			// Recalculate task ID to be a subtask of the new parent
+			nextID, err := f.getNextTaskID(newParent.seg...)
+			if err != nil {
+				return fmt.Errorf("could not get next task ID for new parent: %w", err)
+			}
+			task.ID = nextID
 		}
 	}
 

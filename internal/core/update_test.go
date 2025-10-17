@@ -120,6 +120,9 @@ func TestUpdateTaskFields(t *testing.T) {
 
 		slices.Sort(updatedTask.Assigned)
 		// Verify fields are updated
+		pstr := parentTask.ID.String()
+		ustr := updatedTask.ID.String()
+		is.True(strings.HasPrefix(ustr, pstr)) // the updated task should be under the parent
 		is.Equal(updatedTask.Title, newTitle)
 		is.Equal(updatedTask.Description, newDesc)
 		is.Equal(string(updatedTask.Status), newStatus)
