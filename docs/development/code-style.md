@@ -45,7 +45,7 @@ The project follows the standard Go project layout recommendations.
 
 ## 4. Logging
 
--   **Structured Logging**: We use a structured logger (e.g., `zerolog`) for all application output. This allows for easier parsing, filtering, and analysis of logs.
+-   **Structured Logging**: We use a structured logger (e.g., `log/slog`) for all application output. This allows for easier parsing, filtering, and analysis of logs.
 -   **Log Levels**: Use appropriate log levels:
     -   `logging.Error`: For failures that prevent a feature from working.
     -   `logging.Warn`: For potential issues that do not cause a failure.
