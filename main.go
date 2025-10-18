@@ -4,6 +4,4 @@ package main
 
 import "github.com/veggiemonk/backlog/internal/cmd"
 
-func main() {
-	cmd.Execute()
-}
+func main() { cmd.Execute() }
