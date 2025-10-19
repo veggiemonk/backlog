@@ -32,7 +32,7 @@ func view(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return fmt.Errorf("failed to view task %q: %w", args[0], err)
 	}
-
+	t.History = nil // save tokens by not showing the whole history.
 	if viewJSON {
 		if err := json.NewEncoder(cmd.OutOrStdout()).Encode(t); err != nil {
 			return fmt.Errorf("failed to encode JSON for task %q: %w", args[0], err)
