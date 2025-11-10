@@ -14,7 +14,7 @@ require (
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/viper v1.21.0
 	github.com/yuin/goldmark v1.7.13
-	go.yaml.in/yaml/v4 v4.0.0-rc.2
+	go.yaml.in/yaml/v4 v4.0.0-rc.3
 )
 
 require (
