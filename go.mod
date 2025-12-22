@@ -5,7 +5,7 @@ go 1.25.1
 require (
 	github.com/agnivade/levenshtein v1.2.1
 	github.com/go-git/go-git/v6 v6.0.0-20250929180949-be58d99c174e
-	github.com/google/jsonschema-go v0.3.0
+	github.com/google/jsonschema-go v0.4.2
 	github.com/imjasonh/version v0.0.1
 	github.com/matryer/is v1.4.1
 	github.com/modelcontextprotocol/go-sdk v1.1.0
