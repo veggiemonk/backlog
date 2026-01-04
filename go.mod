@@ -8,7 +8,7 @@ require (
 	github.com/google/jsonschema-go v0.4.2
 	github.com/imjasonh/version v0.0.1
 	github.com/matryer/is v1.4.1
-	github.com/modelcontextprotocol/go-sdk v1.1.0
+	github.com/modelcontextprotocol/go-sdk v1.2.0
 	github.com/olekukonko/tablewriter v1.1.2
 	github.com/spf13/afero v1.15.0
 	github.com/spf13/cobra v1.10.2
