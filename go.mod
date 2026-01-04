@@ -11,7 +11,7 @@ require (
 	github.com/modelcontextprotocol/go-sdk v1.1.0
 	github.com/olekukonko/tablewriter v1.1.2
 	github.com/spf13/afero v1.15.0
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
 	github.com/yuin/goldmark v1.7.13
 	go.yaml.in/yaml/v4 v4.0.0-rc.3
@@ -58,5 +58,4 @@ require (
 	golang.org/x/sys v0.36.0 // indirect
 	golang.org/x/text v0.29.0 // indirect
 	golang.org/x/tools v0.37.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
